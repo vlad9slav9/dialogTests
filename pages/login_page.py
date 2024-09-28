@@ -3,12 +3,14 @@ import configparser
 from playwright.async_api import Page
 from playwright.sync_api import expect
 
+from pages.event_page import EventPage
+
 
 class LoginPage:
     def __init__(self, page: Page):
         self.page = page
         self._username_input = self.page.locator("#login")
-        self._password_input = self.page.locator("password")
+        self._password_input = self.page.locator("#password")
         self._login_button = self.page.locator("#login_enter_button")
         self._login_error_message = self.page.get_by_text("Введены неверные данные")
         self.config = configparser.ConfigParser()
@@ -29,3 +31,5 @@ class LoginPage:
     def do_login(self, username, password):
         self._username_input.fill(username)
         self._password_input.fill(password)
+        self._login_button.click()
+        return EventPage(self.page)
