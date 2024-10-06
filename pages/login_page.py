@@ -9,12 +9,15 @@ from pages.event_page import EventPage
 class LoginPage:
     def __init__(self, page: Page):
         self.page = page
+        self.config = configparser.ConfigParser()
+        self.config.read("auth.ini")
+
         self._username_input = self.page.locator("#login")
         self._password_input = self.page.locator("#password")
         self._login_button = self.page.locator("#login_enter_button")
         self._login_error_message = self.page.get_by_text("Введены неверные данные")
-        self.config = configparser.ConfigParser()
-        self.config.read("auth.ini")
+        self._login_page_logo = self.page.get_by_text("Войти в систему электронного документооборота")
+        self._krtech_logo_link = self.page.get_by_role("link").first
 
     def navigate(self):
         self.page.goto("/")
@@ -40,10 +43,36 @@ class LoginPage:
         return self.config['responsible']['password']
 
     def login_with_responsible(self):
-        username = self.get_responsible_username()
-        password = self.get_responsible_password()
-        self.do_login(username, password)
+        self.do_login(self.get_responsible_username(), self.get_responsible_password())
         return EventPage(self.page)
+
+    def click_krtech_logo(self):
+        context = self.page.context
+        with context.expect_page() as krtech_website:
+            self._krtech_logo_link.click()
+        krtech_page = krtech_website.value
+        krtech_page.wait_for_load_state()
+        return krtech_page
+
+
+
+
+
+
+
+
+
+
+
 
     def assert_login_error_visible(self):
         expect(self._login_error_message).to_be_visible()
+
+    def assert_login_page_logo_visible(self):
+        expect(self._login_page_logo).to_be_visible()
+
+    def assert_login_button_disabled(self):
+        expect(self._login_button).to_be_disabled()
+
+    def assert_krtech_website_opened(self, new_page):
+        expect(new_page).to_have_url("https://krtech.ru/")

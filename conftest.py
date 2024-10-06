@@ -24,7 +24,7 @@ def browser(playwright, request):
 
 
 @pytest.fixture(scope="function")
-def login_page(page):
+def login_page(page):   
     login_page = LoginPage(page)
     login_page.navigate()
     yield login_page
