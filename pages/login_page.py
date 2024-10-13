@@ -17,7 +17,9 @@ class LoginPage:
         self._login_button = self.page.locator("#login_enter_button")
         self._login_error_message = self.page.get_by_text("Введены неверные данные")
         self._login_page_logo = self.page.get_by_text("Войти в систему электронного документооборота")
-        self._krtech_logo_link = self.page.get_by_role("link").first
+        self._krtech_logo_link = self.page.locator(".SocialComponent-KrtechLogo a")
+        self._telegram_button_link = self.page.locator(".SocialComponent-Telegram a")
+        self._vkontakte_button_link = self.page.locator(".SocialComponent-Vkontakte a")
 
     def navigate(self):
         self.page.goto("/")
@@ -46,24 +48,21 @@ class LoginPage:
         self.do_login(self.get_responsible_username(), self.get_responsible_password())
         return EventPage(self.page)
 
-    def click_krtech_logo(self):
+    def click_and_open_new_tab(self, button_link):
         context = self.page.context
-        with context.expect_page() as krtech_website:
-            self._krtech_logo_link.click()
-        krtech_page = krtech_website.value
-        krtech_page.wait_for_load_state()
-        return krtech_page
+        with context.expect_page() as new_page_info:
+            button_link.click()
+        new_page = new_page_info.value
+        return new_page
 
+    def click_krtech_logo(self):
+        return self.click_and_open_new_tab(self._krtech_logo_link)
 
+    def click_telegram_button(self):
+        return self.click_and_open_new_tab(self._telegram_button_link)
 
-
-
-
-
-
-
-
-
+    def click_vkontakte_button(self):
+        return self.click_and_open_new_tab(self._vkontakte_button_link)
 
     def assert_login_error_visible(self):
         expect(self._login_error_message).to_be_visible()
@@ -76,3 +75,9 @@ class LoginPage:
 
     def assert_krtech_website_opened(self, new_page):
         expect(new_page).to_have_url("https://krtech.ru/")
+
+    def assert_telegram_website_opened(self, new_page):
+        expect(new_page).to_have_url("https://t.me/krtech")
+
+    def assert_vkontakte_website_opened(self, new_page):
+        expect(new_page).to_have_url("https://vk.com/krtech_crimea")
