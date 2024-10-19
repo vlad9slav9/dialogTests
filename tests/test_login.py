@@ -37,16 +37,16 @@ def test_login_button_disabled_without_password(login_page):
     login_page.assert_login_button_disabled()
 
 
-def test_open_krtech_via_logo(login_page):
+def test_click_krtech_logo(login_page):
     krtech_page = login_page.click_krtech_logo()
     login_page.assert_krtech_website_opened(krtech_page)
 
 
-def test_open_telegram_via_button(login_page):
+def test_click_telegram_button(login_page):
     telegram_page = login_page.click_telegram_button()
     login_page.assert_telegram_website_opened(telegram_page)
 
 
-def test_open_vkontakte_via_button(login_page):
+def test_click_vkontakte_button(login_page):
     vkontakte_page = login_page.click_vkontakte_button()
     login_page.assert_vkontakte_website_opened(vkontakte_page)
