@@ -40,6 +40,6 @@ def login_page(page):
 
 
 @pytest.fixture(scope="function")
-def responsible_main_page(login_page):
+def main_page_with_responsible(login_page):
     main_page = login_page.login_with_responsible()
     yield main_page
