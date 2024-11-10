@@ -58,6 +58,6 @@ class MainPage(BasePage):
         expect(self._event_container).to_be_visible()
 
     def assert_displayed_date(self):
-        locale.setlocale(locale.LC_TIME, "ru_RU.UTF-8")
+        locale.setlocale(locale.LC_TIME, "ru_RU")
         expected_date = datetime.now().strftime("%A, %d.%m.%Y").capitalize()
         expect(self._displayed_date).to_have_text(expected_date)
