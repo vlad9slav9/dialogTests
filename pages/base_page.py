@@ -5,6 +5,7 @@ from playwright.sync_api import expect
 class BasePage:
     def __init__(self, page: Page):
         self.page = page
+
         self._krtech_logo_link = self.page.locator(".SocialComponent-KrtechLogo a")
         self._telegram_button_link = self.page.locator(".SocialComponent-Telegram a")
         self._vkontakte_button_link = self.page.locator(".SocialComponent-Vkontakte a")

@@ -31,9 +31,9 @@ class LoginPage(BasePage):
         self._login_button.click()
 
     def do_login(self, username, password):
-        self._username_input_field.fill(username)
-        self._password_input_field.fill(password)
-        self._login_button.click()
+        self.enter_username(username)
+        self.enter_password(password)
+        self.click_login()
 
     def get_responsible_username(self):
         return self.config['responsible']['username']

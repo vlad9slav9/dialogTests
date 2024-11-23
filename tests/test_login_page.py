@@ -10,7 +10,7 @@ def test_navigate_to_login_page(login_page):
 
 def test_correct_login(login_page):
     event_page = login_page.login_with_responsible()
-    event_page.assert_responsible_profile_button_visible()
+    event_page.assert_profile_button_visible()
 
 
 def test_incorrect_login(login_page):
