@@ -11,8 +11,11 @@ from pages.create_document_page import CreateDocumentPage
 class MainPage(BasePage):
     def __init__(self, page: Page):
         super().__init__(page)
-        self._profile_button = self.page.locator('button[title="Профиль"]')
-        self._logout_button = self.page.locator('button[title = "Выход"]')
+        self._profile_button = self.page.get_by_role("button").and_(page.get_by_title("Профиль"))
+        self._logout_button = self.page.get_by_role("button").and_(page.get_by_title("Выход"))
+
+        #self._profile_button = self.page.locator('button[title="Профиль"]')
+        #self._logout_button = self.page.locator('button[title = "Выход"]')
         self._logout_confirmation_button = self.page.get_by_role("button", name="Выйти")
         self._cancel_logout_button = self.page.get_by_role("button", name="Отмена")
         self._sidebar = self.page.locator(".PageSidebar")
@@ -32,7 +35,7 @@ class MainPage(BasePage):
         self._document_type_search_field_clear_button = self.page.get_by_role("button", name="Clear")
         self._incoming_document_option = self.page.get_by_role("option", name="Входящий (Автотест)")
         self._outgoing_document_option = self.page.get_by_role("option", name="Исходящий (Автотест)")
-        self._outgoing_MEDO_document_option = self.page.get_by_role("option", name="Исходящий МЭДО (Автотест)")
+        self._outgoing_medo_document_option = self.page.get_by_role("option", name="Исходящий МЭДО (Автотест)")
         self._internal_document_option = self.page.get_by_role("option", name="Внутренний (Без Шаблона Печати) Автотест")
         self._create_document_button = self.page.get_by_role("button", name="Создать")
         self._cancel_document_creation_window_button = self.page.get_by_role("button", name="Отмена")
@@ -83,9 +86,9 @@ class MainPage(BasePage):
         self._document_type_selection_button.click()
         self._incoming_document_option.click()
 
-    def select_outgoing_MEDO_document_type(self):
+    def select_outgoing_medo_document_type(self):
         self.enter_document_type_in_field("исходящий мэдо")
-        self._outgoing_MEDO_document_option.click()
+        self._outgoing_medo_document_option.click()
 
     def select_internal_document_type(self):
         self.enter_document_type_in_field("внутренний")
@@ -142,11 +145,11 @@ class MainPage(BasePage):
     def assert_outgoing_document_option_hidden(self):
         expect(self._outgoing_document_option).to_be_hidden()
 
-    def assert_outgoing_MEDO_document_option_visible(self):
-        expect(self._outgoing_MEDO_document_option).to_be_visible()
+    def assert_outgoing_medo_document_option_visible(self):
+        expect(self._outgoing_medo_document_option).to_be_visible()
 
-    def assert_outgoing_MEDO_document_option_hidden(self):
-        expect(self._outgoing_MEDO_document_option).to_be_hidden()
+    def assert_outgoing_medo_document_option_hidden(self):
+        expect(self._outgoing_medo_document_option).to_be_hidden()
 
     def assert_incoming_document_option_visible(self):
         expect(self._incoming_document_option).to_be_visible()

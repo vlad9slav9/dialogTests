@@ -72,7 +72,7 @@ def test_search_document_type_in_document_creation_window(main_page_with_respons
     main_page_with_responsible.click_quick_document_creation_button()
     main_page_with_responsible.enter_document_type_in_field("исходящий")
     main_page_with_responsible.assert_outgoing_document_option_visible()
-    main_page_with_responsible.assert_outgoing_MEDO_document_option_visible()
+    main_page_with_responsible.assert_outgoing_medo_document_option_visible()
     main_page_with_responsible.assert_internal_document_option_hidden()
     main_page_with_responsible.assert_incoming_document_option_hidden()
 
