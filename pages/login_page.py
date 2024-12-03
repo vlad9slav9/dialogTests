@@ -11,15 +11,15 @@ class LoginPage(BasePage):
     def __init__(self, page: Page):
         super().__init__(page)
         self.config = configparser.ConfigParser()
-        self.config.read("auth.ini")
-        self._username_input_field = self.page.locator("#login")
-        self._password_input_field = self.page.locator("#password")
-        self._login_button = self.page.locator("#login_enter_button")
-        self._login_error_message = self.page.get_by_text("Введены неверные данные")
-        self._login_page_logo = self.page.get_by_text("Войти в систему электронного документооборота")
+        self.config.read('auth.ini')
+        self._username_input_field = self.page.locator('#login')
+        self._password_input_field = self.page.locator('#password')
+        self._login_button = self.page.locator('#login_enter_button')
+        self._login_error_message = self.page.get_by_text('Введены неверные данные')
+        self._login_page_logo = self.page.get_by_text('Войти в систему электронного документооборота')
 
     def navigate(self):
-        self.page.goto("/")
+        self.page.goto('/')
 
     def enter_username(self, username):
         self._username_input_field.fill(username)

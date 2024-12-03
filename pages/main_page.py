@@ -5,7 +5,7 @@ from pages.base_page import BasePage
 from datetime import datetime
 import locale
 
-from pages.create_document_page import CreateDocumentPage
+from pages.document_сreation_page import DocumentCreationPage
 
 
 class MainPage(BasePage):
@@ -40,7 +40,9 @@ class MainPage(BasePage):
         self._create_document_button = self.page.get_by_role("button", name="Создать")
         self._cancel_document_creation_window_button = self.page.get_by_role("button", name="Отмена")
         self._close_document_creation_window_button = self.page.get_by_role("button", name="close")
-        self._quick_document_creation_window = self.page.get_by_role("dialog", name="Быстрое создание документа")
+        self._document_creation_window = self.page.get_by_role("dialog", name="Быстрое создание документа")
+
+
 
     def click_responsible_profile_button(self):
         self._profile_button.click()
@@ -75,30 +77,49 @@ class MainPage(BasePage):
     def click_document_type_search_field_clear_button(self):
         self._document_type_search_field_clear_button.click()
 
+    def click_document_type_selection_button(self):
+        self._document_type_selection_button.click()
+
+    def click_document_type_selection_field(self):
+        self._document_type_search_field.click()
+
+    def click_outgoing_document_option(self):
+        self._outgoing_document_option.click()
+
+    def click_incoming_document_option(self):
+        self._incoming_document_option.click()
+
+    def click_internal_document_option(self):
+        self._internal_document_option.click()
+
+    def click_outgoing_medo_document_option(self):
+        self._outgoing_medo_document_option.click()
+
     def enter_document_type_in_field(self, document_type):
         self._document_type_search_field.fill(document_type)
 
     def select_outgoing_document_type(self):
-        self._document_type_selection_button.click()
-        self._outgoing_document_option.click()
+        self.click_document_type_selection_button()
+        self.click_outgoing_document_option()
 
     def select_incoming_document_type(self):
-        self._document_type_selection_button.click()
-        self._incoming_document_option.click()
+        self.click_document_type_selection_button()
+        self.click_incoming_document_option()
 
     def select_outgoing_medo_document_type(self):
         self.enter_document_type_in_field("исходящий мэдо")
-        self._outgoing_medo_document_option.click()
+        self.click_outgoing_medo_document_option()
 
     def select_internal_document_type(self):
         self.enter_document_type_in_field("внутренний")
-        self._internal_document_option.click()
+        self.click_internal_document_option()
 
     def open_outgoing_document_creation_page(self):
         self._quick_document_creation_button.click()
         self.select_outgoing_document_type()
         self._create_document_button.click()
-        return CreateDocumentPage(self.page)
+        return DocumentCreationPage(self.page)
+
 
 
 
@@ -127,11 +148,11 @@ class MainPage(BasePage):
         expected_time = datetime.now().strftime("%H:%M")
         expect(self._displayed_time).to_contain_text(expected_time)
 
-    def assert_quick_document_creation_window_visible(self):
-        expect(self._quick_document_creation_window).to_be_visible()
+    def assert_document_creation_window_visible(self):
+        expect(self._document_creation_window).to_be_visible()
 
-    def assert_quick_document_creation_window_hidden(self):
-        expect(self._quick_document_creation_window).to_be_hidden()
+    def assert_document_creation_window_hidden(self):
+        expect(self._document_creation_window).to_be_hidden()
 
     def assert_create_document_button_disabled(self):
         expect(self._create_document_button).to_be_disabled()
@@ -162,3 +183,18 @@ class MainPage(BasePage):
 
     def assert_internal_document_option_hidden(self):
         expect(self._internal_document_option).to_be_hidden()
+
+    def assert_outgoing_document_option_selected(self):
+        expect(self._document_type_search_field).to_have_value("Исходящий (Автотест)")
+
+    def assert_incoming_document_option_selected(self):
+        expect(self._document_type_search_field).to_have_value("Входящий (Автотест)")
+
+    def assert_internal_document_option_selected(self):
+        expect(self._document_type_search_field).to_have_value("Внутренний (Без Шаблона Печати) Автотест")
+
+    def assert_outgoing_medo_document_option_selected(self):
+        expect(self._document_type_search_field).to_have_value("Исходящий МЭДО (Автотест)")
+
+    def assert_document_type_search_field_empty(self):
+        expect(self._document_type_search_field).to_be_empty()
