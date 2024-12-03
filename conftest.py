@@ -2,8 +2,6 @@ import configparser
 import pytest
 from pages.login_page import LoginPage
 
-from mimesis import Generic
-
 
 def pytest_addoption(parser):
     parser.addoption('--browser_name', action='store', help="Choose browser: gost, yandex, or default")

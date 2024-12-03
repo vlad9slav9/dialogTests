@@ -318,47 +318,47 @@ class DocumentCreationPage(BasePage):
         #random_organizations_group = self.fill_random_organization_group_after_signing()
         #expect(self._organization_group_after_signing_field).to_have_value(random_organizations_group)
 
-        #random_signature = self.fill_random_signature()
-        #self.shorten_name(self._signature_field, random_signature)
+        signature_name = self.fill_classifier('Подпись')
+        self.assert_field_has_short_name('Подпись', signature_name)
 
         #random_document_information = self.fill_random_document_information()
         #expect(self._document_information_field).to_have_value(random_document_information)
 
-        #random_coordinator_name = self.fill_random_coordinator_name()
-        #self.shorten_name(self._coordinator_name_field, random_coordinator_name)
+        coordinator_name = self.fill_classifier('Имя согласователя')
+        self.assert_field_has_short_name('Имя согласователя', coordinator_name)
 
-        #random_responsible_performer = self.fill_random_responsible_performer()
-        #expect(self._responsible_performer_field).to_have_value(random_responsible_performer)
+        responsible_performer = self.fill_classifier('Ответственный исполнитель')
+        self.assert_field_has_value('Ответственный исполнитель', responsible_performer)
 
         #random_users_group = self.fill_random_users_group_after_signing()
         #expect(self._users_group_after_signing_field).to_have_value(random_users_group)
 
-        #random_addressee = self.fill_random_addressee()
-        #expect(self._addressee_field).to_have_value(random_addressee)
+        addressee = self.fill_classifier('Адресат')
+        self.assert_field_has_value('Адресат', addressee)
 
-        #random_my_organization_users = self.fill_random_my_organization_users()
-        #expect(self._my_organisation_users_field).to_have_value(random_my_organization_users)
+        my_organization_users = self.fill_classifier('Пользователи своей орги')
+        self.assert_field_has_value('Пользователи своей орги', my_organization_users)
 
         #random_test_number = self.fill_random_test_number()
         #self.assert_field_has_correct_value(self._test_number_field, random_test_number)
 
-        #random_document_view = self.fill_random_document_view()
-        #expect(self._document_view_field).to_have_value(random_document_view)
+        document_view = self.fill_classifier('Вид документа *')
+        self.assert_field_has_value('Вид документа *', document_view)
 
-        #random_topic = self.fill_random_topic()
-        #expect(self._topic_field).to_have_value(random_topic)
+        topic = self.fill_classifier('Тематика')
+        self.assert_field_has_value('Тематика', topic)
 
-        #random_correspondent = self.fill_random_correspondent()
-        #expect(self._correspondent_field).to_have_value(random_correspondent)
+        correspondent = self.fill_classifier('Корреспондент')
+        self.assert_field_has_value('Корреспондент', correspondent)
 
-        #random_meeting_place = self.fill_random_meeting_place()
-        #expect(self._meeting_place_multivalue).to_contain_text(random_meeting_place)
+        #meeting_place = self.fill_classifier('Выездные совещания')
+        #self.assert_field_has_text('Выездные совещания', meeting_place)
 
         #random_meeting_company = self.fill_random_meeting_company()
         #expect(self._meeting_company_multivalue).to_contain_text(random_meeting_company)
 
-        #random_print_font_size = self.fill_random_print_font_size()
-        #expect(self._print_font_size_field).to_have_value(random_print_font_size)
+        print_font_size = self.fill_classifier('Размер шрифта(при печати)')
+        self.assert_field_has_value('Размер шрифта(при печати)', print_font_size)
 
         #random_short_description = self.fill_random_short_description()
         #expect(self._short_description_field).to_have_value(random_short_description)
@@ -429,13 +429,16 @@ class DocumentCreationPage(BasePage):
         return input_date
 
 
-    def assert_classifier_has_short_name(self, classifier_name, option_text):
+    def assert_field_has_short_name(self, classifier_name, option_text):
         short_name = self.shorten_name(option_text)
         expect(self.page.get_by_label(classifier_name, exact=True)).to_have_value(short_name)
 
 
     def assert_field_has_value(self, field_name, value):
         expect(self.page.get_by_label(field_name, exact=True)).to_have_value(value)
+
+    def assert_field_has_text(self, field_name, text):
+        expect(self.page.get_by_label(field_name, exact=True)).to_contain_text(text)
 
 
 
