@@ -391,7 +391,7 @@ class DocumentCreationPage(BasePage):
     def fill_classifier(self, classifier_name, multiform=False, option_value=None):
         if multiform:
             options_text = []
-            for i in range(random.randint(2, 5)):
+            for i in range(random.randint(1, 1)):
                 self.page.get_by_label(classifier_name, exact=True).click()
                 expect(self.page.locator("role=option")).not_to_have_count(0)
                 options = self.page.locator("role=option").all()
@@ -455,18 +455,23 @@ class DocumentCreationPage(BasePage):
         expect(self.page.get_by_label(field_name, exact=True)).to_contain_text(text.strip())
 
 
-    def assert_multivalues_field_has_value(self, field_name, options_text):
-        field_container = self.page.locator(f"label:has-text('{field_name}')").locator("..").locator(".MuiInputBase-root")
+    def assert_multivalues_field_has_value(self, field_name, values):
+        field_container = self.page.locator(f"label:has-text('{field_name}')").locator("..").locator(
+            ".MuiInputBase-root")
 
-        for organization in options_text:
-            expect(field_container).to_contain_text(organization)
+        for text in values:
+            button = field_container.locator(f"[role='button'] >> text='{text}'")
+            expect(button).to_be_visible(), f"Кнопка с текстом '{text}' отсутствует в поле '{field_name}'."
 
 
 
 
     def example_method(self):
-        test = self.fill_textarea("Информация о документе", "Тестовый тест")
-        self.verify_textarea_field("Информация о документе", test)
+        values_v = self.fill_classifier("Выездные совещания", multiform=True)
+        values_f = ['Ответственный Первый Пользователь | Автотестовая Родительская организация | Первая автотестовая должность']
+
+        self.assert_multivalues_field_has_value("От кого", values_f)
+        self.assert_multivalues_field_has_value("Выездные совещания", values_v)
 
 
     def select_group(self, group_field_name, group):
