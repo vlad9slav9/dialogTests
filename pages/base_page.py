@@ -57,3 +57,8 @@ class BasePage:
     def generate_date_offset_days(self, days=0):
         date_offset = (datetime.datetime.now() + datetime.timedelta(days=days)).strftime('%d.%m.%Y')
         return date_offset
+
+    def get_user_data(self, data_name):
+        user_data_locator = self.page.locator(f'p.MuiTypography-root.MuiTypography-body1:has(strong:text("{data_name}"))')
+        user_data = user_data_locator.inner_text().split(':')[-1].strip()
+        return user_data

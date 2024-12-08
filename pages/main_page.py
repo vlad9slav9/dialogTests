@@ -44,7 +44,7 @@ class MainPage(BasePage):
 
 
 
-    def click_responsible_profile_button(self):
+    def click_profile_button(self):
         self._profile_button.click()
 
     def click_logout_button(self):
@@ -120,8 +120,18 @@ class MainPage(BasePage):
         self._create_document_button.click()
         return DocumentCreationPage(self.page)
 
+    '''def get_user_data(self, data_name):
+        self.click_profile_button()
+        user_data_locator = self.page.locator(f'p.MuiTypography-root.MuiTypography-body1:has(strong:text("{data_name}"))')
+        user_data = user_data_locator.inner_text().split(':')[-1].strip()
+        return user_data'''
 
+    def get_basic_user_information(self):
+        user_fio = self.get_user_data("Ф.И.О.")
+        user_organization = self.get_user_data("Организация")
+        user_position = self.get_user_data("Должность")
 
+        return f"{user_fio} | {user_organization} | {user_position}"
 
 
 

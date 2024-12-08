@@ -38,7 +38,7 @@ def test_open_sidebar(main_page_with_responsible):
 
 
 def test_click_home_button(main_page_with_responsible):
-    main_page_with_responsible.click_responsible_profile_button()
+    main_page_with_responsible.click_profile_button()
     main_page_with_responsible.click_home_button()
     main_page_with_responsible.assert_event_container_visible()
 
