@@ -56,7 +56,6 @@ class DocumentCreationPage(BasePage):
         self._meeting_place_field = self.page.get_by_label("Выездные совещания", exact=True)
         self._meeting_company_field = self.page.get_by_label("Встреча с коллективами предприятий", exact=True)
 
-
         self._print_font_size_field = self.page.get_by_label("Размер шрифта(при печати)", exact=True)
         self._short_description_field = self.page.locator("textarea[name='description']")
         self._print_template_field = self.page.get_by_role("textbox", name="Шаблон (для печати)")
@@ -68,10 +67,7 @@ class DocumentCreationPage(BasePage):
         self._bottom_edit_button = self.page.get_by_role("button", name="Сохранить + редактировать")
         self._bottom_save_button = self.page.get_by_role("button", name="Сохранить + просмотр")
 
-
-
         self._responsible_in_from_field = self.page.get_by_role("button", name="Первый Ответственный Пользователь")
-
 
         self._first_responsible_user = self.page.get_by_role("option", name="Ответственный Первый Пользователь")
         self._first_regular_user = self.page.get_by_role("option", name="Обычный Первый Пользователь")
@@ -79,103 +75,9 @@ class DocumentCreationPage(BasePage):
         self._meeting_place_multivalue = self.page.locator("#document_type_field_meeting")
         self._meeting_company_multivalue = self.page.locator("#document_type_field_meeting_region")
 
-        self.group_with_organizations = {
-            "ТК9 группа": ["ФУЛ МКУ 9", "Тестовая 9919", "РЕадмин", "Министерство сэд 2.0"]
-        }
+        self.group_with_organizations = ["ФУЛ МКУ 9", "Тестовая 9919", "РЕадмин", "Министерство сэд 2.0"]
+        self.group_with_users = ["Ответственный Первый Пользователь | Автотестовая Родительская организация | Первая автотестовая должность", 'Обычный Первый Пользователь | Автотестовая Родительская организация | Вторая автотестовая должность']
 
-    '''def fill_classifier_with_random_option(self, input_field, classifier_options):
-        input_field.click()
-        random_option = random.choice(classifier_options)
-        option_text = random_option.inner_text()
-        random_option.click()
-        expect(input_field).to_have_value(option_text)
-        return option_text'''
-
-    '''def fill_classifier_with_short_random_option(self, input_field, classifier_options, short_names):
-        input_field.click()
-        random_option = random.choice(classifier_options)
-        option_text = random_option.inner_text()
-        random_option.click()
-        expected_shortened_value = short_names.get(option_text)
-        expect(input_field).to_have_value(expected_shortened_value)
-        return expected_shortened_value'''
-
-
-
-    def fill_end_date(self, date):
-        self._end_date_field.fill(date)
-        expect(self._end_date_field).to_have_value(date)
-
-    def fill_document_date(self, date):
-        self._document_date_field.fill(date)
-        expect
-
-    def fill_document_type(self, document_type):
-        self._document_type_field.fill(document_type)
-
-    def check_to_medo_checkbox(self):
-        self._to_medo_checkbox.check()
-
-    def fill_link_to_number(self, number):
-        self._link_to_number_field.fill(number)
-
-    def fill_document_number(self, number):
-        self._document_number_field.fill(number)
-
-    def fill_document_referenced_date(self, date):
-        self._document_referenced_date_field.fill(date)
-
-    def fill_whom(self, user_option):
-        self._whom_field.click()
-        user_option.click()
-
-    def check_control_uk(self):
-        self._control_uk_checkbox.check()
-
-    def check_control_uk_fcp(self):
-        self._control_uk_fcp_checkbox.check()
-
-    def fill_year(self, year):
-        self._year_field.fill(year)
-
-    def check_urgent(self):
-        self._urgent_checkbox.check()
-
-    def fill_organisation_group_after_signing_field(self, group_option):
-        self._organization_group_after_signing_field.click()
-        group_option.click()
-
-    def fill_organisation_after_signing_field(self, organization_name, organization_option):
-        self._organization_after_signing_field.fill(organization_name)
-        organization_option.click()
-
-    def fill_signature(self, user_option):
-        self._signature_field.click()
-        user_option.click()
-
-    def fill_signatory_position(self, position):
-        self._signatory_position_field.fill(position)
-
-    def fill_document_information(self, information):
-        self._document_information_field.fill(information)
-
-    def fill_coordinator_position(self, position):
-        self._coordinator_position_field.fill(position)
-
-    def fill_date_from(self, date):
-        self._date_from_field.fill(date)
-
-    def fill_test_number(self, number):
-        self._test_number_field.fill(number)
-
-    def fill_short_description(self, description):
-        self._short_description_field.fill(description)
-
-    def fill_content_editor(self, content):
-        self._content_editor.fill(content)
-
-    def clear_end_date(self):
-        self._end_date_field.clear()
 
     def assert_outgoing_document_creation_tab_visible(self):
         expect(self._outgoing_document_creation_tab).to_be_visible()
@@ -192,8 +94,6 @@ class DocumentCreationPage(BasePage):
         expected_date = datetime.datetime.now().strftime("%d.%m.%Y")
         expect(self._date_from_field).to_have_value(expected_date)
 
-    def assert_from_whom_has_text(self, user_name):
-        expect(self._from_whom_field).to_contain_text(user_name)
 
     def assert_show_signature_checkbox_checked(self):
         expect(self._show_signature_checkbox).to_be_checked()
@@ -207,88 +107,6 @@ class DocumentCreationPage(BasePage):
 
     def assert_print_template_filled_first_template(self):
         expect(self._print_template_field).to_have_value("Первый исходящий автотестовый шаблон")
-
-    def fill_random_document_type(self):
-        random_document_type = self.generate_random_string_with_all_symbols()
-        self._document_type_field.fill(random_document_type)
-        return random_document_type
-
-    def fill_random_link_to_number(self):
-        random_link_to_number = self.generate_random_string_with_all_symbols()
-        self._link_to_number_field.fill(random_link_to_number)
-        return random_link_to_number
-
-    def fill_random_document_number(self):
-        random_document_number = self.generate_random_string_with_all_symbols()
-        self._document_number_field.fill(random_document_number)
-        return random_document_number
-
-    def fill_document_referenced_date_with_current(self):
-        current_date = self.generate_date_offset_days(0)
-        self.fill_document_referenced_date(current_date)
-        return current_date
-
-    def fill_random_whom(self):
-        return self.select_random_option(self._whom_field)
-
-    def fill_random_organization_group_after_signing(self):
-        return self.select_random_option(self._organization_group_after_signing_field)
-
-    def fill_random_signature(self):
-        return self.select_random_option(self._signature_field)
-
-    def fill_random_document_information(self):
-        random_information = generic.text.text()
-        self.fill_document_information(random_information)
-        return random_information
-
-    def fill_random_coordinator_name(self):
-        return self.select_random_option(self._coordinator_name_field)
-
-    def fill_random_responsible_performer(self):
-        return self.select_random_option(self._responsible_performer_field)
-
-    def fill_random_users_group_after_signing(self):
-        return self.select_random_option(self._users_group_after_signing_field)
-
-    def fill_random_addressee(self):
-        return self.select_random_option(self._addressee_field)
-
-    def fill_random_my_organization_users(self):
-        return self.select_random_option(self._my_organisation_users_field)
-
-    def fill_random_test_number(self):
-        random_number = generic.random.randint(0, 99)
-        self.fill_test_number(random_number)
-        return random_number
-
-    def fill_random_document_view(self):
-        return self.select_random_option(self._document_view_field)
-
-    def fill_random_topic(self):
-        return self.select_random_option(self._topic_field)
-
-    def fill_random_correspondent(self):
-        return self.select_random_option(self._correspondent_field)
-
-    def fill_random_meeting_place(self):
-        return self.select_random_option(self._meeting_place_field)
-
-    def fill_random_meeting_company(self):
-        return self.select_random_option(self._meeting_company_field)
-
-    def fill_random_print_font_size(self):
-        return self.select_random_option(self._print_font_size_field)
-
-    def fill_random_short_description(self):
-        random_short_description = generic.text.text()
-        self.fill_short_description(random_short_description)
-        return random_short_description
-
-    def fill_random_content(self):
-        random_content = generic.text.text()
-        self.fill_content_editor(random_content)
-        return random_content
 
     def fill_all_fields_randomly(self):
         document_type = self.fill_property('Тип документа *')
@@ -317,13 +135,14 @@ class DocumentCreationPage(BasePage):
 
         organizations_group = self.fill_classifier("Выберите группу", option_value="ТК9 группа")
         self.assert_field_has_value("Выберите группу", organizations_group)
-        self.assert_organizations_contain_from_group('Адресат-организация после подписания (не более 10)',self.group_with_organizations, 'ТК9 группа')
+        self.assert_multivalues_field_has_value('Адресат-организация после подписания (не более 10)',
+                                                self.group_with_organizations)
 
         signature_name = self.fill_classifier('Подпись')
         self.assert_field_has_short_name('Подпись', signature_name)
 
         document_information = self.fill_textarea('Информация о документе')
-        self.verify_textarea_field('Информация о документе', document_information)
+        self.assert_textarea_has_value('Информация о документе', document_information)
 
         coordinator_name = self.fill_classifier('Имя согласователя')
         self.assert_field_has_short_name('Имя согласователя', coordinator_name)
@@ -331,8 +150,9 @@ class DocumentCreationPage(BasePage):
         responsible_performer = self.fill_classifier('Ответственный исполнитель')
         self.assert_field_has_value('Ответственный исполнитель', responsible_performer)
 
-        #random_users_group = self.fill_random_users_group_after_signing()
-        #expect(self._users_group_after_signing_field).to_have_value(random_users_group)
+        users_group = self.fill_classifier("Добавить из группы", option_value="Пользователи моей организации")
+        self.assert_field_has_value("Добавить из группы", users_group)
+        self.assert_multivalues_field_has_value('Получатели после подписания', self.group_with_users)
 
         addressee = self.fill_classifier('Адресат')
         self.assert_field_has_value('Адресат', addressee)
@@ -340,8 +160,8 @@ class DocumentCreationPage(BasePage):
         my_organization_users = self.fill_classifier('Пользователи своей орги')
         self.assert_field_has_value('Пользователи своей орги', my_organization_users)
 
-        #random_test_number = self.fill_random_test_number()
-        #self.assert_field_has_correct_value(self._test_number_field, random_test_number)
+        test_number = self.fill_property('Число', '1234567890')
+        self.assert_field_has_value('Число', test_number)
 
         document_view = self.fill_classifier('Вид документа *')
         self.assert_field_has_value('Вид документа *', document_view)
@@ -355,30 +175,17 @@ class DocumentCreationPage(BasePage):
         meeting_place = self.fill_classifier('Выездные совещания', multiform=True)
         self.assert_multivalues_field_has_value('Выездные совещания', meeting_place)
 
-        #meeting_company = self.fill_classifier('Встреча с коллективами предприятий', multiform=True)
-        #self.assert_multivalues_field_has_value('Встреча с коллективами предприятий', meeting_company)
+        meeting_company = self.fill_classifier('Встреча с коллективами предприятий', multiform=True)
+        self.assert_multivalues_field_has_value('Встреча с коллективами предприятий', meeting_company)
 
         print_font_size = self.fill_classifier('Размер шрифта(при печати)')
         self.assert_field_has_value('Размер шрифта(при печати)', print_font_size)
 
-        #random_short_description = self.fill_random_short_description()
-        #expect(self._short_description_field).to_have_value(random_short_description)
+        short_description = self.fill_short_description()
+        self.assert_short_description_has_value(short_description)
 
-        #random_content = self.fill_random_content()
-        #self.assert_field_has_correct_value(self._content_editor, random_content)
-
-    '''def select_random_option(self, classifier):
-        classifier.click()
-        expect(self.page.locator("role=option")).not_to_have_count(0)
-        options = self.page.locator("role=option").all()
-        #expect(classifier.locator("role=option")).not_to_have_count(0)
-        #options = classifier.locator("role=option").all()
-        random_option = random.choice(options)
-        option_text = random_option.inner_text()
-        random_option.click()
-        return option_text'''
-
-
+        content = self.fill_content_editor()
+        self.assert_content_editor_has_value(content)
 
     def shorten_name(self, option_text):
         parts = option_text.split()
@@ -387,31 +194,28 @@ class DocumentCreationPage(BasePage):
         short_name = f"{first_name_initial}. {last_name}"
         return short_name
 
-
     def fill_classifier(self, classifier_name, multiform=False, option_value=None):
-        if multiform:
-            options_text = []
-            for i in range(random.randint(1, 1)):
-                self.page.get_by_label(classifier_name, exact=True).click()
-                expect(self.page.locator("role=option")).not_to_have_count(0)
-                options = self.page.locator("role=option").all()
-                selected_option = random.choice(options)
-                options_text.append(selected_option.inner_text())
-                selected_option.click()
-            return options_text
-        else:
-            self.page.get_by_label(classifier_name, exact=True).click()
-            expect(self.page.locator("role=option")).not_to_have_count(0)
-            options = self.page.locator("role=option").all()
-            if option_value:
-                matching_option = next((option for option in options if option_value in option.inner_text()), None)
-                selected_option = matching_option
+        classifier = self.page.get_by_label(classifier_name, exact=True)
+        options_locator = self.page.locator("role=option")
+
+        def select_option(value=None):
+            classifier.click()
+            expect(options_locator).not_to_have_count(0)
+            options = options_locator.all()
+            if value:
+                selected_option = next((opt for opt in options if value in opt.inner_text()), None)
             else:
                 selected_option = random.choice(options)
             option_text = selected_option.inner_text()
             selected_option.click()
             return option_text
-
+        if multiform:
+            selected_texts = []
+            for _ in range(3):
+                selected_texts.append(select_option())
+            return selected_texts
+        else:
+            return select_option(option_value)
 
     def fill_property(self, property_name, input_text=None):
         if input_text:
@@ -442,18 +246,35 @@ class DocumentCreationPage(BasePage):
 
         return input_date
 
+    def fill_content_editor(self, text=None):
+        if text:
+            self.page.get_by_role("textbox", name='Область редактирования редактора: main').fill(text)
+        else:
+            text = generic.text.text()
+            self.page.get_by_role("textbox", name='Область редактирования редактора: main').fill(text)
+
+        return text
+
+    def fill_short_description(self, value=None):
+        if value:
+            self.page.locator("textarea[name='description']").fill(value)
+        else:
+            value = generic.text.text()
+            self.page.locator("textarea[name='description']").fill(value)
+        return value
+
+    def assert_short_description_has_value(self, value):
+        expect(self.page.locator("textarea[name='description']")).to_have_value(value)
+
+    def assert_content_editor_has_value(self, value):
+        expect(self.page.get_by_role("textbox", name='Область редактирования редактора: main')).to_have_text(value)
 
     def assert_field_has_short_name(self, classifier_name, option_text):
         short_name = self.shorten_name(option_text)
         expect(self.page.get_by_label(classifier_name, exact=True)).to_have_value(short_name)
 
-
     def assert_field_has_value(self, field_name, value):
         expect(self.page.get_by_label(field_name, exact=True)).to_have_value(value.strip())
-
-    def assert_field_has_value_text(self, field_name, text):
-        expect(self.page.get_by_label(field_name, exact=True)).to_contain_text(text.strip())
-
 
     def assert_multivalues_field_has_value(self, field_name, values):
         field_container = self.page.locator(f"label:has-text('{field_name}')").locator("..").locator(
@@ -461,48 +282,13 @@ class DocumentCreationPage(BasePage):
 
         for text in values:
             button = field_container.locator(f"[role='button'] >> text='{text}'")
-            expect(button).to_be_visible(), f"Кнопка с текстом '{text}' отсутствует в поле '{field_name}'."
+            expect(button).to_be_visible()
 
-
-
+    def assert_textarea_has_value(self, area_name, value_text):
+        textarea = self.page.locator(f"legend:has-text('{area_name}')").locator("..").locator(
+            "textarea.PropsTextArea-Autosize:first-of-type")
+        expect(textarea).to_have_value(value_text)
 
     def example_method(self):
-        values_v = self.fill_classifier("Выездные совещания", multiform=True)
-        values_f = ['Ответственный Первый Пользователь | Автотестовая Родительская организация | Первая автотестовая должность']
-
-        self.assert_multivalues_field_has_value("От кого", values_f)
-        self.assert_multivalues_field_has_value("Выездные совещания", values_v)
-
-
-    def select_group(self, group_field_name, group):
-
-        group_field = self.page.get_by_label(group_field_name, exact=True)
-        random_group = random.choice(list(group.keys()))
-
-        group_field.click()
-        expect(self.page.locator("role=option")).not_to_have_count(0)
-
-        group_option = self.page.get_by_role("option", name=random_group)
-        group_option.click()
-
-        return random_group
-
-    def assert_organizations_contain_from_group(self, organizations_field_name, group, selected_group):
-
-        expected_organizations = group[selected_group]
-
-        organizations_field = self.page.locator(f"label:has-text('{organizations_field_name}')").locator("..").locator(
-            ".MuiInputBase-root")
-
-        for organization in expected_organizations:
-            expect(organizations_field).to_contain_text(organization)
-
-    def verify_textarea_field(self, label_text, expected_text):
-        expect(self.page.get_by_role("group", name=label_text)).to_contain_text(expected_text)
-
-
-
-
-
-
-
+        short_description = self.fill_short_description()
+        self.assert_short_description_has_value(short_description)
