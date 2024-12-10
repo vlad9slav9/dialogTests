@@ -18,45 +18,6 @@ class DocumentCreationPage(BasePage):
         self._outgoing_document_creation_tab = self.page.get_by_role("tab",
                                                                      name="Создание документа (Исходящий (Автотест))")
         self._end_date_field = self.page.locator("#endDate")
-        self._document_date_field = self.page.get_by_label("Дата документа *", exact=True)
-        self._document_type_field = self.page.get_by_label("Тип документа *", exact=True)
-        self._from_whom_field = self.page.locator("#from")
-        self._to_medo_checkbox = self.page.get_by_label("Для МЭДО", exact=True)
-        self._link_to_number_field = self.page.get_by_label("Ссылается на № (для печати)", exact=True)
-        self._document_number_field = self.page.get_by_label("№ документа", exact=True)
-        self._document_referenced_date_field = self.page.get_by_label(
-            "Дата документа на который ссылаемся (для печати)", exact=True)
-        self._whom_field = self.page.get_by_label("Кому")
-        self._control_uk_checkbox = self.page.get_by_label("Контроль УК", exact=True)
-        self._control_uk_fcp_checkbox = self.page.get_by_label("Контроль УК ФЦП", exact=True)
-        self._year_field = self.page.get_by_label("Год", exact=True)
-        self._urgent_checkbox = self.page.get_by_label("Срочный", exact=True)
-        self._organization_group_after_signing_field = self.page.get_by_role("textbox", name="Выберите группу")
-        self._organization_after_signing_field = self.page.get_by_role("textbox",
-                                                                       name="Адресат-организация после подписания (не более 10)")
-        self._signature_field = self.page.get_by_label("Подпись", exact=True)
-        self._signatory_position_field = self.page.locator("#position")
-        self._show_signature_checkbox = self.page.get_by_label("Отображать ЭП при печати", exact=True)
-        self._show_author_checkbox = self.page.get_by_label("Отображать автора и номер телефона на последней странице",
-                                                            exact=True)
-        self._document_information_field = self.page.locator("#props_0_17")
-        self._coordinator_name_field = self.page.get_by_label("Имя согласователя", exact=True)
-        self._coordinator_position_field = self.page.locator("#coordinator_pos")
-        self._date_from_field = self.page.get_by_label("Дата от", exact=True)
-        self._responsible_performer_field = self.page.get_by_label("Ответственный исполнитель", exact=True)
-        self._users_group_after_signing_field = self.page.get_by_role("textbox", name="Добавить из группы")
-        self._users_after_signing_field = self.page.get_by_role("textbox", name="Получатели после подписания")
-        self._addressee_field = self.page.get_by_label("Адресат", exact=True)
-        self._my_organisation_users_field = self.page.get_by_label("Пользователи своей орги", exact=True)
-        self._test_number_field = self.page.get_by_label("Число", exact=True)
-        self._document_view_field = self.page.get_by_label("Вид документа *", exact=True)
-        self._topic_field = self.page.get_by_label("Тематика", exact=True)
-        self._correspondent_field = self.page.get_by_label("Корреспондент", exact=True)
-
-        self._meeting_place_field = self.page.get_by_label("Выездные совещания", exact=True)
-        self._meeting_company_field = self.page.get_by_label("Встреча с коллективами предприятий", exact=True)
-
-        self._print_font_size_field = self.page.get_by_label("Размер шрифта(при печати)", exact=True)
         self._short_description_field = self.page.locator("textarea[name='description']")
         self._print_template_field = self.page.get_by_role("textbox", name="Шаблон (для печати)")
         self._content_editor = self.page.get_by_role("textbox", name="Область редактирования редактора: main")
@@ -66,14 +27,6 @@ class DocumentCreationPage(BasePage):
             page.get_by_title("Сохранить + просмотр (Ctrl+Alt+S)"))
         self._bottom_edit_button = self.page.get_by_role("button", name="Сохранить + редактировать")
         self._bottom_save_button = self.page.get_by_role("button", name="Сохранить + просмотр")
-
-        self._responsible_in_from_field = self.page.get_by_role("button", name="Первый Ответственный Пользователь")
-
-        self._first_responsible_user = self.page.get_by_role("option", name="Ответственный Первый Пользователь")
-        self._first_regular_user = self.page.get_by_role("option", name="Обычный Первый Пользователь")
-
-        self._meeting_place_multivalue = self.page.locator("#document_type_field_meeting")
-        self._meeting_company_multivalue = self.page.locator("#document_type_field_meeting_region")
 
         self.group_with_organizations = ["ФУЛ МКУ 9", "Тестовая 9919", "РЕадмин", "Министерство сэд 2.0"]
         self.group_with_users = ["Ответственный Первый Пользователь | Автотестовая Родительская организация | Первая автотестовая должность", 'Обычный Первый Пользователь | Автотестовая Родительская организация | Вторая автотестовая должность']
