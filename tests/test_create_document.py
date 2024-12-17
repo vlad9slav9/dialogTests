@@ -55,17 +55,11 @@ def test_create_document_button_disabled_after_clearing_field(main_page_with_res
 
 def test_open_outgoing_document_creation_page(main_page_with_responsible):
     main_page_with_responsible.click_profile_button()
-    user_information = main_page_with_responsible.get_basic_user_information()
+    user_information = main_page_with_responsible.get_basic_user_information(array=True)
     document_creation_page = main_page_with_responsible.open_outgoing_document_creation_page()
     document_creation_page.assert_outgoing_document_creation_tab_visible()
-    document_creation_page.assert_end_date_filled_plus_nine_days()
-    document_creation_page.assert_document_date_filled_current_date()
-    document_creation_page.assert_date_from_filled_current_date()
     document_creation_page.assert_multivalues_field_has_value("От кого", user_information)
-    document_creation_page.assert_year_filled_current_year()
-    document_creation_page.assert_show_signature_checkbox_checked()
-    document_creation_page.assert_show_author_checkbox_checked()
-    document_creation_page.assert_print_template_filled_first_template()
+    document_creation_page.assert_default_field_filled()
 
 
 def test_fill_all_fields(main_page_with_responsible):

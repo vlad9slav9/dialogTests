@@ -17,7 +17,6 @@ class DocumentCreationPage(BasePage):
 
         self._outgoing_document_creation_tab = self.page.get_by_role("tab",
                                                                      name="Создание документа (Исходящий (Автотест))")
-        self._end_date_field = self.page.locator("#endDate")
         self._short_description_field = self.page.locator("textarea[name='description']")
         self._print_template_field = self.page.get_by_role("textbox", name="Шаблон (для печати)")
         self._content_editor = self.page.get_by_role("textbox", name="Область редактирования редактора: main")
@@ -35,31 +34,44 @@ class DocumentCreationPage(BasePage):
     def assert_outgoing_document_creation_tab_visible(self):
         expect(self._outgoing_document_creation_tab).to_be_visible()
 
-    def assert_end_date_filled_plus_nine_days(self):
-        expected_date = self.generate_date_offset_days(9)
-        expect(self._end_date_field).to_have_value(expected_date)
+    def assert_default_field_filled(self):
+        end_date = self.generate_date_offset_days(9)
+        self.assert_field_has_value('Срок исполнения *', f'{end_date}')
 
-    def assert_document_date_filled_current_date(self):
-        expected_date = datetime.datetime.now().strftime("%d.%m.%Y")
-        expect(self._document_date_field).to_have_value(expected_date)
+        current_date = self.generate_date_offset_days()
+        self.assert_field_has_value('Дата документа *', f'{current_date}')
+        self.assert_field_has_value('Дата от', current_date)
 
-    def assert_date_from_filled_current_date(self):
-        expected_date = datetime.datetime.now().strftime("%d.%m.%Y")
-        expect(self._date_from_field).to_have_value(expected_date)
+        self.assert_checkbox_checked('Отображать ЭП при печати')
+        self.assert_checkbox_checked('Отображать автора и номер телефона на последней странице')
 
+        current_year = self.generate_date_offset_days(0, year=True)
+        self.assert_field_has_value('Год', f'{current_year}')
 
-    def assert_show_signature_checkbox_checked(self):
-        expect(self._show_signature_checkbox).to_be_checked()
-
-    def assert_show_author_checkbox_checked(self):
-        expect(self._show_author_checkbox).to_be_checked()
-
-    def assert_year_filled_current_year(self):
-        expected_year = datetime.datetime.now().strftime("%Y")
-        expect(self._year_field).to_have_value(expected_year)
+        self.assert_field_has_value('Шаблон (для печати) *', 'Первый автотестовый шаблон')
 
     def assert_print_template_filled_first_template(self):
         expect(self._print_template_field).to_have_value("Первый исходящий автотестовый шаблон")
+
+    def assert_checkbox_checked(self, checkbox_name):
+        expect(self.page.get_by_label(checkbox_name, exact=True)).to_be_checked()
+
+    def check_checkbox(self, checkbox_name):
+        self.page.get_by_label(checkbox_name, exact=True).check()
+
+    def check_all_checkbox(self):
+        self.check_checkbox('Для МЭДО')
+        self.assert_checkbox_checked('Для МЭДО')
+
+        self.check_checkbox('Контроль УК')
+        self.assert_checkbox_checked('Контроль УК')
+
+        self.check_checkbox('Контроль УК ФЦП')
+        self.assert_checkbox_checked('Контроль УК ФЦП')
+
+        self.check_checkbox('Срочный')
+        self.assert_checkbox_checked('Срочный')
+
 
     def fill_all_fields_randomly(self):
         document_type = self.fill_property('Тип документа *')
@@ -76,15 +88,6 @@ class DocumentCreationPage(BasePage):
 
         whom_value = self.fill_classifier('Кому')
         self.assert_field_has_value('Кому', whom_value)
-
-        self.check_control_uk()
-        self._control_uk_checkbox.is_checked()
-
-        self.check_control_uk_fcp()
-        self._control_uk_fcp_checkbox.is_checked()
-
-        self.check_urgent()
-        self._urgent_checkbox.is_checked()
 
         organizations_group = self.fill_classifier("Выберите группу", option_value="ТК9 группа")
         self.assert_field_has_value("Выберите группу", organizations_group)
@@ -243,5 +246,5 @@ class DocumentCreationPage(BasePage):
         expect(textarea).to_have_value(value_text)
 
     def example_method(self):
-        short_description = self.fill_short_description()
-        self.assert_short_description_has_value(short_description)
+        self.check_checkbox('Контроль УК')
+        self.assert_checkbox_checked('Контроль УК')

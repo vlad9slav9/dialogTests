@@ -126,12 +126,19 @@ class MainPage(BasePage):
         user_data = user_data_locator.inner_text().split(':')[-1].strip()
         return user_data'''
 
-    def get_basic_user_information(self):
-        user_fio = self.get_user_data("Ф.И.О.")
-        user_organization = self.get_user_data("Организация")
-        user_position = self.get_user_data("Должность")
+    def get_basic_user_information(self, array=False):
+        def generate_user_information():
+            user_fio = self.get_user_data("Ф.И.О.")
+            user_organization = self.get_user_data("Организация")
+            user_position = self.get_user_data("Должность")
 
-        return f"{user_fio} | {user_organization} | {user_position}"
+            return f"{user_fio} | {user_organization} | {user_position}"
+
+        if array:
+            user_information_array = [generate_user_information()]
+            return user_information_array
+        else:
+            return generate_user_information()
 
 
 

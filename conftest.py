@@ -33,7 +33,7 @@ def browser(playwright, request):
 
 @pytest.fixture(scope="function")
 def login_page(page):
-    page.set_viewport_size({"width": 1920, "height": 1080})
+    #page.set_viewport_size({"width": 1920, "height": 1080})
     login_page = LoginPage(page)
     login_page.navigate()
     yield login_page

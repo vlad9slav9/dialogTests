@@ -54,8 +54,11 @@ class BasePage:
 
         return random_string
 
-    def generate_date_offset_days(self, days=0):
-        date_offset = (datetime.datetime.now() + datetime.timedelta(days=days)).strftime('%d.%m.%Y')
+    def generate_date_offset_days(self, days=0, year=False):
+        if year:
+            date_offset = (datetime.datetime.now() + datetime.timedelta(days=days)).strftime('%Y')
+        else:
+            date_offset = (datetime.datetime.now() + datetime.timedelta(days=days)).strftime('%d.%m.%Y')
         return date_offset
 
     def get_user_data(self, data_name):
