@@ -6,6 +6,7 @@ import random
 from mimesis import Generic
 
 from pages.base_page import BasePage
+from pages.main_page import MainPage
 
 generic = Generic('ru')
 
@@ -17,6 +18,7 @@ class DocumentCreationPage(BasePage):
 
         self._outgoing_document_creation_tab = self.page.get_by_role("tab",
                                                                      name="Создание документа (Исходящий (Автотест))")
+        self._end_date_field = self.page.locator("#endDate")
         self._short_description_field = self.page.locator("textarea[name='description']")
         self._print_template_field = self.page.get_by_role("textbox", name="Шаблон (для печати)")
         self._content_editor = self.page.get_by_role("textbox", name="Область редактирования редактора: main")
@@ -34,12 +36,13 @@ class DocumentCreationPage(BasePage):
     def assert_outgoing_document_creation_tab_visible(self):
         expect(self._outgoing_document_creation_tab).to_be_visible()
 
-    def assert_default_field_filled(self):
+    def assert_default_field_are_filled(self):
         end_date = self.generate_date_offset_days(9)
         self.assert_field_has_value('Срок исполнения *', f'{end_date}')
 
         current_date = self.generate_date_offset_days()
         self.assert_field_has_value('Дата документа *', f'{current_date}')
+
         self.assert_field_has_value('Дата от', current_date)
 
         self.assert_checkbox_checked('Отображать ЭП при печати')
@@ -59,7 +62,7 @@ class DocumentCreationPage(BasePage):
     def check_checkbox(self, checkbox_name):
         self.page.get_by_label(checkbox_name, exact=True).check()
 
-    def check_all_checkbox(self):
+    def check_all_not_default_checkboxes(self):
         self.check_checkbox('Для МЭДО')
         self.assert_checkbox_checked('Для МЭДО')
 
@@ -232,11 +235,11 @@ class DocumentCreationPage(BasePage):
     def assert_field_has_value(self, field_name, value):
         expect(self.page.get_by_label(field_name, exact=True)).to_have_value(value.strip())
 
-    def assert_multivalues_field_has_value(self, field_name, values):
+    def assert_multivalues_field_has_value(self, field_name, values_array):
         field_container = self.page.locator(f"label:has-text('{field_name}')").locator("..").locator(
             ".MuiInputBase-root")
 
-        for text in values:
+        for text in values_array:
             button = field_container.locator(f"[role='button'] >> text='{text}'")
             expect(button).to_be_visible()
 
@@ -246,5 +249,5 @@ class DocumentCreationPage(BasePage):
         expect(textarea).to_have_value(value_text)
 
     def example_method(self):
-        self.check_checkbox('Контроль УК')
-        self.assert_checkbox_checked('Контроль УК')
+        short_description = self.fill_short_description()
+        self.assert_short_description_has_value(short_description)
