@@ -25,12 +25,7 @@ def test_click_vkontakte_button_from_main_page(main_page_with_responsible):
     main_page_with_responsible.assert_vkontakte_website_opened(vkontakte_page)
 
 
-def test_hide_sidebar(main_page_with_responsible):
-    main_page_with_responsible.click_hide_sidebar_button()
-    main_page_with_responsible.assert_sidebar_hidden()
-
-
-def test_open_sidebar(main_page_with_responsible):
+def test_switch_sidebar(main_page_with_responsible):
     main_page_with_responsible.click_hide_sidebar_button()
     main_page_with_responsible.assert_sidebar_hidden()
     main_page_with_responsible.click_open_sidebar_button()
