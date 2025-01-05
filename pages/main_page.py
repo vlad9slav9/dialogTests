@@ -120,11 +120,11 @@ class MainPage(BasePage):
         self._create_document_button.click()
         return DocumentCreationPage(self.page)
 
-    '''def get_user_data(self, data_name):
-        self.click_profile_button()
-        user_data_locator = self.page.locator(f'p.MuiTypography-root.MuiTypography-body1:has(strong:text("{data_name}"))')
-        user_data = user_data_locator.inner_text().split(':')[-1].strip()
-        return user_data'''
+    def open_incoming_document_creation_page(self):
+        self._quick_document_creation_button.click()
+        self.select_incoming_document_type()
+        self._create_document_button.click()
+        return DocumentCreationPage(self.page)
 
     def get_basic_user_information(self, array=False):
         def generate_user_information():

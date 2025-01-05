@@ -118,7 +118,6 @@ class DocumentCreationPage(BasePage):
         position = parts[2].strip()
         return position
 
-
     def fill_all_not_default_fields(self):
         document_type = self.fill_property('Тип документа *')
         self.assert_field_has_value('Тип документа *', document_type)
@@ -194,6 +193,16 @@ class DocumentCreationPage(BasePage):
         content = self.fill_content_editor()
         self.assert_content_editor_has_value(content)
 
+    def fill_required_fields(self):
+        document_type = self.fill_property('Тип документа *')
+        self.assert_field_has_value('Тип документа *', document_type)
+
+        document_view = self.fill_classifier('Вид документа *')
+        self.assert_field_has_value('Вид документа *', document_view)
+
+        short_description = self.fill_short_description()
+        self.assert_short_description_has_value(short_description)
+
     def check_not_default_checkboxes(self):
         self.click_checkbox('Для МЭДО')
         self.assert_checkbox_checked('Для МЭДО')
@@ -207,6 +216,17 @@ class DocumentCreationPage(BasePage):
         self.click_checkbox('Срочный')
         self.assert_checkbox_checked('Срочный')
 
+    def click_upper_edit_button(self):
+        self._upper_edit_button.click()
+
+    def click_upper_save_button(self):
+        self._upper_save_button.click()
+
+    def click_bottom_edit_button(self):
+        self._bottom_edit_button.click()
+
+    def click_bottom_save_button(self):
+        self._bottom_save_button.click()
 
     def assert_outgoing_document_creation_tab_visible(self):
         expect(self._outgoing_document_creation_tab).to_be_visible()
@@ -250,21 +270,17 @@ class DocumentCreationPage(BasePage):
         current_date = self.generate_date_offset_days()
         self.assert_field_has_value('Дата документа *', f'{current_date}')
 
+        current_year = self.generate_date_offset_days(0, year=True)
+        self.assert_field_has_value('Год', f'{current_year}')
+
         self.assert_field_has_value('Дата от', current_date)
 
         self.assert_checkbox_checked('Отображать ЭП при печати')
         self.assert_checkbox_checked('Отображать автора и номер телефона на последней странице')
 
-        current_year = self.generate_date_offset_days(0, year=True)
-        self.assert_field_has_value('Год', f'{current_year}')
-
         self.assert_field_has_value('Шаблон (для печати) *', 'Первый автотестовый шаблон')
 
-    def assert_default_checkboxes_are_checked(self):
-        self.assert_checkbox_checked('Отображать ЭП при печати')
-        self.assert_checkbox_checked('Отображать автора и номер телефона на последней странице')
 
 
-
-    def example_method(self):
+    #def example_method(self):
 

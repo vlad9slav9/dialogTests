@@ -60,13 +60,18 @@ def test_open_outgoing_document_creation_page(main_page_with_responsible):
     document_creation_page.assert_outgoing_document_creation_tab_visible()
     document_creation_page.assert_multivalues_field_has_value("От кого", user_information)
     document_creation_page.assert_default_field_are_filled()
-    document_creation_page.assert_default_checkboxes_are_checked()
 
 
 def test_create_document_with_all_fields(main_page_with_responsible):
     document_creation_page = main_page_with_responsible.open_outgoing_document_creation_page()
     document_creation_page.fill_all_not_default_fields()
     document_creation_page.check_not_default_checkboxes()
+    document_creation_page.click_upper_save_button()
+
+def test_create_document_with_only_required_fields(main_page_with_responsible):
+    document_creation_page = main_page_with_responsible.open_outgoing_document_creation_page()
+    document_creation_page.fill_required_fields()
+    document_creation_page.click_bottom_save_button()
 
 def test_example(main_page_with_responsible):
     document_creation_page = main_page_with_responsible.open_outgoing_document_creation_page()
