@@ -126,6 +126,18 @@ class MainPage(BasePage):
         self._create_document_button.click()
         return DocumentCreationPage(self.page)
 
+    def open_internal_document_creation_page(self):
+        self._quick_document_creation_button.click()
+        self.select_internal_document_type()
+        self._create_document_button.click()
+        return DocumentCreationPage(self.page)
+
+    def open_outgoing_medo_creation_page(self):
+        self._quick_document_creation_button.click()
+        self.select_outgoing_medo_document_type()
+        self._create_document_button.click()
+        return DocumentCreationPage(self.page)
+
     def get_basic_user_information(self, array=False):
         def generate_user_information():
             user_fio = self.get_user_data("Ф.И.О.")

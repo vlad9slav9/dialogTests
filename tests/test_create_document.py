@@ -66,12 +66,43 @@ def test_create_document_with_all_fields(main_page_with_responsible):
     document_creation_page = main_page_with_responsible.open_outgoing_document_creation_page()
     document_creation_page.fill_all_not_default_fields()
     document_creation_page.check_not_default_checkboxes()
-    document_creation_page.click_upper_save_button()
+    document_creation_page.click_bottom_save_button()
 
 def test_create_document_with_only_required_fields(main_page_with_responsible):
-    document_creation_page = main_page_with_responsible.open_outgoing_document_creation_page()
+    document_creation_page = main_page_with_responsible.open_incoming_document_creation_page()
     document_creation_page.fill_required_fields()
+    document_creation_page.click_upper_save_button()
+
+def test_create_document_via_upper_edit_button(main_page_with_responsible):
+    document_creation_page = main_page_with_responsible.open_outgoing_medo_creation_page()
+    document_creation_page.fill_short_description()
+    document_creation_page.click_upper_edit_button()
+
+def test_create_document_via_bottom_edit_button(main_page_with_responsible):
+    document_creation_page = main_page_with_responsible.open_internal_document_creation_page()
+    document_creation_page.fill_short_description()
+    document_creation_page.click_bottom_edit_button()
+
+
+def test_click_upper_save_button_without_filling_required_fields(main_page_with_responsible):
+    document_creation_page = main_page_with_responsible.open_outgoing_document_creation_page()
+    document_creation_page.click_upper_save_button()
+    document_creation_page.assert_field_filling_error_displayed()
+
+def test_click_bottom_save_button_without_filling_required_fields(main_page_with_responsible):
+    document_creation_page = main_page_with_responsible.open_incoming_document_creation_page()
     document_creation_page.click_bottom_save_button()
+    document_creation_page.assert_field_filling_error_displayed()
+
+def test_click_bottom_edit_button_without_filling_required_fields(main_page_with_responsible):
+    document_creation_page = main_page_with_responsible.open_outgoing_medo_creation_page()
+    document_creation_page.click_bottom_edit_button()
+    document_creation_page.assert_field_filling_error_displayed()
+
+def test_click_upper_edit_button_without_filling_required_fields(main_page_with_responsible):
+    document_creation_page = main_page_with_responsible.open_internal_document_creation_page()
+    document_creation_page.click_upper_edit_button()
+    document_creation_page.assert_field_filling_error_displayed()
 
 def test_example(main_page_with_responsible):
     document_creation_page = main_page_with_responsible.open_outgoing_document_creation_page()

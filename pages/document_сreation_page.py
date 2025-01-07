@@ -25,8 +25,9 @@ class DocumentCreationPage(BasePage):
             page.get_by_title('Сохранить + редактирование (Ctrl+Alt+S)'))
         self._upper_save_button = self.page.get_by_role('button').and_(
             page.get_by_title('Сохранить + просмотр (Ctrl+Alt+S)'))
-        self._bottom_edit_button = self.page.get_by_role('button', name='Сохранить + редактировать')
-        self._bottom_save_button = self.page.get_by_role('button', name='Сохранить + просмотр')
+        self._bottom_edit_button = self.page.get_by_role('button', name='Сохранить + редактировать', exact=True)
+        self._bottom_save_button = self.page.get_by_role('button', name='Сохранить + просмотр', exact=True)
+        self._error_snackbar = self.page.locator('#notistack-snackbar')
 
         self.group_with_organizations = ['ФУЛ МКУ 9', 'Тестовая 9919', "РЕадмин", "Министерство сэд 2.0"]
         self.group_with_users = ['Ответственный Первый Пользователь | Автотестовая Родительская организация | Первая автотестовая должность',
@@ -281,6 +282,12 @@ class DocumentCreationPage(BasePage):
         self.assert_field_has_value('Шаблон (для печати) *', 'Первый автотестовый шаблон')
 
 
+    def assert_field_filling_error_displayed(self):
+        expect(self._error_snackbar).to_have_text('Не все поля заполнены корректно.')
 
-    #def example_method(self):
+
+
+    def example_method(self):
+        self.click_upper_save_button()
+        self.assert_field_filling_error_displayed()
 
