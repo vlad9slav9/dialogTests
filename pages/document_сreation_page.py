@@ -46,7 +46,7 @@ class DocumentCreationPage(BasePage):
             expect(options_locator).not_to_have_count(0)
             options = options_locator.all()
             if value:
-                selected_option = next((opt for opt in options if value in opt.inner_text()), None)
+                selected_option = next((option for option in options if value in option.inner_text()), None)
             else:
                 selected_option = random.choice(options)
             option_text = selected_option.inner_text()
@@ -229,6 +229,12 @@ class DocumentCreationPage(BasePage):
     def click_bottom_save_button(self):
         self._bottom_save_button.click()
 
+    def change_print_template(self):
+        self._print_template_field.click()
+        options_locator = self.page.get_by_role('option', name='Второй для печати', exact=True)
+        options_locator.click()
+        self.assert_field_has_value('Шаблон (для печати) *', 'Второй для печати')
+
     def assert_outgoing_document_creation_tab_visible(self):
         expect(self._outgoing_document_creation_tab).to_be_visible()
 
@@ -258,9 +264,6 @@ class DocumentCreationPage(BasePage):
     def assert_short_description_has_value(self, value):
         expect(self._short_description_field).to_have_value(value)
 
-    def assert_print_template_filled_first_template(self):
-        expect(self._print_template_field).to_have_value("Первый исходящий автотестовый шаблон")
-
     def assert_content_editor_has_value(self, value):
         expect(self._content_editor).to_have_text(value)
 
@@ -287,7 +290,5 @@ class DocumentCreationPage(BasePage):
 
 
 
-    def example_method(self):
-        self.click_upper_save_button()
-        self.assert_field_filling_error_displayed()
+    #def example_method(self):
 

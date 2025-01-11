@@ -104,6 +104,10 @@ def test_click_upper_edit_button_without_filling_required_fields(main_page_with_
     document_creation_page.click_upper_edit_button()
     document_creation_page.assert_field_filling_error_displayed()
 
+def test_change_default_fields(main_page_with_responsible):
+    document_creation_page = main_page_with_responsible.open_outgoing_document_creation_page()
+    document_creation_page.change_print_template()
+
 def test_example(main_page_with_responsible):
     document_creation_page = main_page_with_responsible.open_outgoing_document_creation_page()
     document_creation_page.example_method()
