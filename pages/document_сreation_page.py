@@ -28,6 +28,8 @@ class DocumentCreationPage(BasePage):
         self._bottom_edit_button = self.page.get_by_role('button', name='Сохранить + редактировать', exact=True)
         self._bottom_save_button = self.page.get_by_role('button', name='Сохранить + просмотр', exact=True)
         self._error_snackbar = self.page.locator('#notistack-snackbar')
+        self._content_template_field = self.page.locator("form div").filter(has_text="Добавить содержимое из шаблона").nth(2)
+
 
         self.group_with_organizations = ['ФУЛ МКУ 9', 'Тестовая 9919', "РЕадмин", "Министерство сэд 2.0"]
         self.group_with_users = ['Ответственный Первый Пользователь | Автотестовая Родительская организация | Первая автотестовая должность',
@@ -235,6 +237,19 @@ class DocumentCreationPage(BasePage):
         options_locator.click()
         self.assert_field_has_value('Шаблон (для печати) *', 'Второй для печати')
 
+    def select_first_content_template(self):
+        self._content_template_field.click()
+        self.page.get_by_role("option", name="Первый шаблон для Исходящего документа").click()
+
+
+    def select_second_content_template(self):
+        self._content_template_field.click()
+        self.page.get_by_role("option", name="Второй свой шаблон для Исходящего документа").click()
+
+    def select_empty_content_template(self):
+        self._content_template_field.click()
+        self.page.get_by_role("option", name="Без шаблона").click()
+
     def assert_outgoing_document_creation_tab_visible(self):
         expect(self._outgoing_document_creation_tab).to_be_visible()
 
@@ -289,6 +304,19 @@ class DocumentCreationPage(BasePage):
         expect(self._error_snackbar).to_have_text('Не все поля заполнены корректно.')
 
 
+    def assert_content_editor_has_first_template(self):
+        self.assert_content_editor_has_value('Автотест для проверки добавления первого шаблона содержимого!')
 
-    #def example_method(self):
+    def assert_content_editor_has_first_and_second_templates(self):
+        expect(self._content_editor).to_have_text("Автотест для проверки добавления первого шаблона содержимого!"
+                                                   "Это второй шаблон для автотеста, который проверяет, что добавляется второй шаблон в дополнении к первому")
+
+    def assert_content_editor_is_empty(self):
+        expect(self._content_editor).to_be_empty()
+
+    def example_method(self):
+        self.select_first_content_template()
+        self.select_second_content_template()
+        self.assert_content_editor_has_first_and_second_templates()
+
 

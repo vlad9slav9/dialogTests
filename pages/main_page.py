@@ -103,7 +103,7 @@ class MainPage(BasePage):
         self.click_outgoing_document_option()
 
     def select_incoming_document_type(self):
-        self.click_document_type_selection_button()
+        self.click_document_type_selection_field()
         self.click_incoming_document_option()
 
     def select_outgoing_medo_document_type(self):

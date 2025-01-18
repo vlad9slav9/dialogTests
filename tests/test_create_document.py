@@ -83,7 +83,6 @@ def test_create_document_via_bottom_edit_button(main_page_with_responsible):
     document_creation_page.fill_short_description()
     document_creation_page.click_bottom_edit_button()
 
-
 def test_click_upper_save_button_without_filling_required_fields(main_page_with_responsible):
     document_creation_page = main_page_with_responsible.open_outgoing_document_creation_page()
     document_creation_page.click_upper_save_button()
@@ -107,6 +106,19 @@ def test_click_upper_edit_button_without_filling_required_fields(main_page_with_
 def test_change_default_fields(main_page_with_responsible):
     document_creation_page = main_page_with_responsible.open_outgoing_document_creation_page()
     document_creation_page.change_print_template()
+
+def test_fill_content_editor_via_content_template(main_page_with_responsible):
+    document_creation_page = main_page_with_responsible.open_outgoing_document_creation_page()
+    document_creation_page.assert_content_editor_is_empty()
+    document_creation_page.select_first_content_template()
+    document_creation_page.assert_content_editor_has_first_template()
+    document_creation_page.select_second_content_template()
+    document_creation_page.assert_content_editor_has_first_and_second_templates()
+
+def test_select_empty_content_template(main_page_with_responsible):
+    document_creation_page = main_page_with_responsible.open_outgoing_document_creation_page()
+    document_creation_page.select_empty_content_template()
+    document_creation_page.assert_content_editor_is_empty()
 
 def test_example(main_page_with_responsible):
     document_creation_page = main_page_with_responsible.open_outgoing_document_creation_page()
