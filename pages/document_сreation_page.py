@@ -54,10 +54,11 @@ class DocumentCreationPage(BasePage):
             option_text = selected_option.inner_text()
             selected_option.click()
             return option_text
+
         if multiform:
             selected_texts = []
-            for _ in range(3):
-                selected_texts.append(select_option())
+            for _ in range(2):
+                selected_texts.append(select_option(option_value))
             return selected_texts
         else:
             return select_option(option_value)
@@ -314,9 +315,24 @@ class DocumentCreationPage(BasePage):
     def assert_content_editor_is_empty(self):
         expect(self._content_editor).to_be_empty()
 
-    def example_method(self):
-        self.select_first_content_template()
-        self.select_second_content_template()
-        self.assert_content_editor_has_first_and_second_templates()
+    def example_method(self, classifier_name, search_text):
+        classifier = self.page.get_by_label(classifier_name, exact=True)
+        classifier.fill(search_text)
+        options_locator = self.page.locator("role=option")
+        expect(options_locator).not_to_have_count(0)
+        options = options_locator.all()
+        all_text_options = [option.inner_text() for option in options]
 
+        for option in all_text_options:
+            expect(option.lower()).to_contain_text(search_text.lower())
+
+    def search_in_classifier(self, classifier_name, search_text):
+        classifier = self.page.get_by_label(classifier_name, exact=True)
+        classifier.fill(search_text)
+        options_locator = self.page.locator("role=option")
+        expect(options_locator).not_to_have_count(0)
+        options = options_locator.all()
+
+        for option in options:
+            expect(option).to_contain_text(search_text)
 

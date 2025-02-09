@@ -1,6 +1,4 @@
 
-
-
 def test_open_document_creation_window(main_page_with_responsible):
     main_page_with_responsible.click_quick_document_creation_button()
     main_page_with_responsible.assert_document_creation_window_visible()
@@ -120,9 +118,16 @@ def test_select_empty_content_template(main_page_with_responsible):
     document_creation_page.select_empty_content_template()
     document_creation_page.assert_content_editor_is_empty()
 
+def test_search_in_classifier(main_page_with_responsible):
+    document_creation_page = main_page_with_responsible.open_outgoing_document_creation_page()
+    document_creation_page.search_in_classifier('Вид документа *', '9')
+    document_creation_page.search_in_classifier('Тематика', 'Тест')
+    document_creation_page.search_in_classifier('Корреспондент', '9999 | Тест значение')
+    document_creation_page.search_in_classifier('Размер шрифта(при печати)', '13')
+
 def test_example(main_page_with_responsible):
     document_creation_page = main_page_with_responsible.open_outgoing_document_creation_page()
-    document_creation_page.example_method()
+    document_creation_page.fill_classifier('Выездные совещания', multiform=True, option_value='0')
 
 
 

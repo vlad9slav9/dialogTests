@@ -24,12 +24,13 @@ def browser(playwright, request):
         browser_path = None
 
     if browser_path:
-        browser = playwright.chromium.launch(executable_path=browser_path, headless=headless)
+        browser = playwright.chromium.launch(executable_path=browser_path, headless=headless, args=["--ignore-certificate-errors"])
     else:
-        browser = playwright.chromium.launch(headless=headless)
+        browser = playwright.chromium.launch(headless=headless, args=["--ignore-certificate-errors"])
 
     yield browser
     browser.close()
+
 
 @pytest.fixture(scope="function")
 def login_page(page):
