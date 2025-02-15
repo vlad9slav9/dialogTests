@@ -106,6 +106,7 @@ class MainPage(BasePage):
 
     def open_document_creation_page(self, document_type):
         self._quick_document_creation_button.click()
+        self.click_document_type_selection_field()
         self.select_document_type(document_type)
         self._create_document_button.click()
         return DocumentCreationPage(self.page)

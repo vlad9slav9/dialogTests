@@ -285,13 +285,13 @@ class DocumentCreationPage(BasePage):
 
     def assert_default_field_are_filled(self):
         end_date = self.generate_date_offset_days(9)
-        self.assert_field_has_value('Срок исполнения *', f'{end_date}')
+        self.assert_field_has_value('Срок исполнения *', end_date)
 
         current_date = self.generate_date_offset_days()
-        self.assert_field_has_value('Дата документа *', f'{current_date}')
+        self.assert_field_has_value('Дата документа *', current_date)
 
         current_year = self.generate_date_offset_days(0, year=True)
-        self.assert_field_has_value('Год', f'{current_year}')
+        self.assert_field_has_value('Год', current_year)
 
         self.assert_field_has_value('Дата от', current_date)
 

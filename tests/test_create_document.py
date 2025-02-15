@@ -60,12 +60,8 @@ def test_create_document_button_disabled_after_clearing_field(main_page_with_res
 def test_autofill_default_fields_when_creating_a_document(main_page_with_responsible):
     main_page_with_responsible.click_profile_button()
     user_information = main_page_with_responsible.get_basic_user_information(array=True)
-
-
-    document_creation_page = main_page_with_responsible.open_outgoing_document_creation_page()
+    document_creation_page = main_page_with_responsible.open_document_creation_page('Исходящий (Автотест)')
     document_creation_page.assert_outgoing_document_creation_tab_visible()
-
-
     document_creation_page.assert_multivalues_field_has_value("От кого", user_information)
     document_creation_page.assert_default_field_are_filled()
 
