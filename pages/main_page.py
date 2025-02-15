@@ -256,5 +256,5 @@ class MainPage(BasePage):
     def assert_outgoing_medo_document_option_selected(self):
         expect(self._document_type_search_field).to_have_value("Исходящий МЭДО (Автотест)")'''
 
-    def assert_document_type_search_field_empty(self):
+    def assert_document_type_search_field_is_empty(self):
         expect(self._document_type_search_field).to_be_empty()
