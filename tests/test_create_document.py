@@ -18,25 +18,30 @@ def test_close_document_creation_window(main_page_with_responsible):
 
 def test_search_document_type_in_document_creation_window(main_page_with_responsible):
     main_page_with_responsible.click_quick_document_creation_button()
-    main_page_with_responsible.enter_document_type_in_field("исходящий")
-    main_page_with_responsible.assert_outgoing_document_option_visible()
-    main_page_with_responsible.assert_outgoing_medo_document_option_visible()
-    main_page_with_responsible.assert_internal_document_option_hidden()
-    main_page_with_responsible.assert_incoming_document_option_hidden()
+    main_page_with_responsible.click_document_type_selection_field()
+    main_page_with_responsible.assert_document_option_visible('Исходящий (Автотест)')
+    main_page_with_responsible.assert_document_option_visible('Исходящий МЭДО (Автотест)')
+    main_page_with_responsible.assert_document_option_visible('Входящий (Автотест)')
+    main_page_with_responsible.assert_document_option_visible('Внутренний (Без Шаблона Печати) Автотест')
+    main_page_with_responsible.search_document_type('исходящий')
+    main_page_with_responsible.assert_document_option_visible('Исходящий (Автотест)')
+    main_page_with_responsible.assert_document_option_visible('Исходящий МЭДО (Автотест)')
+    main_page_with_responsible.assert_document_option_hidden('Входящий (Автотест)')
+    main_page_with_responsible.assert_document_option_hidden('Внутренний (Без Шаблона Печати) Автотест')
 
 
 def test_reselect_document_type_in_document_creation_window(main_page_with_responsible):
     main_page_with_responsible.click_quick_document_creation_button()
-    main_page_with_responsible.select_internal_document_type()
-    main_page_with_responsible.assert_internal_document_option_selected()
-    main_page_with_responsible.assert_internal_document_option_selected()
     main_page_with_responsible.click_document_type_selection_button()
-    main_page_with_responsible.assert_internal_document_option_hidden()
-    main_page_with_responsible.assert_outgoing_document_option_visible()
-    main_page_with_responsible.assert_incoming_document_option_visible()
-    main_page_with_responsible.assert_outgoing_medo_document_option_visible()
-    main_page_with_responsible.click_outgoing_document_option()
-    main_page_with_responsible.assert_outgoing_document_option_selected()
+    main_page_with_responsible.select_document_type('Исходящий (Автотест)')
+    main_page_with_responsible.assert_document_option_selected('Исходящий (Автотест)')
+    main_page_with_responsible.click_document_type_selection_field()
+    main_page_with_responsible.assert_document_option_hidden('Исходящий (Автотест)')
+    main_page_with_responsible.assert_document_option_visible('Входящий (Автотест)')
+    main_page_with_responsible.assert_document_option_visible('Исходящий МЭДО (Автотест)')
+    main_page_with_responsible.assert_document_option_visible('Внутренний (Без Шаблона Печати) Автотест')
+    main_page_with_responsible.select_document_type('Входящий (Автотест)')
+    main_page_with_responsible.assert_document_option_selected('Входящий (Автотест)')
 
 
 def test_create_document_button_disabled_after_clearing_field(main_page_with_responsible):

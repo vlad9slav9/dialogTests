@@ -334,5 +334,5 @@ class DocumentCreationPage(BasePage):
         options = options_locator.all()
 
         for option in options:
-            expect(option).to_contain_text(search_text)
+            expect(option).to_contain_text(search_text, ignore_case=True)
 
