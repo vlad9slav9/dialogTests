@@ -8,9 +8,12 @@ class BasePage:
     def __init__(self, page: Page):
         self.page = page
 
+        self._profile_button = self.page.locator('button[title="Профиль"]')
+        self._logout_button = self.page.locator('button[title="Выход"]')
         self._krtech_logo_link = self.page.locator('.SocialComponent-KrtechLogo a')
         self._telegram_button_link = self.page.locator('.SocialComponent-Telegram a')
         self._vkontakte_button_link = self.page.locator('.SocialComponent-Vkontakte a')
+        self._dropdown_list_without_options = self.page.get_by_text('No options')
 
     def click_and_open_new_tab(self, button_link):
         context = self.page.context
@@ -65,3 +68,11 @@ class BasePage:
         user_data_locator = self.page.locator(f'p.MuiTypography-root.MuiTypography-body1:has(strong:text("{data_name}"))')
         user_data = user_data_locator.inner_text().split(':')[-1].strip()
         return user_data
+
+    def assert_dropdown_list_contain_text(self, search_text):
+        #self.fill_document_type_search_field(search_text)
+        document_type_options = self.page.locator("role=option")
+        expect(document_type_options).not_to_have_count(0)
+        all_options = document_type_options.all()
+        for option in all_options:
+            expect(option).to_contain_text(search_text, ignore_case=True)

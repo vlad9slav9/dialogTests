@@ -268,6 +268,9 @@ class DocumentCreationPage(BasePage):
         field_container = self.page.locator(f"label:has-text('{field_name}')").locator("..").locator(
             ".MuiInputBase-root")
 
+        if isinstance(buttons_name, str):
+            buttons_name = [buttons_name]
+
         for text in buttons_name:
             button = field_container.locator(f"[role='button'] >> text='{text}'")
             expect(button).to_be_visible()
@@ -315,16 +318,8 @@ class DocumentCreationPage(BasePage):
     def assert_content_editor_is_empty(self):
         expect(self._content_editor).to_be_empty()
 
-    def example_method(self, classifier_name, search_text):
-        classifier = self.page.get_by_label(classifier_name, exact=True)
-        classifier.fill(search_text)
-        options_locator = self.page.locator("role=option")
-        expect(options_locator).not_to_have_count(0)
-        options = options_locator.all()
-        all_text_options = [option.inner_text() for option in options]
+    #def example_method(self, classifier_name, search_text):
 
-        for option in all_text_options:
-            expect(option.lower()).to_contain_text(search_text.lower())
 
     def search_in_classifier(self, classifier_name, search_text):
         classifier = self.page.get_by_label(classifier_name, exact=True)

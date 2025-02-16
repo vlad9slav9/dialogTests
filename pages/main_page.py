@@ -11,11 +11,7 @@ from pages.document_сreation_page import DocumentCreationPage
 class MainPage(BasePage):
     def __init__(self, page: Page):
         super().__init__(page)
-        self._profile_button = self.page.get_by_role("button").and_(page.get_by_title("Профиль"))
-        self._logout_button = self.page.get_by_role("button").and_(page.get_by_title("Выход"))
 
-        #self._profile_button = self.page.locator('button[title="Профиль"]')
-        #self._logout_button = self.page.locator('button[title = "Выход"]')
         self._logout_confirmation_button = self.page.get_by_role("button", name="Выйти")
         self._cancel_logout_button = self.page.get_by_role("button", name="Отмена")
         self._sidebar = self.page.locator(".PageSidebar")
@@ -41,7 +37,6 @@ class MainPage(BasePage):
         self._cancel_document_creation_window_button = self.page.get_by_role("button", name="Отмена")
         self._close_document_creation_window_button = self.page.get_by_role("button", name="close")
         self._document_creation_window = self.page.get_by_role("dialog", name="Быстрое создание документа")
-
 
 
     def click_profile_button(self):
@@ -111,13 +106,14 @@ class MainPage(BasePage):
         self._create_document_button.click()
         return DocumentCreationPage(self.page)
 
-    def search_document_type(self, search_text):
-        self.fill_document_type_search_field(search_text)
-        document_type_options = self.page.locator("role=option")
-        expect(document_type_options).not_to_have_count(0)
-        all_options = document_type_options.all()
-        for option in all_options:
-            expect(option).to_contain_text(search_text, ignore_case=True)
+    # def assert_dropdown_list_contain_text(self, search_text):
+    #     #self.fill_document_type_search_field(search_text)
+    #     document_type_options = self.page.locator("role=option")
+    #     expect(document_type_options).not_to_have_count(0)
+    #     all_options = document_type_options.all()
+    #     for option in all_options:
+    #         expect(option).to_contain_text(search_text, ignore_case=True)
+
 
    # def select_outgoing_document_type(self):
    #      self.click_document_type_selection_button()
@@ -161,22 +157,13 @@ class MainPage(BasePage):
 
 
 
-    def get_basic_user_information(self, array=False):
-        def generate_user_information():
-            user_fio = self.get_user_data("Ф.И.О.")
-            user_organization = self.get_user_data("Организация")
-            user_position = self.get_user_data("Должность")
+    def get_basic_user_information(self):
+        self.click_profile_button()
+        user_fio = self.get_user_data("Ф.И.О.")
+        user_organization = self.get_user_data("Организация")
+        user_position = self.get_user_data("Должность")
 
-            return f"{user_fio} | {user_organization} | {user_position}"
-
-        if array:
-            user_information_array = [generate_user_information()]
-            return user_information_array
-        else:
-            return generate_user_information()
-
-
-
+        return f"{user_fio} | {user_organization} | {user_position}"
 
 
     def assert_profile_button_visible(self):
@@ -259,3 +246,14 @@ class MainPage(BasePage):
 
     def assert_document_type_search_field_is_empty(self):
         expect(self._document_type_search_field).to_be_empty()
+
+    def assert_dropdown_list_without_options_visible(self):
+        options_locator = self.page.locator("role=option")
+        expect(options_locator).to_have_count(0)
+        expect(self._dropdown_list_without_options).to_be_visible()
+
+    def test_example(self):
+        self.click_quick_document_creation_button()
+        self.click_document_type_selection_field()
+        self.fill_document_type_search_field('Негативный тест')
+        self.click_quick_document_creation_button()
