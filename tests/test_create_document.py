@@ -131,12 +131,16 @@ def test_select_empty_content_template(main_page_with_responsible):
     document_creation_page.select_empty_content_template()
     document_creation_page.assert_content_editor_is_empty()
 
-def test_search_in_classifier(main_page_with_responsible):
+def test_search_option_in_classifier(main_page_with_responsible):
     document_creation_page = main_page_with_responsible.open_document_creation_page('Исходящий (Автотест)')
-    document_creation_page.search_in_classifier('Вид документа *', '9')
-    document_creation_page.search_in_classifier('Тематика', 'Тест')
-    document_creation_page.search_in_classifier('Корреспондент', '9999 | Тест значение')
-    document_creation_page.search_in_classifier('Размер шрифта(при печати)', '13')
+    document_creation_page.enter_text_in_the_classifier('Вид документа * ','9')
+    document_creation_page.assert_options_contain_text('9')
+    document_creation_page.enter_text_in_the_classifier('Тематика', 'Тест')
+    document_creation_page.assert_options_contain_text('Тест')
+    document_creation_page.enter_text_in_the_classifier('Корреспондент', '9999 | Тест значение')
+    document_creation_page.assert_options_contain_text('9999 | Тест значение')
+    document_creation_page.enter_text_in_the_classifier('Размер шрифта(при печати)', '13')
+    document_creation_page.assert_options_contain_text('13')
 
 def test_example(main_page_with_responsible):
     #document_creation_page = main_page_with_responsible.open_document_creation_page('Исходящий (Автотест)')

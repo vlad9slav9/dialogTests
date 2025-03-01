@@ -254,6 +254,15 @@ class DocumentCreationPage(BasePage):
     def assert_outgoing_document_creation_tab_visible(self):
         expect(self._outgoing_document_creation_tab).to_be_visible()
 
+    def enter_text_in_the_classifier(self, classifier_name, text):
+        classifier = self.page.get_by_label(classifier_name, exact=True)
+        classifier.press_sequentially(text, delay=100)
+
+
+
+
+
+
     def assert_field_has_value(self, field_name, value):
         expect(self.page.get_by_label(field_name, exact=True)).to_have_value(value.strip())
 
@@ -318,16 +327,11 @@ class DocumentCreationPage(BasePage):
     def assert_content_editor_is_empty(self):
         expect(self._content_editor).to_be_empty()
 
-    #def example_method(self, classifier_name, search_text):
 
-
-    def search_in_classifier(self, classifier_name, search_text):
-        classifier = self.page.get_by_label(classifier_name, exact=True)
-        classifier.fill(search_text)
+    def assert_options_contain_text(self, search_text):
         options_locator = self.page.locator("role=option")
         expect(options_locator).not_to_have_count(0)
         options = options_locator.all()
-
         for option in options:
             expect(option).to_contain_text(search_text, ignore_case=True)
 

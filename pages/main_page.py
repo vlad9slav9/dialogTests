@@ -12,6 +12,8 @@ class MainPage(BasePage):
     def __init__(self, page: Page):
         super().__init__(page)
 
+        self._profile_button = self.page.locator('button[title="Профиль"]')
+        self._logout_button = self.page.locator('button[title="Выход"]')
         self._logout_confirmation_button = self.page.get_by_role("button", name="Выйти")
         self._cancel_logout_button = self.page.get_by_role("button", name="Отмена")
         self._sidebar = self.page.locator(".PageSidebar")
@@ -29,10 +31,6 @@ class MainPage(BasePage):
         self._document_type_search_field = self.page.get_by_role("textbox", name="Выберите тип документа")
         self._document_type_selection_button = self.page.get_by_role("button", name="Open")
         self._document_type_search_field_clear_button = self.page.get_by_role("button", name="Clear")
-        #self._incoming_document_option = self.page.get_by_role("option", name="Входящий (Автотест)")
-        #self._outgoing_document_option = self.page.get_by_role("option", name="Исходящий (Автотест)")
-        #self._outgoing_medo_document_option = self.page.get_by_role("option", name="Исходящий МЭДО (Автотест)")
-        #self._internal_document_option = self.page.get_by_role("option", name="Внутренний (Без Шаблона Печати) Автотест")
         self._create_document_button = self.page.get_by_role("button", name="Создать")
         self._cancel_document_creation_window_button = self.page.get_by_role("button", name="Отмена")
         self._close_document_creation_window_button = self.page.get_by_role("button", name="close")
@@ -81,18 +79,6 @@ class MainPage(BasePage):
     def click_document_option(self, document_option):
         self.page.get_by_role('option', name=document_option, exact=True).click()
 
-    '''def click_outgoing_document_option(self):
-        self._outgoing_document_option.click()
-
-    def click_incoming_document_option(self):
-        self._incoming_document_option.click()
-
-    def click_internal_document_option(self):
-        self._internal_document_option.click()
-
-    def click_outgoing_medo_document_option(self):
-        self._outgoing_medo_document_option.click()'''
-
     def fill_document_type_search_field(self, document_type):
         self._document_type_search_field.fill(document_type)
 
@@ -106,57 +92,6 @@ class MainPage(BasePage):
         self._create_document_button.click()
         return DocumentCreationPage(self.page)
 
-    # def assert_dropdown_list_contain_text(self, search_text):
-    #     #self.fill_document_type_search_field(search_text)
-    #     document_type_options = self.page.locator("role=option")
-    #     expect(document_type_options).not_to_have_count(0)
-    #     all_options = document_type_options.all()
-    #     for option in all_options:
-    #         expect(option).to_contain_text(search_text, ignore_case=True)
-
-
-   # def select_outgoing_document_type(self):
-   #      self.click_document_type_selection_button()
-   #      self.click_outgoing_document_option()
-   #
-   #  def select_incoming_document_type(self):
-   #      self.click_document_type_selection_field()
-   #      self.click_incoming_document_option()
-   #
-   #  def select_outgoing_medo_document_type(self):
-   #      self.enter_document_type_in_field("исходящий мэдо")
-   #      self.click_outgoing_medo_document_option()
-   #
-   #  def select_internal_document_type(self):
-   #      self.enter_document_type_in_field("внутренний")
-   #      self.click_internal_document_option()
-   #
-   #  def open_outgoing_document_creation_page(self):
-   #      self._quick_document_creation_button.click()
-   #      self.select_outgoing_document_type()
-   #      self._create_document_button.click()
-   #      return DocumentCreationPage(self.page)
-   #
-   #  def open_incoming_document_creation_page(self):
-   #      self._quick_document_creation_button.click()
-   #      self.select_incoming_document_type()
-   #      self._create_document_button.click()
-   #      return DocumentCreationPage(self.page)
-   #
-   #  def open_internal_document_creation_page(self):
-   #      self._quick_document_creation_button.click()
-   #      self.select_internal_document_type()
-   #      self._create_document_button.click()
-   #      return DocumentCreationPage(self.page)
-   #
-   #  def open_outgoing_medo_creation_page(self):
-   #      self._quick_document_creation_button.click()
-   #      self.select_outgoing_medo_document_type()
-   #      self._create_document_button.click()
-   #      return DocumentCreationPage(self.page)
-
-
-
     def get_basic_user_information(self):
         self.click_profile_button()
         user_fio = self.get_user_data("Ф.И.О.")
@@ -164,7 +99,6 @@ class MainPage(BasePage):
         user_position = self.get_user_data("Должность")
 
         return f"{user_fio} | {user_organization} | {user_position}"
-
 
     def assert_profile_button_visible(self):
         expect(self._profile_button).to_be_visible()
@@ -205,52 +139,11 @@ class MainPage(BasePage):
     def assert_document_option_hidden(self, option_text):
         expect(self.page.get_by_role('option', name=option_text, exact=True)).to_be_hidden()
 
-    # def assert_outgoing_document_option_visible(self):
-    #     expect(self._outgoing_document_option).to_be_visible()
-    #
-    # def assert_outgoing_document_option_hidden(self):
-    #     expect(self._outgoing_document_option).to_be_hidden()
-    #
-    # def assert_outgoing_medo_document_option_visible(self):
-    #     expect(self._outgoing_medo_document_option).to_be_visible()
-    #
-    # def assert_outgoing_medo_document_option_hidden(self):
-    #     expect(self._outgoing_medo_document_option).to_be_hidden()
-    #
-    # def assert_incoming_document_option_visible(self):
-    #     expect(self._incoming_document_option).to_be_visible()
-    #
-    # def assert_incoming_document_option_hidden(self):
-    #     expect(self._incoming_document_option).to_be_hidden()
-    #
-    # def assert_internal_document_option_visible(self):
-    #     expect(self._internal_document_option).to_be_visible()
-    #
-    # def assert_internal_document_option_hidden(self):
-    #     expect(self._internal_document_option).to_be_hidden()
-
     def assert_document_option_selected(self, document_type_text):
         expect(self._document_type_search_field).to_have_value(document_type_text)
 
-    '''def assert_outgoing_document_option_selected(self):
-        expect(self._document_type_search_field).to_have_value("Исходящий (Автотест)")
-
-    def assert_incoming_document_option_selected(self):
-        expect(self._document_type_search_field).to_have_value("Входящий (Автотест)")
-
-    def assert_internal_document_option_selected(self):
-        expect(self._document_type_search_field).to_have_value("Внутренний (Без Шаблона Печати) Автотест")
-
-    def assert_outgoing_medo_document_option_selected(self):
-        expect(self._document_type_search_field).to_have_value("Исходящий МЭДО (Автотест)")'''
-
     def assert_document_type_search_field_is_empty(self):
         expect(self._document_type_search_field).to_be_empty()
-
-    def assert_dropdown_list_without_options_visible(self):
-        options_locator = self.page.locator("role=option")
-        expect(options_locator).to_have_count(0)
-        expect(self._dropdown_list_without_options).to_be_visible()
 
     def test_example(self):
         self.click_quick_document_creation_button()
