@@ -295,12 +295,14 @@ class DocumentCreationPage(BasePage):
     def assert_content_editor_has_value(self, value):
         expect(self._content_editor).to_have_text(value)
 
-    def assert_default_field_are_filled(self):
+    def assert_default_field_are_filled(self, user_information):
         end_date = self.generate_date_offset_days(9)
         self.assert_field_has_value('Срок исполнения *', end_date)
 
         current_date = self.generate_date_offset_days()
         self.assert_field_has_value('Дата документа *', current_date)
+
+        self.assert_multivalues_field_has_value('От кого',user_information)
 
         current_year = self.generate_date_offset_days(0, year=True)
         self.assert_field_has_value('Год', current_year)

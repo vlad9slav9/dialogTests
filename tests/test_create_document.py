@@ -1,3 +1,4 @@
+from pages.main_page import MainPage
 
 def test_open_document_creation_window(main_page_with_responsible):
     main_page_with_responsible.click_quick_document_creation_button()
@@ -69,8 +70,7 @@ def test_autofill_default_fields_when_creating_a_document(main_page_with_respons
     user_information = main_page_with_responsible.get_basic_user_information()
     document_creation_page = main_page_with_responsible.open_document_creation_page('Исходящий (Автотест)')
     document_creation_page.assert_outgoing_document_creation_tab_visible()
-    document_creation_page.assert_multivalues_field_has_value("От кого", user_information)
-    document_creation_page.assert_default_field_are_filled()
+    document_creation_page.assert_default_field_are_filled(user_information)
 
 
 def test_create_document_with_all_fields(main_page_with_responsible):
