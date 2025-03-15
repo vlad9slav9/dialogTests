@@ -144,9 +144,3 @@ class MainPage(BasePage):
 
     def assert_document_type_search_field_is_empty(self):
         expect(self._document_type_search_field).to_be_empty()
-
-    def test_example(self):
-        self.click_quick_document_creation_button()
-        self.click_document_type_selection_field()
-        self.fill_document_type_search_field('Негативный тест')
-        self.click_quick_document_creation_button()

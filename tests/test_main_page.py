@@ -44,3 +44,4 @@ def test_display_date(main_page_with_responsible):
 
 def test_display_time(main_page_with_responsible):
     main_page_with_responsible.assert_displayed_time()
+

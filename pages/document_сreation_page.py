@@ -233,7 +233,13 @@ class DocumentCreationPage(BasePage):
         self._bottom_save_button.click()
 
     def change_print_template(self):
+        self.assert_field_has_value('Шаблон (для печати) *', 'Первый автотестовый шаблон')
+        self._print_template_field.hover()
+        clear_button = self.page.locator("//label[text() = 'Шаблон (для печати)']//following::button[@title='Clear']")
+        clear_button.click()
         self._print_template_field.click()
+        self._print_template_field.press_sequentially('второй', delay=100)
+        self.assert_dropdown_list_contain_text('второй')
         options_locator = self.page.get_by_role('option', name='Второй для печати', exact=True)
         options_locator.click()
         self.assert_field_has_value('Шаблон (для печати) *', 'Второй для печати')
