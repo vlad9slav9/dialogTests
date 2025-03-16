@@ -38,13 +38,17 @@ class DocumentCreationPage(BasePage):
     def click_checkbox(self, checkbox_name):
         self.page.get_by_label(checkbox_name, exact=True).click()
 
+    def click_classifier(self, classifier_name):
+        self.page.get_by_label(classifier_name, exact=True).click()
+
 
     def fill_classifier(self, classifier_name, multiform=False, option_value=None):
         classifier = self.page.get_by_label(classifier_name, exact=True)
-        options_locator = self.page.locator("role=option")
+        #options_locator = self.page.locator("role=option")
 
         def select_option(value=None):
             classifier.click()
+            options_locator = self.page.get_by_role('option')
             expect(options_locator).not_to_have_count(0)
             options = options_locator.all()
             if value:
@@ -129,8 +133,8 @@ class DocumentCreationPage(BasePage):
         link_to_number = self.fill_property('Ссылается на № (для печати)')
         self.assert_field_has_value('Ссылается на № (для печати)', link_to_number)
 
-        document_number = self.fill_property('№ документа')
-        self.assert_field_has_value('№ документа', document_number)
+        document_number = self.fill_property('№ документа *')
+        self.assert_field_has_value('№ документа *', document_number)
 
         reference_date = self.fill_date_property('Дата документа на который ссылаемся (для печати)')
         self.assert_field_has_value('Дата документа на который ссылаемся (для печати)', reference_date)
@@ -232,17 +236,19 @@ class DocumentCreationPage(BasePage):
     def click_bottom_save_button(self):
         self._bottom_save_button.click()
 
-    def change_print_template(self):
-        self.assert_field_has_value('Шаблон (для печати) *', 'Первый автотестовый шаблон')
+    def change_print_template(self, entered_text):
         self._print_template_field.hover()
         clear_button = self.page.locator("//label[text() = 'Шаблон (для печати)']//following::button[@title='Clear']")
         clear_button.click()
         self._print_template_field.click()
-        self._print_template_field.press_sequentially('второй', delay=100)
-        self.assert_dropdown_list_contain_text('второй')
-        options_locator = self.page.get_by_role('option', name='Второй для печати', exact=True)
+        self._print_template_field.press_sequentially(f'{entered_text}', delay=100)
+        self.assert_dropdown_list_contain_text(f'{entered_text}')
+        options_locator = self.page.get_by_role('option', name=f'{entered_text}')
         options_locator.click()
-        self.assert_field_has_value('Шаблон (для печати) *', 'Второй для печати')
+
+
+
+
 
     def select_first_content_template(self):
         self._content_template_field.click()
@@ -264,6 +270,10 @@ class DocumentCreationPage(BasePage):
         classifier = self.page.get_by_label(classifier_name, exact=True)
         classifier.press_sequentially(text, delay=100)
 
+    def clear_classifier(self, classifier_name):
+        classifier = self.page.get_by_label(classifier_name, exact=True)
+        classifier.clear()
+
 
 
 
@@ -271,6 +281,9 @@ class DocumentCreationPage(BasePage):
 
     def assert_field_has_value(self, field_name, value):
         expect(self.page.get_by_label(field_name, exact=True)).to_have_value(value.strip())
+
+    def assert_field_is_empty(self, field_name):
+        expect(self.page.get_by_label(field_name, exact=True)).to_be_empty()
 
     def assert_checkbox_checked(self, checkbox_name):
         expect(self.page.get_by_label(checkbox_name, exact=True)).to_be_checked()

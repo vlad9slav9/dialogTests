@@ -74,7 +74,7 @@ class BasePage:
         for option in all_options:
             expect(option).to_contain_text(search_text, ignore_case=True)
 
-    def assert_dropdown_list_without_options_visible(self, wait_time=3000):
+    def assert_dropdown_list_without_options(self, wait_time=3000):
         options_locator = self.page.locator("role=option")
         self.page.wait_for_timeout(wait_time)
         expect(options_locator).to_have_count(0)

@@ -36,7 +36,7 @@ def test_search_nonexistent_document_type(main_page_with_responsible):
     main_page_with_responsible.click_quick_document_creation_button()
     main_page_with_responsible.click_document_type_selection_button()
     main_page_with_responsible.fill_document_type_search_field('Негативный тест')
-    main_page_with_responsible.assert_dropdown_list_without_options_visible()
+    main_page_with_responsible.assert_dropdown_list_without_options()
 
 
 def test_reselect_document_type_in_document_creation_window(main_page_with_responsible):
@@ -121,7 +121,21 @@ def test_click_upper_edit_button_without_filling_required_fields(main_page_with_
 
 def test_change_print_template(main_page_with_responsible):
     document_creation_page = main_page_with_responsible.open_document_creation_page('Исходящий (Автотест)')
-    document_creation_page.change_print_template()
+    document_creation_page.assert_field_has_value('Шаблон (для печати) *', 'Первый автотестовый шаблон')
+    document_creation_page.change_print_template('второй')
+    document_creation_page.assert_field_has_value('Шаблон (для печати) *', 'Второй для печати')
+def test_search_nonexistent_print_template(main_page_with_responsible):
+    document_creation_page = main_page_with_responsible.open_document_creation_page('Исходящий (Автотест)')
+    document_creation_page.assert_field_has_value('Шаблон (для печати) *', 'Первый автотестовый шаблон')
+    document_creation_page.clear_classifier('Шаблон (для печати) *')
+    document_creation_page.enter_text_in_the_classifier('Шаблон (для печати) *','второй несуществующий')
+    document_creation_page.assert_dropdown_list_without_options()
+def test_check_for_an_empty_print_template(main_page_with_responsible):
+    document_creation_page = main_page_with_responsible.open_document_creation_page('Внутренний. Без Шаблона Печати (Автотест)')
+    document_creation_page.assert_field_is_empty('Шаблон (для печати)')
+    document_creation_page.click_classifier('Шаблон (для печати)')
+    document_creation_page.assert_dropdown_list_without_options()
+
 
 def test_fill_content_editor_via_content_template(main_page_with_responsible):
     document_creation_page = main_page_with_responsible.open_document_creation_page('Исходящий (Автотест)')
