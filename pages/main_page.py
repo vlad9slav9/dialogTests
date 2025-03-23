@@ -133,11 +133,11 @@ class MainPage(BasePage):
     def assert_create_document_button_enabled(self):
         expect(self._create_document_button).to_be_enabled()
 
-    def assert_document_option_visible(self, option_text):
-        expect(self.page.get_by_role('option', name=option_text, exact=True)).to_be_visible()
+    #def assert_document_option_visible(self, option_text):
+    #    expect(self.page.get_by_role('option', name=option_text, exact=True)).to_be_visible()
 
-    def assert_document_option_hidden(self, option_text):
-        expect(self.page.get_by_role('option', name=option_text, exact=True)).to_be_hidden()
+    #def assert_document_option_hidden(self, option_text):
+    #    expect(self.page.get_by_role('option', name=option_text, exact=True)).to_be_hidden()
 
     def assert_document_option_selected(self, document_type_text):
         expect(self._document_type_search_field).to_have_value(document_type_text)

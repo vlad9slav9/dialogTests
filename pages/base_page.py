@@ -68,14 +68,44 @@ class BasePage:
         return user_data
 
     def assert_dropdown_list_contain_text(self, search_text):
-        document_type_options = self.page.locator("role=option")
-        expect(document_type_options).not_to_have_count(0)
-        all_options = document_type_options.all()
+        options_locator = self.page.locator('role=option')
+        expect(options_locator).not_to_have_count(0)
+        all_options = options_locator.all()
         for option in all_options:
             expect(option).to_contain_text(search_text, ignore_case=True)
+
+    def assert_dropdown_list_contain_options(self, classifier_name, options_text, text_input=True):
+        if isinstance(options_text, str):
+            options_text = [options_text]
+        for option_text in options_text:
+            if text_input:
+                search_prefix = option_text[:3]
+                self.enter_text_in_the_classifier(classifier_name, search_prefix)
+                expect(self.page.get_by_role('option', name=option_text, exact=True)).to_be_visible()
+                self.clear_classifier(classifier_name)
+            else:
+                expect(self.page.get_by_role('option', name=option_text, exact=True)).to_be_visible()
+
+    def assert_dropdown_list_not_contain_options(self, options_text):
+        if isinstance(options_text, str):
+            options_text = [options_text]
+        for option_text in options_text:
+            expect(self.page.get_by_role('option', name=option_text, exact=True)).to_be_hidden()
+
+
+
 
     def assert_dropdown_list_without_options(self, wait_time=3000):
         options_locator = self.page.locator("role=option")
         self.page.wait_for_timeout(wait_time)
         expect(options_locator).to_have_count(0)
         expect(self._dropdown_list_without_options).to_be_visible()
+
+
+    def enter_text_in_the_classifier(self, classifier_name, text):
+        classifier = self.page.get_by_role('textbox', name=classifier_name)
+        classifier.press_sequentially(text, delay=100)
+
+    def clear_classifier(self, classifier_name):
+        classifier = self.page.get_by_role('textbox', name=classifier_name, exact=True)
+        classifier.clear()

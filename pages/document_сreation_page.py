@@ -32,8 +32,23 @@ class DocumentCreationPage(BasePage):
 
 
         self.group_with_organizations = ['ФУЛ МКУ 9', 'Тестовая 9919', "РЕадмин", "Министерство сэд 2.0"]
-        self.group_with_users = ['Ответственный Первый Пользователь | Автотестовая Родительская организация | Первая автотестовая должность',
+
+        self._department_users = ['Ответственный Первый Пользователь | Автотестовая Родительская организация | Первая автотестовая должность',
                                  'Обычный Первый Пользователь | Автотестовая Родительская организация | Вторая автотестовая должность']
+
+        self._department_curators = ['Волохов Алексей Николаевич | Аппарат Совета министров Республики Крым | Глава Республики Крым',
+                                     'Войтко Анастасия Владимировна | Аппарат Совета министров Республики Крым | Начальник Главного контрольного управления']
+
+        self._mku_users = ['Второй Юзер Мкушнович | МКУ Автотестовое | Второго уровня должность',
+                           'Мкушный Пользователь Ответственный | МКУ Автотестовое | Должность первого уровня']
+
+        self._users_from_other_departments = ['Косторнова Елена Борисовна | Аппарат Совета министров Республики Крым | Начальник управления',
+                                              'Сидоров Артем Сергеевич | Министерство сэд 2.0 | Руководитель']
+
+        self._cross_department_users = self._department_users + self._department_curators + self._mku_users + self._users_from_other_departments
+
+        self._users_with_curators_and_mku = self._department_users + self._department_curators + self._mku_users
+
 
     def click_checkbox(self, checkbox_name):
         self.page.get_by_label(checkbox_name, exact=True).click()
@@ -166,7 +181,7 @@ class DocumentCreationPage(BasePage):
 
         users_group = self.fill_classifier("Добавить из группы", option_value="Пользователи моей организации")
         self.assert_field_has_value("Добавить из группы", users_group)
-        self.assert_multivalues_field_has_value('Получатели после подписания', self.group_with_users)
+        self.assert_multivalues_field_has_value('Получатели после подписания', self._department_users)
 
         addressee = self.fill_classifier('Адресат')
         self.assert_field_has_value('Адресат', addressee)
@@ -266,13 +281,7 @@ class DocumentCreationPage(BasePage):
     def assert_outgoing_document_creation_tab_visible(self):
         expect(self._outgoing_document_creation_tab).to_be_visible()
 
-    def enter_text_in_the_classifier(self, classifier_name, text):
-        classifier = self.page.get_by_label(classifier_name, exact=True)
-        classifier.press_sequentially(text, delay=100)
 
-    def clear_classifier(self, classifier_name):
-        classifier = self.page.get_by_label(classifier_name, exact=True)
-        classifier.clear()
 
 
 
@@ -293,11 +302,11 @@ class DocumentCreationPage(BasePage):
         expect(self.page.get_by_label(classifier_name, exact=True)).to_have_value(short_name)
 
     def assert_multivalues_field_has_value(self, field_name, buttons_name):
-        field_container = self.page.locator(f"label:has-text('{field_name}')").locator("..").locator(
-            ".MuiInputBase-root")
-
         if isinstance(buttons_name, str):
             buttons_name = [buttons_name]
+
+        field_container = self.page.locator(f"label:has-text('{field_name}')").locator("..").locator(
+            ".MuiInputBase-root")
 
         for text in buttons_name:
             button = field_container.locator(f"[role='button'] >> text='{text}'")
@@ -341,18 +350,40 @@ class DocumentCreationPage(BasePage):
     def assert_content_editor_has_first_template(self):
         self.assert_content_editor_has_value('Автотест для проверки добавления первого шаблона содержимого!')
 
-    def assert_content_editor_has_first_and_second_templates(self):
+    def assert_content_editor_has_two_templates(self):
         expect(self._content_editor).to_have_text("Автотест для проверки добавления первого шаблона содержимого!"
                                                    "Это второй шаблон для автотеста, который проверяет, что добавляется второй шаблон в дополнении к первому")
 
     def assert_content_editor_is_empty(self):
         expect(self._content_editor).to_be_empty()
 
+    def assert_picker_contain_all_users(self):
+        self.assert_dropdown_list_contain_options(self._cross_department_users)
 
-    def assert_options_contain_text(self, search_text):
-        options_locator = self.page.locator("role=option")
-        expect(options_locator).not_to_have_count(0)
-        options = options_locator.all()
-        for option in options:
-            expect(option).to_contain_text(search_text, ignore_case=True)
+    def assert_picker_contain_department_users(self, classifier_name, text_input=True):
+        self.assert_dropdown_list_contain_options(classifier_name, self._department_users, text_input=text_input)
+
+    def assert_picker_contain_department_curators(self):
+        self.assert_dropdown_list_contain_options(self._department_curators)
+
+    def assert_picker_contain_mku_users(self):
+        self.assert_dropdown_list_contain_options(self._mku_users)
+
+    def assert_picker_contain_users_with_curators_and_mku(self):
+        self.assert_dropdown_list_contain_options(self._users_with_curators_and_mku)
+
+    def assert_picker_contain_users_from_other_departments(self):
+        self.assert_dropdown_list_contain_options(self._users_from_other_departments)
+
+    def assert_picker_not_contain_department_users(self):
+        self.assert_dropdown_list_not_contain_options(self._department_users)
+
+    def assert_picker_not_contain_department_curators(self):
+        self.assert_dropdown_list_not_contain_options(self._department_curators)
+
+    def assert_picker_not_contain_mku_users(self):
+        self.assert_dropdown_list_not_contain_options(self._mku_users)
+
+    def assert_picker_not_contain_users_from_other_departments(self):
+        self.assert_dropdown_list_not_contain_options(self._users_from_other_departments)
 
