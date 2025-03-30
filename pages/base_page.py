@@ -13,6 +13,21 @@ class BasePage:
         self._vkontakte_button_link = self.page.locator('.SocialComponent-Vkontakte a')
         self._dropdown_list_without_options = self.page.get_by_text('No options')
 
+        self.group_with_organizations = ['ФУЛ МКУ 9', 'Тестовая 9919', "РЕадмин", "Министерство сэд 2.0"]
+        self.department_users = [
+            'Ответственный Первый Пользователь | Автотестовая Родительская организация | Первая автотестовая должность',
+            'Обычный Первый Пользователь | Автотестовая Родительская организация | Вторая автотестовая должность']
+        self.department_curators = [
+            'Волохов Алексей Николаевич | Аппарат Совета министров Республики Крым | Глава Республики Крым',
+            'Войтко Анастасия Владимировна | Аппарат Совета министров Республики Крым | Начальник Главного контрольного управления']
+        self.mku_users = ['Второй Юзер Мкушнович | МКУ Автотестовое | Второго уровня должность',
+                          'Мкушный Пользователь Ответственный | МКУ Автотестовое | Должность первого уровня']
+        self.users_from_other_departments = [
+            'Косторнова Елена Борисовна | Аппарат Совета министров Республики Крым | Начальник управления',
+            'Сидоров Артем Сергеевич | Министерство сэд 2.0 | Руководитель']
+        self.cross_department_users = self.department_users + self.department_curators + self.mku_users + self.users_from_other_departments
+        self.users_with_curators_and_mku = self.department_users + self.department_curators + self.mku_users
+
     def click_and_open_new_tab(self, button_link):
         context = self.page.context
         with context.expect_page() as new_page_info:
@@ -28,6 +43,12 @@ class BasePage:
 
     def click_vkontakte_button(self):
         return self.click_and_open_new_tab(self._vkontakte_button_link)
+
+    def click_checkbox(self, checkbox_name):
+        self.page.get_by_label(checkbox_name, exact=True).click()
+
+    def click_classifier(self, classifier_name):
+        self.page.get_by_label(classifier_name, exact=True).click()
 
     def assert_krtech_website_opened(self, new_page):
         expect(new_page).to_have_url('https://krtech.ru/')
@@ -74,23 +95,31 @@ class BasePage:
         for option in all_options:
             expect(option).to_contain_text(search_text, ignore_case=True)
 
-    def assert_dropdown_list_contain_options(self, classifier_name, options_text, text_input=True):
-        if isinstance(options_text, str):
-            options_text = [options_text]
-        for option_text in options_text:
-            if text_input:
-                search_prefix = option_text[:3]
-                self.enter_text_in_the_classifier(classifier_name, search_prefix)
-                expect(self.page.get_by_role('option', name=option_text, exact=True)).to_be_visible()
+    def assert_dropdown_list_contain_options(self, classifier_name, users_options, fill_field=False):
+        if isinstance(users_options, str):
+            users_options = [users_options]
+        self.click_classifier(classifier_name)
+        for user_option in users_options:
+            if fill_field:
+                search_prefix = user_option[:3]
                 self.clear_classifier(classifier_name)
+                self.enter_text_in_the_classifier(classifier_name, search_prefix)
+                expect(self.page.get_by_role('option', name=user_option, exact=True)).to_be_visible()
             else:
-                expect(self.page.get_by_role('option', name=option_text, exact=True)).to_be_visible()
+                expect(self.page.get_by_role('option', name=user_option, exact=True)).to_be_visible()
 
-    def assert_dropdown_list_not_contain_options(self, options_text):
-        if isinstance(options_text, str):
-            options_text = [options_text]
-        for option_text in options_text:
-            expect(self.page.get_by_role('option', name=option_text, exact=True)).to_be_hidden()
+    def assert_dropdown_list_not_contain_options(self, classifier_name, users_options, fill_field=False):
+        if isinstance(users_options, str):
+            users_options = [users_options]
+        self.click_classifier()
+        for user_option in users_options:
+            if fill_field:
+                search_prefix = user_option[:3]
+                self.clear_classifier(classifier_name)
+                self.enter_text_in_the_classifier(classifier_name, search_prefix)
+                expect(self.page.get_by_role('option', name=user_option, exact=True)).to_be_hidden()
+            else:
+                expect(self.page.get_by_role('option', name=user_option, exact=True)).to_be_hidden()
 
 
 

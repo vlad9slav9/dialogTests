@@ -28,39 +28,26 @@ class DocumentCreationPage(BasePage):
         self._bottom_edit_button = self.page.get_by_role('button', name='Сохранить + редактировать', exact=True)
         self._bottom_save_button = self.page.get_by_role('button', name='Сохранить + просмотр', exact=True)
         self._error_snackbar = self.page.locator('#notistack-snackbar')
-        self._content_template_field = self.page.locator("form div").filter(has_text="Добавить содержимое из шаблона").nth(2)
-
+        self._content_template_field = self.page.locator("form div").filter(
+            has_text="Добавить содержимое из шаблона").nth(2)
 
         self.group_with_organizations = ['ФУЛ МКУ 9', 'Тестовая 9919', "РЕадмин", "Министерство сэд 2.0"]
-
-        self._department_users = ['Ответственный Первый Пользователь | Автотестовая Родительская организация | Первая автотестовая должность',
-                                 'Обычный Первый Пользователь | Автотестовая Родительская организация | Вторая автотестовая должность']
-
-        self._department_curators = ['Волохов Алексей Николаевич | Аппарат Совета министров Республики Крым | Глава Республики Крым',
-                                     'Войтко Анастасия Владимировна | Аппарат Совета министров Республики Крым | Начальник Главного контрольного управления']
-
-        self._mku_users = ['Второй Юзер Мкушнович | МКУ Автотестовое | Второго уровня должность',
-                           'Мкушный Пользователь Ответственный | МКУ Автотестовое | Должность первого уровня']
-
-        self._users_from_other_departments = ['Косторнова Елена Борисовна | Аппарат Совета министров Республики Крым | Начальник управления',
-                                              'Сидоров Артем Сергеевич | Министерство сэд 2.0 | Руководитель']
-
-        self._cross_department_users = self._department_users + self._department_curators + self._mku_users + self._users_from_other_departments
-
-        self._users_with_curators_and_mku = self._department_users + self._department_curators + self._mku_users
-
-
-    def click_checkbox(self, checkbox_name):
-        self.page.get_by_label(checkbox_name, exact=True).click()
-
-    def click_classifier(self, classifier_name):
-        self.page.get_by_label(classifier_name, exact=True).click()
-
+        self.department_users = [
+            'Ответственный Первый Пользователь | Автотестовая Родительская организация | Первая автотестовая должность',
+            'Обычный Первый Пользователь | Автотестовая Родительская организация | Вторая автотестовая должность']
+        self.department_curators = [
+            'Волохов Алексей Николаевич | Аппарат Совета министров Республики Крым | Глава Республики Крым',
+            'Войтко Анастасия Владимировна | Аппарат Совета министров Республики Крым | Начальник Главного контрольного управления']
+        self.mku_users = ['Второй Юзер Мкушнович | МКУ Автотестовое | Второго уровня должность',
+                          'Мкушный Пользователь Ответственный | МКУ Автотестовое | Должность первого уровня']
+        self.users_from_other_departments = [
+            'Косторнова Елена Борисовна | Аппарат Совета министров Республики Крым | Начальник управления',
+            'Сидоров Артем Сергеевич | Министерство сэд 2.0 | Руководитель']
+        self.cross_department_users = self.department_users + self.department_curators + self.mku_users + self.users_from_other_departments
+        self.users_with_curators_and_mku = self.department_users + self.department_curators + self.mku_users
 
     def fill_classifier(self, classifier_name, multiform=False, option_value=None):
         classifier = self.page.get_by_label(classifier_name, exact=True)
-        #options_locator = self.page.locator("role=option")
-
         def select_option(value=None):
             classifier.click()
             options_locator = self.page.get_by_role('option')
@@ -128,7 +115,6 @@ class DocumentCreationPage(BasePage):
             self.page.locator("textarea[name='description']").fill(value)
         return value
 
-
     def get_shortened_name(self, option_text):
         parts = option_text.split()
         first_name_initial = parts[1][0]
@@ -166,7 +152,6 @@ class DocumentCreationPage(BasePage):
         signatory_position = self.get_user_position(signatory_name)
         self.assert_field_has_short_name('Подпись', signatory_name)
         self.assert_field_has_value('Должность', signatory_position)
-
 
         document_information = self.fill_textarea('Информация о документе')
         self.assert_textarea_has_value('Информация о документе', document_information)
@@ -261,14 +246,9 @@ class DocumentCreationPage(BasePage):
         options_locator = self.page.get_by_role('option', name=f'{entered_text}')
         options_locator.click()
 
-
-
-
-
     def select_first_content_template(self):
         self._content_template_field.click()
         self.page.get_by_role("option", name="Первый шаблон для Исходящего документа").click()
-
 
     def select_second_content_template(self):
         self._content_template_field.click()
@@ -278,15 +258,13 @@ class DocumentCreationPage(BasePage):
         self._content_template_field.click()
         self.page.get_by_role("option", name="Без шаблона").click()
 
+    def clear_multivalues_field(self, field_name):
+        delete_icons = self.page.locator(f'label:has-text("{field_name}") + div .MuiChip-deleteIcon')
+        for icon in delete_icons.all()[::-1]:
+            icon.click()
+
     def assert_outgoing_document_creation_tab_visible(self):
         expect(self._outgoing_document_creation_tab).to_be_visible()
-
-
-
-
-
-
-
 
     def assert_field_has_value(self, field_name, value):
         expect(self.page.get_by_label(field_name, exact=True)).to_have_value(value.strip())
@@ -305,11 +283,10 @@ class DocumentCreationPage(BasePage):
         if isinstance(buttons_name, str):
             buttons_name = [buttons_name]
 
-        field_container = self.page.locator(f"label:has-text('{field_name}')").locator("..").locator(
-            ".MuiInputBase-root")
+        field_container = self.page.locator(f"label:has-text('{field_name}') ~ .MuiInputBase-root")
 
         for text in buttons_name:
-            button = field_container.locator(f"[role='button'] >> text='{text}'")
+            button = field_container.get_by_role("button", name=text)
             expect(button).to_be_visible()
 
     def assert_textarea_has_value(self, area_name, value_text):
@@ -330,7 +307,7 @@ class DocumentCreationPage(BasePage):
         current_date = self.generate_date_offset_days()
         self.assert_field_has_value('Дата документа *', current_date)
 
-        self.assert_multivalues_field_has_value('От кого',user_information)
+        self.assert_multivalues_field_has_value('От кого', user_information)
 
         current_year = self.generate_date_offset_days(0, year=True)
         self.assert_field_has_value('Год', current_year)
@@ -342,48 +319,21 @@ class DocumentCreationPage(BasePage):
 
         self.assert_field_has_value('Шаблон (для печати) *', 'Первый автотестовый шаблон')
 
-
     def assert_field_filling_error_displayed(self):
         expect(self._error_snackbar).to_have_text('Не все поля заполнены корректно.')
-
 
     def assert_content_editor_has_first_template(self):
         self.assert_content_editor_has_value('Автотест для проверки добавления первого шаблона содержимого!')
 
     def assert_content_editor_has_two_templates(self):
         expect(self._content_editor).to_have_text("Автотест для проверки добавления первого шаблона содержимого!"
-                                                   "Это второй шаблон для автотеста, который проверяет, что добавляется второй шаблон в дополнении к первому")
+                                                  "Это второй шаблон для автотеста, который проверяет, что добавляется второй шаблон в дополнении к первому")
 
     def assert_content_editor_is_empty(self):
         expect(self._content_editor).to_be_empty()
 
-    def assert_picker_contain_all_users(self):
-        self.assert_dropdown_list_contain_options(self._cross_department_users)
+    def assert_picker_contain_users(self, classifier_name, users_type, fill_field=False):
+        self.assert_dropdown_list_contain_options(classifier_name, users_type, fill_field=fill_field)
 
-    def assert_picker_contain_department_users(self, classifier_name, text_input=True):
-        self.assert_dropdown_list_contain_options(classifier_name, self._department_users, text_input=text_input)
-
-    def assert_picker_contain_department_curators(self):
-        self.assert_dropdown_list_contain_options(self._department_curators)
-
-    def assert_picker_contain_mku_users(self):
-        self.assert_dropdown_list_contain_options(self._mku_users)
-
-    def assert_picker_contain_users_with_curators_and_mku(self):
-        self.assert_dropdown_list_contain_options(self._users_with_curators_and_mku)
-
-    def assert_picker_contain_users_from_other_departments(self):
-        self.assert_dropdown_list_contain_options(self._users_from_other_departments)
-
-    def assert_picker_not_contain_department_users(self):
-        self.assert_dropdown_list_not_contain_options(self._department_users)
-
-    def assert_picker_not_contain_department_curators(self):
-        self.assert_dropdown_list_not_contain_options(self._department_curators)
-
-    def assert_picker_not_contain_mku_users(self):
-        self.assert_dropdown_list_not_contain_options(self._mku_users)
-
-    def assert_picker_not_contain_users_from_other_departments(self):
-        self.assert_dropdown_list_not_contain_options(self._users_from_other_departments)
-
+    def assert_picker_not_contain_users(self, classifier_name, users_type, fill_field=False):
+        self.assert_dropdown_list_not_contain_options(classifier_name, users_type, fill_field=fill_field)
