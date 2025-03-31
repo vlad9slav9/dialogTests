@@ -32,19 +32,6 @@ class DocumentCreationPage(BasePage):
             has_text="Добавить содержимое из шаблона").nth(2)
 
         self.group_with_organizations = ['ФУЛ МКУ 9', 'Тестовая 9919', "РЕадмин", "Министерство сэд 2.0"]
-        self.department_users = [
-            'Ответственный Первый Пользователь | Автотестовая Родительская организация | Первая автотестовая должность',
-            'Обычный Первый Пользователь | Автотестовая Родительская организация | Вторая автотестовая должность']
-        self.department_curators = [
-            'Волохов Алексей Николаевич | Аппарат Совета министров Республики Крым | Глава Республики Крым',
-            'Войтко Анастасия Владимировна | Аппарат Совета министров Республики Крым | Начальник Главного контрольного управления']
-        self.mku_users = ['Второй Юзер Мкушнович | МКУ Автотестовое | Второго уровня должность',
-                          'Мкушный Пользователь Ответственный | МКУ Автотестовое | Должность первого уровня']
-        self.users_from_other_departments = [
-            'Косторнова Елена Борисовна | Аппарат Совета министров Республики Крым | Начальник управления',
-            'Сидоров Артем Сергеевич | Министерство сэд 2.0 | Руководитель']
-        self.cross_department_users = self.department_users + self.department_curators + self.mku_users + self.users_from_other_departments
-        self.users_with_curators_and_mku = self.department_users + self.department_curators + self.mku_users
 
     def fill_classifier(self, classifier_name, multiform=False, option_value=None):
         classifier = self.page.get_by_label(classifier_name, exact=True)
@@ -332,7 +319,7 @@ class DocumentCreationPage(BasePage):
     def assert_content_editor_is_empty(self):
         expect(self._content_editor).to_be_empty()
 
-    def assert_picker_contain_users(self, classifier_name, *users_type, fill_field=True):
+    def assert_picker_contain_users(self, classifier_name, users_type, fill_field=True):
         self.assert_dropdown_list_contain_options(classifier_name, users_type, fill_field=fill_field)
 
     def assert_picker_not_contain_users(self, classifier_name, users_type, fill_field=True):

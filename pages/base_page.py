@@ -24,8 +24,7 @@ class BasePage:
                           'Мкушный Пользователь Ответственный | МКУ Автотестовое | Должность первого уровня']
         self.users_from_other_departments = [
             'Андрошин Андрей Владимирович | Министерство Тестирования РК | Генеральный директор	',
-            'Сидоров Артем Сергеевич | Министерство сэд 2.0 | Руководитель',
-            'Пупкин Александр Вантузович | Министерство внутренней политики, информации и связи Республики Крым | Консультант']
+            'Сидоров Артем Сергеевич | Министерство сэд 2.0 | Руководитель']
         self.users_with_mku = self.department_users + self.mku_users
         self.users_with_mku_and_curators = self.users_with_mku + self.department_curators
         self.cross_department_users = self.users_with_mku_and_curators + self.users_from_other_departments
@@ -52,7 +51,7 @@ class BasePage:
         self.page.get_by_label(checkbox_name, exact=True).click()
 
     def click_classifier(self, classifier_name):
-        self.page.get_by_label(classifier_name, exact=True).click()
+        self.page.get_by_role('textbox', name=classifier_name, exact=True).click()
 
     def assert_krtech_website_opened(self, new_page):
         expect(new_page).to_have_url('https://krtech.ru/')
@@ -106,22 +105,22 @@ class BasePage:
         for user_option in users_options:
             if fill_field:
                 search_prefix = user_option[:3]
-                self.clear_classifier(classifier_name)
                 self.enter_text_in_the_classifier(classifier_name, search_prefix)
                 expect(self.page.get_by_role('option', name=user_option, exact=True)).to_be_visible()
+                self.clear_classifier(classifier_name)
             else:
                 expect(self.page.get_by_role('option', name=user_option, exact=True)).to_be_visible()
 
     def assert_dropdown_list_not_contain_options(self, classifier_name, users_options, fill_field=True):
         if isinstance(users_options, str):
             users_options = [users_options]
-        self.click_classifier()
+        self.click_classifier(classifier_name)
         for user_option in users_options:
             if fill_field:
                 search_prefix = user_option[:3]
-                self.clear_classifier(classifier_name)
                 self.enter_text_in_the_classifier(classifier_name, search_prefix)
                 expect(self.page.get_by_role('option', name=user_option, exact=True)).to_be_hidden()
+                self.clear_classifier(classifier_name)
             else:
                 expect(self.page.get_by_role('option', name=user_option, exact=True)).to_be_hidden()
 
