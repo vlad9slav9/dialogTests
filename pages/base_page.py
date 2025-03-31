@@ -19,14 +19,18 @@ class BasePage:
             'Обычный Первый Пользователь | Автотестовая Родительская организация | Вторая автотестовая должность']
         self.department_curators = [
             'Волохов Алексей Николаевич | Аппарат Совета министров Республики Крым | Глава Республики Крым',
-            'Войтко Анастасия Владимировна | Аппарат Совета министров Республики Крым | Начальник Главного контрольного управления']
+            'Косторнова Елена Борисовна | Аппарат Совета министров Республики Крым | Начальник управления']
         self.mku_users = ['Второй Юзер Мкушнович | МКУ Автотестовое | Второго уровня должность',
                           'Мкушный Пользователь Ответственный | МКУ Автотестовое | Должность первого уровня']
         self.users_from_other_departments = [
-            'Косторнова Елена Борисовна | Аппарат Совета министров Республики Крым | Начальник управления',
-            'Сидоров Артем Сергеевич | Министерство сэд 2.0 | Руководитель']
-        self.cross_department_users = self.department_users + self.department_curators + self.mku_users + self.users_from_other_departments
-        self.users_with_curators_and_mku = self.department_users + self.department_curators + self.mku_users
+            'Андрошин Андрей Владимирович | Министерство Тестирования РК | Генеральный директор	',
+            'Сидоров Артем Сергеевич | Министерство сэд 2.0 | Руководитель',
+            'Пупкин Александр Вантузович | Министерство внутренней политики, информации и связи Республики Крым | Консультант']
+        self.users_with_mku = self.department_users + self.mku_users
+        self.users_with_mku_and_curators = self.users_with_mku + self.department_curators
+        self.cross_department_users = self.users_with_mku_and_curators + self.users_from_other_departments
+        self.users_without_curators = self.department_users + self.mku_users + self.users_from_other_departments
+        self.curators_and_other_departments = self.department_curators + self.users_from_other_departments
 
     def click_and_open_new_tab(self, button_link):
         context = self.page.context
@@ -108,7 +112,7 @@ class BasePage:
             else:
                 expect(self.page.get_by_role('option', name=user_option, exact=True)).to_be_visible()
 
-    def assert_dropdown_list_not_contain_options(self, classifier_name, users_options, fill_field=False):
+    def assert_dropdown_list_not_contain_options(self, classifier_name, users_options, fill_field=True):
         if isinstance(users_options, str):
             users_options = [users_options]
         self.click_classifier()

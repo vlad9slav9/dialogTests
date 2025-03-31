@@ -162,32 +162,36 @@ def test_search_option_in_classifier(main_page_with_responsible):
 def test_search_user_in_creation_document_fields(main_page_with_responsible):
     doc_create_page = main_page_with_responsible.open_document_creation_page('Исходящий (Автотест)')
     doc_create_page.clear_multivalues_field('От кого')
-    doc_create_page.assert_picker_contain_users('От кого', doc_create_page.cross_department_users, fill_field=True)
+    doc_create_page.assert_picker_contain_users('От кого', doc_create_page.cross_department_users)
     doc_create_page.assert_picker_contain_users('Кому', doc_create_page.cross_department_users)
-    doc_create_page.assert_picker_contain_users('Подпись', doc_create_page.users_with_curators_and_mku)
+    doc_create_page.assert_picker_contain_users('Подпись', doc_create_page.users_with_mku_and_curators)
     doc_create_page.assert_picker_not_contain_users('Подпись', doc_create_page.users_from_other_departments)
-    doc_create_page.assert_picker_contain_users('Имя согласователя', doc_create_page.users_with_curators_and_mku)
+    doc_create_page.assert_picker_contain_users('Имя согласователя', doc_create_page.users_with_mku_and_curators)
     doc_create_page.assert_picker_not_contain_users('Имя согласователя', doc_create_page.users_from_other_departments)
     doc_create_page.assert_picker_contain_users('Ответственный исполнитель', doc_create_page.cross_department_users)
-    doc_create_page.assert_picker_contain_users('Получатели после подписания', doc_create_page.users_with_curators_and_mku, fill_field=True)
-    doc_create_page.assert_picker_not_contain_users('Получатели после подписания', doc_create_page.users_from_other_departments, fill_field=True)
-    doc_create_page.assert_picker_contain_users('Пользователи своей орги', doc_create_page.users_with_curators_and_mku, fill_field=True)
-    doc_create_page.assert_picker_not_contain_users('Пользователи своей орги', doc_create_page.users_from_other_departments, fill_field=True)
+    doc_create_page.assert_picker_contain_users('Получатели после подписания', doc_create_page.users_with_mku_and_curators)
+    doc_create_page.assert_picker_not_contain_users('Получатели после подписания', doc_create_page.users_from_other_departments)
+    doc_create_page.assert_picker_contain_users('Пользователи своей орги', doc_create_page.users_with_mku_and_curators, fill_field=False)
+    doc_create_page.assert_picker_not_contain_users('Пользователи своей орги', doc_create_page.users_from_other_departments, fill_field=False)
 
-def test_search_user_in_creation_medo_document_fields(main_page_with_responsible):
+def test_search_user_in_creation_document_fields_medo(main_page_with_responsible):
     doc_create_page = main_page_with_responsible.open_document_creation_page('Исходящий МЭДО (Автотест)')
     doc_create_page.clear_multivalues_field('От кого')
-    doc_create_page.assert_picker_contain_users('От кого', doc_create_page.cross_department_users, fill_field=True)
-
-
-
-
-
+    doc_create_page.assert_picker_contain_users('От кого', doc_create_page.users_without_curators)
+    doc_create_page.assert_picker_not_contain_users('От кого', doc_create_page.department_curators)
+    doc_create_page.assert_picker_contain_users('Кому', doc_create_page.cross_department_users, fill_field=False)
+    doc_create_page.assert_picker_contain_users('Подпись', doc_create_page.cross_department_users, fill_field=False)
+    doc_create_page.assert_picker_contain_users('Имя согласователя', doc_create_page.cross_department_users, fill_field=False)
+    doc_create_page.assert_picker_contain_users('Ответственный исполнитель', doc_create_page.cross_department_users, fill_field=False)
+    doc_create_page.assert_picker_contain_users('Получатели после подписания', doc_create_page.users_with_mku)
+    doc_create_page.assert_picker_not_contain_users('Получатели после подписания', doc_create_page.curators_and_other_departments)
+    doc_create_page.assert_picker_contain_users('Пользователи своей орги', doc_create_page.users_with_mku_and_curators)
+    doc_create_page.assert_picker_not_contain_users('Пользователи своей орги', doc_create_page.users_from_other_departments)
 
 def test_retest(main_page_with_responsible):
-    document_creation_page = main_page_with_responsible.open_document_creation_page('Исходящий (Автотест)')
-    document_creation_page.clear_multivalues_field('От кого')
-    document_creation_page.assert_picker_contain_users('От кого', document_creation_page.cross_department_users, fill_field=True)
+    doc_create_page = main_page_with_responsible.open_document_creation_page('Исходящий (Автотест)')
+
+
 
 
 

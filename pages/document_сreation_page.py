@@ -332,8 +332,8 @@ class DocumentCreationPage(BasePage):
     def assert_content_editor_is_empty(self):
         expect(self._content_editor).to_be_empty()
 
-    def assert_picker_contain_users(self, classifier_name, users_type, fill_field=False):
+    def assert_picker_contain_users(self, classifier_name, *users_type, fill_field=True):
         self.assert_dropdown_list_contain_options(classifier_name, users_type, fill_field=fill_field)
 
-    def assert_picker_not_contain_users(self, classifier_name, users_type, fill_field=False):
+    def assert_picker_not_contain_users(self, classifier_name, users_type, fill_field=True):
         self.assert_dropdown_list_not_contain_options(classifier_name, users_type, fill_field=fill_field)
