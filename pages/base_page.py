@@ -20,8 +20,9 @@ class BasePage:
         self.department_curators = [
             'Волохов Алексей Николаевич | Аппарат Совета министров Республики Крым | Глава Республики Крым',
             'Косторнова Елена Борисовна | Аппарат Совета министров Республики Крым | Начальник управления']
-        self.mku_users = ['Второй Юзер Мкушнович | МКУ Автотестовое | Второго уровня должность',
-                          'Мкушный Пользователь Ответственный | МКУ Автотестовое | Должность первого уровня']
+        self.mku_users = [
+            'Второй Юзер Мкушнович | МКУ Автотестовое | Второго уровня должность',
+            'Мкушный Пользователь Ответственный | МКУ Автотестовое | Должность первого уровня']
         self.users_from_other_departments = [
             'Андрошин Андрей Владимирович | Министерство Тестирования РК | Генеральный директор	',
             'Сидоров Артем Сергеевич | Министерство сэд 2.0 | Руководитель']
@@ -30,6 +31,46 @@ class BasePage:
         self.cross_department_users = self.users_with_mku_and_curators + self.users_from_other_departments
         self.users_without_curators = self.department_users + self.mku_users + self.users_from_other_departments
         self.curators_and_other_departments = self.department_curators + self.users_from_other_departments
+
+    def generate_random_string_with_all_symbols(self):
+        digits = '0123456789'
+        lowercase = 'абвгдежзийклмнопрстуфхцчшщъыьэюя'
+        uppercase = 'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
+        special_chars = '!@#$%^&*()_+-=[]{}|;:\'",.<>?/`~'
+
+        random_digit = random.choice(digits)
+        random_lowercase = random.choice(lowercase)
+        random_uppercase = random.choice(uppercase)
+
+        random_string = random_digit + random_lowercase + random_uppercase + special_chars
+
+        random_string = ''.join(random.sample(random_string, len(random_string)))
+
+        return random_string
+
+    def generate_date_offset_days(self, days=0, year=False):
+        if year:
+            date_offset = (datetime.datetime.now() + datetime.timedelta(days=days)).strftime('%Y')
+        else:
+            date_offset = (datetime.datetime.now() + datetime.timedelta(days=days)).strftime('%d.%m.%Y')
+        return date_offset
+
+    def get_user_data(self, data_name):
+        user_data_locator = self.page.locator(f'p.MuiTypography-root.MuiTypography-body1:has(strong:text("{data_name}"))')
+        user_data = user_data_locator.inner_text().split(':')[-1].strip()
+        return user_data
+
+    def get_shortened_name(self, option_text):
+        parts = option_text.split()
+        first_name_initial = parts[1][0]
+        last_name = parts[0]
+        short_name = f"{first_name_initial}. {last_name}"
+        return short_name
+
+    def get_user_position(self, option_text):
+        parts = option_text.split('|')
+        position = parts[2].strip()
+        return position
 
     def click_and_open_new_tab(self, button_link):
         context = self.page.context
@@ -62,34 +103,6 @@ class BasePage:
     def assert_vkontakte_website_opened(self, new_page):
         expect(new_page).to_have_url('https://vk.com/krtech_crimea')
 
-
-    def generate_random_string_with_all_symbols(self):
-        digits = '0123456789'
-        lowercase = 'абвгдежзийклмнопрстуфхцчшщъыьэюя'
-        uppercase = 'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
-        special_chars = '!@#$%^&*()_+-=[]{}|;:\'",.<>?/`~'
-
-        random_digit = random.choice(digits)
-        random_lowercase = random.choice(lowercase)
-        random_uppercase = random.choice(uppercase)
-
-        random_string = random_digit + random_lowercase + random_uppercase + special_chars
-
-        random_string = ''.join(random.sample(random_string, len(random_string)))
-
-        return random_string
-
-    def generate_date_offset_days(self, days=0, year=False):
-        if year:
-            date_offset = (datetime.datetime.now() + datetime.timedelta(days=days)).strftime('%Y')
-        else:
-            date_offset = (datetime.datetime.now() + datetime.timedelta(days=days)).strftime('%d.%m.%Y')
-        return date_offset
-
-    def get_user_data(self, data_name):
-        user_data_locator = self.page.locator(f'p.MuiTypography-root.MuiTypography-body1:has(strong:text("{data_name}"))')
-        user_data = user_data_locator.inner_text().split(':')[-1].strip()
-        return user_data
 
     def assert_dropdown_list_contain_text(self, search_text):
         options_locator = self.page.locator('role=option')

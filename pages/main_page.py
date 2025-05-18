@@ -14,27 +14,27 @@ class MainPage(BasePage):
 
         self._profile_button = self.page.locator('button[title="Профиль"]')
         self._logout_button = self.page.locator('button[title="Выход"]')
-        self._logout_confirmation_button = self.page.get_by_role("button", name="Выйти")
+        self._logout_confirm_button = self.page.get_by_role("button", name="Выйти")
         self._cancel_logout_button = self.page.get_by_role("button", name="Отмена")
         self._sidebar = self.page.locator(".PageSidebar")
         self._hide_sidebar_button = self.page.get_by_role("button", name="Скрыть меню")
         self._open_sidebar_button = self.page.get_by_role("button", name="Открыть меню")
         self._home_button = self.page.get_by_role("button", name="На главную")
         self._event_container = self.page.locator(".EventContainer")
-        self._quick_document_creation_button = self.page.locator(".DocumentCreateModal > .MuiButtonBase-root")
+        self._quick_doc_create_button = self.page.locator(".DocumentCreateModal > .MuiButtonBase-root")
         self._add_animal_card_button = self.page.get_by_role("button", name="Добавить карточку животного")
         self._quick_search_button = self.page.locator(".DocumentQuickSearchAutocomplete-SearchButton")
         self._support_service_button = self.page.get_by_role("button", name="Служба поддержки (Ctrl+Alt+2)")
         self._reference_materials_button = self.page.get_by_role("button", name="Справочные материалы")
         self._displayed_date = self.page.locator(".style_date__TlIM3")
         self._displayed_time = self.page.locator(".style_time__RaPtf")
-        self._document_type_search_field = self.page.get_by_role("textbox", name="Выберите тип документа")
-        self._document_type_selection_button = self.page.get_by_role("button", name="Open")
-        self._document_type_search_field_clear_button = self.page.get_by_role("button", name="Clear")
-        self._create_document_button = self.page.get_by_role("button", name="Создать")
-        self._cancel_document_creation_window_button = self.page.get_by_role("button", name="Отмена")
-        self._close_document_creation_window_button = self.page.get_by_role("button", name="close")
-        self._document_creation_window = self.page.get_by_role("dialog", name="Быстрое создание документа")
+        self._doc_type_search_field = self.page.get_by_role("textbox", name="Выберите тип документа")
+        self._doc_type_select_button = self.page.get_by_role("button", name="Open")
+        self._doc_type_search_field_clear_button = self.page.get_by_role("button", name="Clear")
+        self._create_doc_button = self.page.get_by_role("button", name="Создать")
+        self._cancel_doc_create_window_button = self.page.get_by_role("button", name="Отмена")
+        self._close_doc_create_window_button = self.page.get_by_role("button", name="close")
+        self._doc_create_window = self.page.get_by_role("dialog", name="Быстрое создание документа")
 
 
     def click_profile_button(self):
@@ -43,8 +43,8 @@ class MainPage(BasePage):
     def click_logout_button(self):
         self._logout_button.click()
 
-    def click_logout_confirmation_button(self):
-        self._logout_confirmation_button.click()
+    def click_logout_confirm_button(self):
+        self._logout_confirm_button.click()
 
     def click_cancel_logout_button(self):
         self._cancel_logout_button.click()
@@ -58,38 +58,38 @@ class MainPage(BasePage):
     def click_home_button(self):
         self._home_button.click()
 
-    def click_quick_document_creation_button(self):
-        self._quick_document_creation_button.click()
+    def click_quick_doc_create_button(self):
+        self._quick_doc_create_button.click()
 
-    def click_cancel_document_creation_button(self):
-        self._cancel_document_creation_window_button.click()
+    def click_cancel_doc_create_button(self):
+        self._cancel_doc_create_window_button.click()
 
-    def click_close_document_creation_button(self):
-        self._close_document_creation_window_button.click()
+    def click_close_doc_create_button(self):
+        self._close_doc_create_window_button.click()
 
-    def click_document_type_search_field_clear_button(self):
-        self._document_type_search_field_clear_button.click()
+    def click_doc_type_search_field_clear_button(self):
+        self._doc_type_search_field_clear_button.click()
 
-    def click_document_type_selection_button(self):
-        self._document_type_selection_button.click()
+    def click_doc_type_select_button(self):
+        self._doc_type_select_button.click()
 
-    def click_document_type_selection_field(self):
-        self._document_type_search_field.click()
+    def click_doc_type_select_field(self):
+        self._doc_type_search_field.click()
 
-    def click_document_option(self, document_option):
-        self.page.get_by_role('option', name=document_option, exact=True).click()
+    def click_doc_option(self, doc_option):
+        self.page.get_by_role('option', name=doc_option, exact=True).click()
 
-    def fill_document_type_search_field(self, document_type):
-        self._document_type_search_field.fill(document_type)
+    def fill_doc_type_search_field(self, doc_type):
+        self._doc_type_search_field.fill(doc_type)
 
-    def select_document_type(self, document_option):
-        self.click_document_option(document_option)
+    def select_doc_type(self, doc_option):
+        self.click_doc_option(doc_option)
 
-    def open_document_creation_page(self, document_type):
-        self._quick_document_creation_button.click()
-        self.click_document_type_selection_field()
-        self.select_document_type(document_type)
-        self._create_document_button.click()
+    def open_doc_create_page(self, doc_type):
+        self._quick_doc_create_button.click()
+        self.click_doc_type_select_field()
+        self.select_doc_type(doc_type)
+        self._create_doc_button.click()
         return DocumentCreationPage(self.page)
 
     def get_basic_user_information(self):
@@ -121,17 +121,17 @@ class MainPage(BasePage):
         expected_time = datetime.now().strftime("%H:%M")
         expect(self._displayed_time).to_contain_text(expected_time)
 
-    def assert_document_creation_window_visible(self):
-        expect(self._document_creation_window).to_be_visible()
+    def assert_doc_create_window_visible(self):
+        expect(self._doc_create_window).to_be_visible()
 
-    def assert_document_creation_window_hidden(self):
-        expect(self._document_creation_window).to_be_hidden()
+    def assert_doc_create_window_hidden(self):
+        expect(self._doc_create_window).to_be_hidden()
 
-    def assert_create_document_button_disabled(self):
-        expect(self._create_document_button).to_be_disabled()
+    def assert_create_doc_button_disabled(self):
+        expect(self._create_doc_button).to_be_disabled()
 
-    def assert_create_document_button_enabled(self):
-        expect(self._create_document_button).to_be_enabled()
+    def assert_create_doc_button_enabled(self):
+        expect(self._create_doc_button).to_be_enabled()
 
     #def assert_document_option_visible(self, option_text):
     #    expect(self.page.get_by_role('option', name=option_text, exact=True)).to_be_visible()
@@ -139,8 +139,8 @@ class MainPage(BasePage):
     #def assert_document_option_hidden(self, option_text):
     #    expect(self.page.get_by_role('option', name=option_text, exact=True)).to_be_hidden()
 
-    def assert_document_option_selected(self, document_type_text):
-        expect(self._document_type_search_field).to_have_value(document_type_text)
+    def assert_doc_option_selected(self, doc_type_text):
+        expect(self._doc_type_search_field).to_have_value(doc_type_text)
 
-    def assert_document_type_search_field_is_empty(self):
-        expect(self._document_type_search_field).to_be_empty()
+    def assert_doc_type_search_field_is_empty(self):
+        expect(self._doc_type_search_field).to_be_empty()

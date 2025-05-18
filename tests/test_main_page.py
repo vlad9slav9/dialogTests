@@ -1,6 +1,6 @@
 def test_logout(login_page, main_page_with_responsible):
     main_page_with_responsible.click_logout_button()
-    main_page_with_responsible.click_logout_confirmation_button()
+    main_page_with_responsible.click_logout_confirm_button()
     login_page.assert_login_page_logo_visible()
 
 
