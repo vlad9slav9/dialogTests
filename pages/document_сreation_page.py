@@ -95,8 +95,7 @@ class DocumentCreationPage(BasePage):
     def assert_field_has_value(self, field_name, value, is_multivalues=False):
         if is_multivalues:
             if isinstance(value, str):
-                buttons_name = [value]
-
+                value = [value]
             field_container = self.page.locator(f"label:has-text('{field_name}') ~ .MuiInputBase-root")
 
             for text in value:
@@ -192,9 +191,12 @@ class DocumentCreationPage(BasePage):
         self._content_template_field.click()
         self.page.get_by_role("option", name=f"{template_name}").click()
 
-    def change_print_template(self, entered_text):
+    def clear_print_template(self):
         self._print_template_field.hover()
         self.clear_print_template_button.click()
+
+    def change_print_template(self, entered_text):
+        self.clear_print_template()
         self._print_template_field.click()
         self._print_template_field.press_sequentially(f'{entered_text}', delay=100)
         self.assert_dropdown_list_contain_text(f'{entered_text}')
@@ -313,8 +315,9 @@ class DocumentCreationPage(BasePage):
     def click_bottom_save_button(self):
         self._bottom_save_button.click()
 
-    def assert_outgoing_document_creation_tab_visible(self):
-        expect(self._outgoing_document_creation_tab).to_be_visible()
+    def assert_document_creation_tab_visible(self, document_name):
+        locator = self.page.get_by_role('tab', name=f'Создание документа ({document_name})', exact=True)
+        expect(locator).to_be_visible()
 
     def assert_default_field_are_filled(self, user_information):
         end_date = self.generate_date_offset_days(9)
@@ -337,8 +340,12 @@ class DocumentCreationPage(BasePage):
 
 
 
-    def assert_field_filling_error_displayed(self):
-        expect(self._error_snackbar).to_have_text('Не все поля заполнены корректно.')
+    def assert_error_snackbar_displayed(self, error_text):
+        expect(self._error_snackbar).to_have_text(error_text)
+
+    def assert_required_field_error_displayed(self, error_text):
+        locator = self.page.locator("p.MuiFormHelperText-root", has_text=error_text)
+        expect(locator).to_be_visible()
 
     def assert_content_editor_has_first_template(self):
         self.assert_content_editor_has_value('Автотест для проверки добавления первого шаблона содержимого!')
