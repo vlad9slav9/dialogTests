@@ -7,6 +7,7 @@ import random
 from mimesis import Generic
 
 from pages.base_page import BasePage
+from pages.document_view_page import DocumentViewPage
 
 generic = Generic('ru')
 
@@ -88,7 +89,7 @@ class DocumentCreationPage(BasePage):
         return input_text
 
     def clear_multivalues_field(self, field_name):
-        delete_icons = self.page.locator(f'label:has-text("{field_name}") + div .MuiChip-deleteIcon')
+        delete_icons = self.page.locator(f'label:has-text("{field_name}") ~ div .MuiChip-deleteIcon')
         for icon in delete_icons.all()[::-1]:
             icon.click()
 
@@ -182,7 +183,8 @@ class DocumentCreationPage(BasePage):
 
         return text
 
-    #def clear_content_editor
+    def clear_content_editor(self):
+        self._content_editor.clear()
 
     def assert_content_editor_has_value(self, value):
         expect(self._content_editor).to_have_text(value)
@@ -220,14 +222,24 @@ class DocumentCreationPage(BasePage):
         self.assert_checkbox_checked('Срочный')
 
     def fill_required_fields(self):
+        filled_fields = {}
+
+        #filled_fields['Автор документа'] = 'Ответственный Первый Пользователь'
+        #filled_fields['Дата документа'] = '15.06.2025'
+
         document_type = self.fill_property('Тип документа *')
         self.assert_field_has_value('Тип документа *', document_type)
+        filled_fields['Тип документа'] = document_type
 
         document_view = self.fill_classifier('Вид документа *')
         self.assert_field_has_value('Вид документа *', document_view)
+        filled_fields['Вид документа'] = document_view
 
         short_description = self.fill_short_description()
         self.assert_short_description_has_value(short_description)
+        #filled_fields['Краткое содержание'] = short_description
+
+        return filled_fields
 
     def fill_all_not_default_fields(self):
         document_type = self.fill_property('Тип документа *')
@@ -258,9 +270,9 @@ class DocumentCreationPage(BasePage):
         document_information = self.fill_textarea('Информация о документе')
         self.assert_textarea_has_value('Информация о документе', document_information)
 
-        coordinator_name = self.fill_classifier('Имя согласователя')
-        coordinator_position = self.get_user_position(coordinator_name)
-        self.assert_field_has_short_name('Имя согласователя', coordinator_name)
+        coordinator_data = self.fill_classifier('Имя согласователя')
+        coordinator_position = self.get_user_position(coordinator_data)
+        self.assert_field_has_short_name('Имя согласователя', coordinator_data)
         self.assert_textarea_has_value('Должность согласователя', coordinator_position)
 
         responsible_performer = self.fill_classifier('Ответственный исполнитель')
@@ -338,8 +350,6 @@ class DocumentCreationPage(BasePage):
 
         self.assert_field_has_value('Шаблон (для печати) *', 'Первый автотестовый шаблон')
 
-
-
     def assert_error_snackbar_displayed(self, error_text):
         expect(self._error_snackbar).to_have_text(error_text)
 
@@ -363,6 +373,15 @@ class DocumentCreationPage(BasePage):
     def assert_picker_not_contain_users(self, classifier_name, users_type, fill_field=True):
         self.assert_dropdown_list_not_contain_options(classifier_name, users_type, fill_field=fill_field)
 
+    def create_incoming_document(self, all_fields=False):
+        if all_fields:
+            self.fill_all_not_default_fields()
+            self.click_upper_save_button()
+            return DocumentViewPage(self.page)
+        else:
+            filled_fields = self.fill_required_fields()
+            self.click_bottom_save_button()
+            return DocumentViewPage(self.page), filled_fields
 
 
 

@@ -226,8 +226,9 @@ def test_search_user_in_creation_document_medo_fields(main_page_with_responsible
     doc_create_page.assert_picker_not_contain_users('Пользователи своей орги', doc_create_page.users_from_other_departments)
 
 def test_retest(main_page_with_responsible):
-    doc_create_page = main_page_with_responsible.open_doc_create_page('Исходящий (Автотест)')
-    doc_create_page.test_example()
+    doc_create_page = main_page_with_responsible.open_doc_create_page('Входящий (Автотест)')
+    doc_view_page, fields_values = doc_create_page.create_incoming_document()
+    doc_view_page.assert_fields_filled(fields_values)
 
 
 
