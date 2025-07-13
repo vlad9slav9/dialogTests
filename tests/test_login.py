@@ -1,7 +1,4 @@
 
-from mimesis import Generic
-generic = Generic('ru')
-
 def test_navigate_to_login_page(login_page):
     login_page.assert_login_page_logo_visible()
 
@@ -12,7 +9,7 @@ def test_correct_login(login_page):
 
 
 def test_incorrect_login(login_page):
-    fake_username = generic.person.username()
+    fake_username = login_page.get_fake_username()
     correct_password = login_page.get_responsible_password()
     login_page.do_login(fake_username, correct_password)
     login_page.assert_login_error_visible()
@@ -20,7 +17,7 @@ def test_incorrect_login(login_page):
 
 def test_incorrect_password(login_page):
     correct_username = login_page.get_responsible_username()
-    fake_password = generic.person.password()
+    fake_password = login_page.get_fake_password()
     login_page.do_login(correct_username, fake_password)
     login_page.assert_login_error_visible()
 

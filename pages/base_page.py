@@ -13,7 +13,7 @@ class BasePage:
         self._vkontakte_button_link = self.page.locator('.SocialComponent-Vkontakte a')
         self._dropdown_list_without_options = self.page.get_by_text('No options')
 
-        self.group_with_organizations = ['ФУЛ МКУ 9', 'Тестовая 9919', "РЕадмин", "Министерство сэд 2.0"]
+        self.group_with_organizations_from_admin = ['ФУЛ МКУ 9', 'Тестовая 9919', "РЕадмин", "Министерство сэд 2.0"]
         self.department_users = [
             'Ответственный Первый Пользователь | Автотестовая Родительская организация | Первая автотестовая должность',
             'Обычный Первый Пользователь | Автотестовая Родительская организация | Вторая автотестовая должность']
@@ -37,15 +37,11 @@ class BasePage:
         lowercase = 'абвгдежзийклмнопрстуфхцчшщъыьэюя'
         uppercase = 'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
         special_chars = '!@#$%^&*()_+-=[]{}|;:\'",.<>?/`~'
-
         random_digit = random.choice(digits)
         random_lowercase = random.choice(lowercase)
         random_uppercase = random.choice(uppercase)
-
         random_string = random_digit + random_lowercase + random_uppercase + special_chars
-
         random_string = ''.join(random.sample(random_string, len(random_string)))
-
         return random_string
 
     def generate_date_offset_days(self, days=0, year=False):
@@ -60,12 +56,24 @@ class BasePage:
         user_data = user_data_locator.inner_text().split(':')[-1].strip()
         return user_data
 
-    def get_shortened_name(self, option_text):
-        parts = option_text.split()
-        first_name_initial = parts[1][0]
+    def get_shortened_name(self, full_name, all_initials=True):
+        parts = full_name.split()
         last_name = parts[0]
-        short_name = f"{first_name_initial}. {last_name}"
+        first_initial = parts[1][0]
+        second_initial = parts[2][0]
+        if all_initials:
+            short_name = f'{last_name} {first_initial}.{second_initial}.'
+        else:
+            short_name = f'{first_initial}. {last_name}'
         return short_name
+
+    def extract_user_parts(self, user_data, parts='fio'):
+        if isinstance(parts, str):
+            parts = [parts]
+        components = user_data.split(' | ')
+        mapping = {"fio": 0, "organization": 1, "position": 2}
+        result = [components[mapping[p]] for p in parts if p in mapping and mapping[p] < len(components)]
+        return " | ".join(result)
 
     def get_user_position(self, option_text):
         parts = option_text.split('|')

@@ -11,15 +11,15 @@ class DocumentViewPage(BasePage):
         self._doc_history_tab = self.page.get_by_role('tab', name='История документа', exact=True)
 
     def assert_field_has_value(self, field_name, expected_value):
-        locator = (self.page.locator(f".MuiFormControl-root:has(label:has-text('{field_name}'))")
+        locator = (self.page.locator(f".MuiFormControl-root:has(label:text-is('{field_name}'))")
                    .locator("input, textarea, span.MuiChip-label, div.PropsViewWorkerPickerSelect-UserList").first)
         tag_name = locator.evaluate("el => el.tagName.toLowerCase()")
         if tag_name in ['input', 'textarea']:
-            expect(locator).to_have_value(expected_value.strip())
+            expect(locator).to_have_value(expected_value)
         else:
-            expect(locator).to_contain_text(expected_value.strip())
+            expect(locator).to_contain_text(expected_value)
 
-    def assert_fields_filled(self, fields_values):
+    def assert_fields_have_values(self, fields_values):
         for field_name, expected_value in fields_values.items():
             self.assert_field_has_value(field_name, expected_value)
 

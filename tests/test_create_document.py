@@ -74,12 +74,12 @@ def test_autofill_default_fields(main_page_with_responsible):
 def test_change_default_date_fields(main_page_with_responsible):
     doc_create_page = main_page_with_responsible.open_doc_create_page('Исходящий (Автотест)')
     future_date = doc_create_page.change_date_via_calendar('Срок исполнения')
-    doc_create_page.assert_field_has_value('Срок исполнения *', future_date)
+    doc_create_page.assert_field_is_filled('Срок исполнения *', future_date)
     doc_create_page.change_date_in_property('Дата документа *', -15)
     new_year = doc_create_page.change_date_via_calendar('Год', is_year=True)
-    doc_create_page.assert_field_has_value('Год', new_year)
+    doc_create_page.assert_field_is_filled('Год', new_year)
     past_date = doc_create_page.change_date_via_calendar('Дата от', future_date=False)
-    doc_create_page.assert_field_has_value('Дата от', past_date)
+    doc_create_page.assert_field_is_filled('Дата от', past_date)
 
 
 def test_create_document_with_all_fields(main_page_with_responsible):
@@ -157,12 +157,12 @@ def test_click_upper_edit_button_without_filling_required_fields(main_page_with_
 
 def test_change_print_template(main_page_with_responsible):
     doc_create_page = main_page_with_responsible.open_doc_create_page('Исходящий (Автотест)')
-    doc_create_page.assert_field_has_value('Шаблон (для печати) *', 'Первый автотестовый шаблон')
+    doc_create_page.assert_field_is_filled('Шаблон (для печати) *', 'Первый автотестовый шаблон')
     doc_create_page.change_print_template('второй')
-    doc_create_page.assert_field_has_value('Шаблон (для печати) *', 'Второй для печати')
+    doc_create_page.assert_field_is_filled('Шаблон (для печати) *', 'Второй для печати')
 def test_search_nonexistent_print_template(main_page_with_responsible):
     doc_create_page = main_page_with_responsible.open_doc_create_page('Исходящий (Автотест)')
-    doc_create_page.assert_field_has_value('Шаблон (для печати) *', 'Первый автотестовый шаблон')
+    doc_create_page.assert_field_is_filled('Шаблон (для печати) *', 'Первый автотестовый шаблон')
     doc_create_page.clear_classifier('Шаблон (для печати) *')
     doc_create_page.enter_text_in_the_classifier('Шаблон (для печати) *','второй несуществующий')
     doc_create_page.assert_dropdown_list_without_options()
@@ -227,8 +227,8 @@ def test_search_user_in_creation_document_medo_fields(main_page_with_responsible
 
 def test_retest(main_page_with_responsible):
     doc_create_page = main_page_with_responsible.open_doc_create_page('Входящий (Автотест)')
-    doc_view_page, fields_values = doc_create_page.create_incoming_document()
-    doc_view_page.assert_fields_filled(fields_values)
+    doc_view_page, fields_values = doc_create_page.create_incoming_document(all_fields=True)
+    doc_view_page.assert_fields_have_values(fields_values)
 
 
 
