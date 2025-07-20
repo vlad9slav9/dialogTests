@@ -162,3 +162,6 @@ class BasePage:
     def clear_classifier(self, classifier_name):
         classifier = self.page.get_by_role('textbox', name=classifier_name, exact=True)
         classifier.clear()
+
+    def normalize_spaces(self, text):
+        return " ".join(text.strip().split())

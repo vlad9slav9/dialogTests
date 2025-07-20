@@ -56,7 +56,7 @@ class DocumentCreationPage(BasePage):
             selected_option = random.choice(options)
         option_text = selected_option.inner_text()
         selected_option.click()
-        return option_text
+        return self.normalize_spaces(option_text)
 
 
     def fill_classifier(self, classifier_name, is_multiform=False, option_value=None):
@@ -104,10 +104,10 @@ class DocumentCreationPage(BasePage):
             field_container = self.page.locator(f"label:has-text('{field_name}') ~ .MuiInputBase-root")
 
             for text in value:
-                button = field_container.get_by_role("button", name=text)
+                button = field_container.get_by_role("button", name=self.normalize_spaces(text))
                 expect(button).to_be_visible()
         else:
-            expect(self.page.get_by_label(field_name, exact=True)).to_have_value(value)
+            expect(self.page.get_by_label(field_name, exact=True)).to_have_value(self.normalize_spaces(value))
 
     def assert_field_is_empty(self, field_name):
         expect(self.page.get_by_label(field_name, exact=True)).to_be_empty()
@@ -328,7 +328,7 @@ class DocumentCreationPage(BasePage):
                 '№ документа': document_number,
                 'Дата документа на который ссылаемся (для печати)': reference_date,
                 'Кому': self.extract_user_parts(whom, parts=['fio', 'organization']),
-                #'Адресат-организация после подписания (не более 10)': self.group_with_organizations_from_profile,
+                'Адресат-организация после подписания (не более 10)': self.group_with_organizations_from_profile,
                 'Подпись': self.get_shortened_name(signatory_name, all_initials=False),
                 'Должность': signatory_position,
                 'Информация о документе': document_information,
@@ -413,10 +413,12 @@ class DocumentCreationPage(BasePage):
         if all_fields:
             filled_fields = self.fill_all_not_default_fields(return_values=True)
             self.click_upper_save_button()
+            expect(self.page.get_by_role('tab', name='Документ №')).to_be_visible()
             return DocumentViewPage(self.page), filled_fields
         else:
             filled_fields = self.fill_required_fields()
             self.click_bottom_save_button()
+            expect(self.page.get_by_role('tab', name='Документ №')).to_be_visible()
             return DocumentViewPage(self.page), filled_fields
 
 
