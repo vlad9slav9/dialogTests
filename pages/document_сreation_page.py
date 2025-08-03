@@ -98,6 +98,7 @@ class DocumentCreationPage(BasePage):
             icon.click()
 
     def assert_field_is_filled(self, field_name, value, is_multivalues=False):
+        value = self.normalize_spaces(value)
         if is_multivalues:
             if isinstance(value, str):
                 value = [value]
@@ -225,25 +226,26 @@ class DocumentCreationPage(BasePage):
         self.click_checkbox('Срочный')
         self.assert_checkbox_checked('Срочный')
 
-    def fill_required_fields(self):
-        filled_fields = {}
+    def fill_required_fields(self, return_content=True):
 
         #filled_fields['Автор документа'] = 'Ответственный Первый Пользователь'
         #filled_fields['Дата документа'] = '15.06.2025'
 
         document_type = self.fill_property('Тип документа *')
         self.assert_field_is_filled('Тип документа *', document_type)
-        filled_fields['Тип документа'] = document_type
 
         document_view = self.fill_classifier('Вид документа *')
         self.assert_field_is_filled('Вид документа *', document_view)
-        filled_fields['Вид документа'] = document_view
 
         short_description = self.fill_short_description()
         self.assert_short_description_has_value(short_description)
-        #filled_fields['Краткое содержание'] = short_description
 
-        return filled_fields
+        if return_content:
+            return {
+                'Тип документа': document_type,
+                'Вид документа': document_view,
+                'Краткое описание:': short_description
+            }
 
     def fill_all_not_default_fields(self, return_values=False):
         document_type = self.fill_property('Тип документа *')
@@ -335,17 +337,18 @@ class DocumentCreationPage(BasePage):
                 'Имя согласователя': self.get_shortened_name(coordinator_data, all_initials=False),
                 'Должность согласователя': coordinator_position,
                 'Ответственный исполнитель': self.extract_user_parts(responsible_performer, parts=['fio', 'organization']),
-                #'Получатели после подписания': self.department_users,
+                'Получатели после подписания': self.get_shortened_name(self.department_users),
                 'Адресат': addressee,
                 'Пользователи своей орги': self.get_shortened_name(my_organization_user),
                 'Число': test_number,
                 'Вид документа': document_view,
                 'Тематика': topic,
                 'Корреспондент': correspondent,
-                #'Выездные совещания': meeting_place,
-                #'Встреча с коллективами предприятий': meeting_company,
+                'Выездные совещания': meeting_place,
+                'Встреча с коллективами предприятий': meeting_company,
                 'Размер шрифта(при печати)': print_font_size,
-                #'Краткое описание': short_description
+                'Краткое описание:': short_description,
+                'Содержимое:': content
             }
 
 

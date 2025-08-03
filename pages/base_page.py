@@ -52,20 +52,33 @@ class BasePage:
         return date_offset
 
     def get_user_data(self, data_name):
-        user_data_locator = self.page.locator(f'p.MuiTypography-root.MuiTypography-body1:has(strong:text("{data_name}"))')
+        user_data_locator = self.page.locator(
+            f'p.MuiTypography-root.MuiTypography-body1:has(strong:text("{data_name}"))')
         user_data = user_data_locator.inner_text().split(':')[-1].strip()
         return user_data
 
-    def get_shortened_name(self, full_name, all_initials=True):
-        parts = full_name.split()
-        last_name = parts[0]
-        first_initial = parts[1][0]
-        second_initial = parts[2][0]
-        if all_initials:
-            short_name = f'{last_name} {first_initial}.{second_initial}.'
+    def get_shortened_name(self, full_names, all_initials=True):
+        if isinstance(full_names, str):
+            full_names = [full_names]
+            single = True
         else:
-            short_name = f'{first_initial}. {last_name}'
-        return short_name
+            single = False
+
+        result = []
+        for full_name in full_names:
+            parts = full_name.split()
+            last_name = parts[0]
+            first_initial = parts[1][0]
+            second_initial = parts[2][0]
+
+            if all_initials:
+                short_name = f'{last_name} {first_initial}.{second_initial}.'
+            else:
+                short_name = f'{first_initial}. {last_name}'
+
+            result.append(short_name)
+
+        return result[0] if single else result
 
     def extract_user_parts(self, user_data, parts='fio'):
         if isinstance(parts, str):
@@ -111,7 +124,6 @@ class BasePage:
     def assert_vkontakte_website_opened(self, new_page):
         expect(new_page).to_have_url('https://vk.com/krtech_crimea')
 
-
     def assert_dropdown_list_contain_text(self, search_text):
         options_locator = self.page.locator('role=option')
         expect(options_locator).not_to_have_count(0)
@@ -145,15 +157,11 @@ class BasePage:
             else:
                 expect(self.page.get_by_role('option', name=user_option, exact=True)).to_be_hidden()
 
-
-
-
     def assert_dropdown_list_without_options(self, wait_time=3000):
         options_locator = self.page.locator("role=option")
         self.page.wait_for_timeout(wait_time)
         expect(options_locator).to_have_count(0)
         expect(self._dropdown_list_without_options).to_be_visible()
-
 
     def enter_text_in_the_classifier(self, classifier_name, text):
         classifier = self.page.get_by_role('textbox', name=classifier_name)
@@ -163,5 +171,15 @@ class BasePage:
         classifier = self.page.get_by_role('textbox', name=classifier_name, exact=True)
         classifier.clear()
 
-    def normalize_spaces(self, text):
-        return " ".join(text.strip().split())
+    def normalize_spaces(self, texts):
+        if isinstance(texts, str):
+            texts = [texts]
+            single = True
+        else:
+            single = False
+        result = []
+        for text in texts:
+            normalized_text = " ".join(text.strip().split())
+            result.append(normalized_text)
+
+        return result[0] if single else result
