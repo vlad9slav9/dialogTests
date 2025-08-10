@@ -37,7 +37,8 @@ class DocumentCreationPage(BasePage):
         self._content_template_field = self.page.locator(".Document-Select").filter(
             has_text="Добавить содержимое из шаблона")
 
-        self.group_with_organizations_from_admin = ["Министерство сэд 2.0", 'Аппарат Совета министров Республики Крым', 'Министерство Тестирования РК']
+        self.group_with_organizations_from_admin = ["Министерство сэд 2.0", 'Аппарат Совета министров Республики Крым',
+                                                    'Министерство Тестирования РК']
         self.group_with_organizations_from_profile = ['Тестовая Организация 999', 'МКУ Автотестовое']
 
 
@@ -370,7 +371,7 @@ class DocumentCreationPage(BasePage):
         locator = self.page.get_by_role('tab', name=f'Создание документа ({document_name})', exact=True)
         expect(locator).to_be_visible()
 
-    def assert_default_field_are_filled(self, user_information):
+    def assert_default_outgoing_document_fields_are_filled(self, user_information, return_values=False):
         end_date = self.generate_date_offset_days(9)
         self.assert_field_is_filled('Срок исполнения *', end_date)
 
@@ -388,6 +389,43 @@ class DocumentCreationPage(BasePage):
         self.assert_checkbox_checked('Отображать автора и номер телефона на последней странице')
 
         self.assert_field_is_filled('Шаблон (для печати) *', 'Первый автотестовый шаблон')
+
+        if return_values:
+            return {
+                'Срок исполнения': end_date,
+                'Дата документа': current_date,
+                'Автор документа': user_information,
+                'Год': current_year,
+                'Дата от': current_date
+            }
+
+    def assert_default_incoming_document_fields_are_filled(self, user_information, return_values=False):
+        end_date = self.generate_date_offset_days(14)
+        self.assert_field_is_filled('Срок исполнения *', end_date)
+
+        current_date = self.generate_date_offset_days()
+        self.assert_field_is_filled('Дата документа *', current_date)
+
+        self.assert_field_is_filled('От кого', user_information, is_multivalues=True)
+
+        current_year = self.generate_date_offset_days(0, year=True)
+        self.assert_field_is_filled('Год', current_year)
+
+        self.assert_field_is_filled('Дата от', current_date)
+
+        self.assert_checkbox_checked('Отображать ЭП при печати')
+        self.assert_checkbox_checked('Отображать автора и номер телефона на последней странице')
+
+        self.assert_field_is_filled('Шаблон (для печати)', 'Первый входящий шаблон печати')
+
+        if return_values:
+            return {
+                'Срок исполнения': end_date,
+                'Дата документа': current_date,
+                'Автор документа': user_information,
+                'Год': current_year,
+                'Дата от': current_date
+            }
 
     def assert_error_snackbar_displayed(self, error_text):
         expect(self._error_snackbar).to_have_text(error_text)
@@ -412,14 +450,16 @@ class DocumentCreationPage(BasePage):
     def assert_picker_not_contain_users(self, classifier_name, users_type, fill_field=True):
         self.assert_dropdown_list_not_contain_options(classifier_name, users_type, fill_field=fill_field)
 
-    def create_incoming_document(self, all_fields=False):
+    def create_incoming_document(self, user_information, all_fields=False):
         if all_fields:
-            filled_fields = self.fill_all_not_default_fields(return_values=True)
+            filled_fields = {**self.assert_default_incoming_document_fields_are_filled(user_information, return_values=True),
+                             **self.fill_all_not_default_fields(return_values=True)}
             self.click_upper_save_button()
             expect(self.page.get_by_role('tab', name='Документ №')).to_be_visible()
             return DocumentViewPage(self.page), filled_fields
         else:
-            filled_fields = self.fill_required_fields()
+            filled_fields = {**self.assert_default_incoming_document_fields_are_filled(user_information, return_values=True),
+                             **self.fill_required_fields()}
             self.click_bottom_save_button()
             expect(self.page.get_by_role('tab', name='Документ №')).to_be_visible()
             return DocumentViewPage(self.page), filled_fields

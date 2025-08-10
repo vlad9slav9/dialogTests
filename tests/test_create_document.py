@@ -69,7 +69,7 @@ def test_autofill_default_fields(main_page_with_responsible):
     user_information = main_page_with_responsible.get_basic_user_information()
     doc_create_page = main_page_with_responsible.open_doc_create_page('Исходящий (Автотест)')
     doc_create_page.assert_document_creation_tab_visible('Исходящий (Автотест)')
-    doc_create_page.assert_default_field_are_filled(user_information)
+    doc_create_page.assert_default_incoming_document_fields_are_filled(user_information)
 
 def test_change_default_date_fields(main_page_with_responsible):
     doc_create_page = main_page_with_responsible.open_doc_create_page('Исходящий (Автотест)')
@@ -226,8 +226,9 @@ def test_search_user_in_creation_document_medo_fields(main_page_with_responsible
     doc_create_page.assert_picker_not_contain_users('Пользователи своей орги', doc_create_page.users_from_other_departments)
 
 def test_retest(main_page_with_responsible):
+    user_information = main_page_with_responsible.get_basic_user_information()
     doc_create_page = main_page_with_responsible.open_doc_create_page('Входящий (Автотест)')
-    doc_view_page, fields_values = doc_create_page.create_incoming_document(all_fields=True)
+    doc_view_page, fields_values = doc_create_page.create_incoming_document(user_information, all_fields=True)
     doc_view_page.assert_fields_have_values(fields_values)
 
 
