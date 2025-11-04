@@ -94,11 +94,11 @@ class MainPage(BasePage):
 
     def get_basic_user_information(self):
         self.click_profile_button()
-        user_fio = self.get_user_data("Ф.И.О.")
-        user_organization = self.get_user_data("Организация")
-        user_position = self.get_user_data("Должность")
+        user_fio = self.get_user_data('Ф.И.О.')
+        user_organization = self.get_user_data('Организация')
+        user_position = self.get_user_data('Должность')
 
-        return f"{user_fio} | {user_organization} | {user_position}"
+        return f'{user_fio} | {user_organization} | {user_position}'
 
     def assert_profile_button_visible(self):
         expect(self._profile_button).to_be_visible()

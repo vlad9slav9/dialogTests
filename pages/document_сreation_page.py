@@ -87,7 +87,7 @@ class DocumentCreationPage(BasePage):
         if input_text:
             property_locator.fill(input_text)
         else:
-            input_text = generic.text.title()
+            input_text = generic.text.word()
             #input_text = self.generate_random_string_with_all_symbols()
             property_locator.fill(input_text)
 
@@ -214,23 +214,20 @@ class DocumentCreationPage(BasePage):
     def assert_checkbox_checked(self, checkbox_name):
         expect(self.page.get_by_label(checkbox_name, exact=True)).to_be_checked()
 
-    def check_not_default_checkboxes(self):
-        self.click_checkbox('Для МЭДО')
-        self.assert_checkbox_checked('Для МЭДО')
-
-        self.click_checkbox('Контроль УК')
-        self.assert_checkbox_checked('Контроль УК')
-
-        self.click_checkbox('Контроль УК ФЦП')
-        self.assert_checkbox_checked('Контроль УК ФЦП')
-
-        self.click_checkbox('Срочный')
-        self.assert_checkbox_checked('Срочный')
+    # def check_not_default_checkboxes(self):
+    #     self.click_checkbox('Контроль УК')
+    #     self.assert_checkbox_checked('Контроль УК')
+    #
+    #     self.click_checkbox('Контроль УК ФЦП')
+    #     self.assert_checkbox_checked('Контроль УК ФЦП')
+    #
+    #     self.click_checkbox('Срочный')
+    #     self.assert_checkbox_checked('Срочный')
+    #
+    #     self.click_checkbox('Для МЭДО')
+    #     self.assert_checkbox_checked('Для МЭДО')
 
     def fill_required_fields(self, return_content=True):
-
-        #filled_fields['Автор документа'] = 'Ответственный Первый Пользователь'
-        #filled_fields['Дата документа'] = '15.06.2025'
 
         document_type = self.fill_property('Тип документа *')
         self.assert_field_is_filled('Тип документа *', document_type)
@@ -252,11 +249,14 @@ class DocumentCreationPage(BasePage):
         document_type = self.fill_property('Тип документа *')
         self.assert_field_is_filled('Тип документа *', document_type)
 
-        link_to_number = self.fill_property('Ссылается на № (для печати)')
-        self.assert_field_is_filled('Ссылается на № (для печати)', link_to_number)
+        document_view = self.fill_classifier('Вид документа *')
+        self.assert_field_is_filled('Вид документа *', document_view)
 
         document_number = self.fill_property('№ документа')
         self.assert_field_is_filled('№ документа', document_number)
+
+        link_to_number = self.fill_property('Ссылается на № (для печати)')
+        self.assert_field_is_filled('Ссылается на № (для печати)', link_to_number)
 
         reference_date = self.fill_date_property('Дата документа на который ссылаемся (для печати)')
         self.assert_field_is_filled('Дата документа на который ссылаемся (для печати)', reference_date)
@@ -264,44 +264,36 @@ class DocumentCreationPage(BasePage):
         whom = self.fill_classifier('Кому')
         self.assert_field_is_filled('Кому', whom)
 
+        addressee = self.fill_classifier('Адресат')
+        self.assert_field_is_filled('Адресат', addressee)
+
+        responsible_performer = self.fill_classifier('Ответственный исполнитель')
+        self.assert_field_is_filled('Ответственный исполнитель', responsible_performer)
+
         organizations_group = self.fill_classifier("Выберите группу", option_value="Группа из профиля")
         self.assert_field_is_filled("Выберите группу", organizations_group)
         self.assert_field_is_filled('Адресат-организация после подписания (не более 10)',
                                     self.group_with_organizations_from_profile, is_multivalues=True)
 
         signatory_name = self.fill_classifier('Подпись')
-        #signatory_position = self.get_user_position(signatory_name)
         signatory_position = self.extract_user_parts(signatory_name, parts='position')
         self.assert_field_has_short_name('Подпись', signatory_name, all_initial=False)
         self.assert_field_is_filled('Должность', signatory_position)
 
-        document_information = self.fill_textarea('Информация о документе')
-        self.assert_textarea_has_value('Информация о документе', document_information)
-
         coordinator_data = self.fill_classifier('Имя согласователя')
-        #coordinator_position = self.get_user_position(coordinator_data)
         coordinator_position = self.extract_user_parts(coordinator_data, parts='position')
         self.assert_field_has_short_name('Имя согласователя', coordinator_data, all_initial=False)
         self.assert_textarea_has_value('Должность согласователя', coordinator_position)
 
-        responsible_performer = self.fill_classifier('Ответственный исполнитель')
-        self.assert_field_is_filled('Ответственный исполнитель', responsible_performer)
+        test_number = self.fill_property('Число', '1234567890')
+        self.assert_field_is_filled('Число', test_number)
 
         users_group = self.fill_classifier("Добавить из группы", option_value="Пользователи моей организации")
         self.assert_field_is_filled('Добавить из группы', users_group)
         self.assert_field_is_filled('Получатели после подписания', self.department_users, is_multivalues=True)
 
-        addressee = self.fill_classifier('Адресат')
-        self.assert_field_is_filled('Адресат', addressee)
-
         my_organization_user = self.fill_classifier('Пользователи своей орги')
         self.assert_field_is_filled('Пользователи своей орги', my_organization_user)
-
-        test_number = self.fill_property('Число', '1234567890')
-        self.assert_field_is_filled('Число', test_number)
-
-        document_view = self.fill_classifier('Вид документа *')
-        self.assert_field_is_filled('Вид документа *', document_view)
 
         topic = self.fill_classifier('Тематика')
         self.assert_field_is_filled('Тематика', topic)
@@ -309,14 +301,17 @@ class DocumentCreationPage(BasePage):
         correspondent = self.fill_classifier('Корреспондент')
         self.assert_field_is_filled('Корреспондент', correspondent)
 
-        meeting_place = self.fill_classifier('Выездные совещания', is_multiform=True)
-        self.assert_field_is_filled('Выездные совещания', meeting_place, is_multivalues=True)
-
         meeting_company = self.fill_classifier('Встреча с коллективами предприятий', is_multiform=True)
         self.assert_field_is_filled('Встреча с коллективами предприятий', meeting_company, is_multivalues=True)
 
+        meeting_place = self.fill_classifier('Выездные совещания', is_multiform=True)
+        self.assert_field_is_filled('Выездные совещания', meeting_place, is_multivalues=True)
+
         print_font_size = self.fill_classifier('Размер шрифта(при печати)')
         self.assert_field_is_filled('Размер шрифта(при печати)', print_font_size)
+
+        document_information = self.fill_textarea('Информация о документе')
+        self.assert_textarea_has_value('Информация о документе', document_information)
 
         short_description = self.fill_short_description()
         self.assert_short_description_has_value(short_description)
@@ -327,33 +322,31 @@ class DocumentCreationPage(BasePage):
         if return_values:
             return {
                 'Тип документа': document_type,
-                'Ссылается на № (для печати)': link_to_number,
+                'Вид документа': document_view,
                 '№ документа': document_number,
+                'Ссылается на № (для печати)': link_to_number,
                 'Дата документа на который ссылаемся (для печати)': reference_date,
                 'Кому': self.extract_user_parts(whom, parts=['fio', 'organization']),
+                'Адресат': addressee,
+                'Ответственный исполнитель': self.extract_user_parts(responsible_performer,
+                                                                     parts=['fio', 'organization']),
                 'Адресат-организация после подписания (не более 10)': self.group_with_organizations_from_profile,
                 'Подпись': self.get_shortened_name(signatory_name, all_initials=False),
                 'Должность': signatory_position,
-                'Информация о документе': document_information,
                 'Имя согласователя': self.get_shortened_name(coordinator_data, all_initials=False),
                 'Должность согласователя': coordinator_position,
-                'Ответственный исполнитель': self.extract_user_parts(responsible_performer, parts=['fio', 'organization']),
-                'Получатели после подписания': self.get_shortened_name(self.department_users),
-                'Адресат': addressee,
-                'Пользователи своей орги': self.get_shortened_name(my_organization_user),
                 'Число': test_number,
-                'Вид документа': document_view,
+                'Получатели после подписания': self.get_shortened_name(self.department_users),
+                'Пользователи своей орги': self.get_shortened_name(my_organization_user),
                 'Тематика': topic,
                 'Корреспондент': correspondent,
-                'Выездные совещания': meeting_place,
                 'Встреча с коллективами предприятий': meeting_company,
+                'Выездные совещания': meeting_place,
                 'Размер шрифта(при печати)': print_font_size,
+                'Информация о документе': document_information,
                 'Краткое описание:': short_description,
                 'Содержимое:': content
             }
-
-
-
 
     def click_upper_edit_button(self):
         self._upper_edit_button.click()
@@ -371,19 +364,19 @@ class DocumentCreationPage(BasePage):
         locator = self.page.get_by_role('tab', name=f'Создание документа ({document_name})', exact=True)
         expect(locator).to_be_visible()
 
-    def assert_default_outgoing_document_fields_are_filled(self, user_information, return_values=False):
-        end_date = self.generate_date_offset_days(9)
+    def assert_default_fields_are_filled(self, user_information, return_values=False):
+        end_date = self.generate_date_offset_days(14)
         self.assert_field_is_filled('Срок исполнения *', end_date)
 
         current_date = self.generate_date_offset_days()
         self.assert_field_is_filled('Дата документа *', current_date)
 
-        self.assert_field_is_filled('От кого', user_information, is_multivalues=True)
+        self.assert_field_is_filled('Дата от', current_date)
 
         current_year = self.generate_date_offset_days(0, year=True)
         self.assert_field_is_filled('Год', current_year)
 
-        self.assert_field_is_filled('Дата от', current_date)
+        self.assert_field_is_filled('От кого', user_information, is_multivalues=True)
 
         self.assert_checkbox_checked('Отображать ЭП при печати')
         self.assert_checkbox_checked('Отображать автора и номер телефона на последней странице')
@@ -394,41 +387,13 @@ class DocumentCreationPage(BasePage):
             return {
                 'Срок исполнения': end_date,
                 'Дата документа': current_date,
-                'Автор документа': user_information,
+                'От кого': user_information.rsplit(' | ', 1)[0],
                 'Год': current_year,
                 'Дата от': current_date
             }
 
-    def assert_default_incoming_document_fields_are_filled(self, user_information, return_values=False):
-        end_date = self.generate_date_offset_days(14)
-        self.assert_field_is_filled('Срок исполнения *', end_date)
-
-        current_date = self.generate_date_offset_days()
-        self.assert_field_is_filled('Дата документа *', current_date)
-
-        self.assert_field_is_filled('От кого', user_information, is_multivalues=True)
-
-        current_year = self.generate_date_offset_days(0, year=True)
-        self.assert_field_is_filled('Год', current_year)
-
-        self.assert_field_is_filled('Дата от', current_date)
-
-        self.assert_checkbox_checked('Отображать ЭП при печати')
-        self.assert_checkbox_checked('Отображать автора и номер телефона на последней странице')
-
-        self.assert_field_is_filled('Шаблон (для печати)', 'Первый входящий шаблон печати')
-
-        if return_values:
-            return {
-                'Срок исполнения': end_date,
-                'Дата документа': current_date,
-                'Автор документа': user_information,
-                'Год': current_year,
-                'Дата от': current_date
-            }
-
-    def assert_error_snackbar_displayed(self, error_text):
-        expect(self._error_snackbar).to_have_text(error_text)
+    def assert_snackbar_displayed(self, notification_text):
+        expect(self._error_snackbar).to_have_text(notification_text)
 
     def assert_required_field_error_displayed(self, error_text):
         locator = self.page.locator("p.MuiFormHelperText-root", has_text=error_text)
@@ -450,18 +415,23 @@ class DocumentCreationPage(BasePage):
     def assert_picker_not_contain_users(self, classifier_name, users_type, fill_field=True):
         self.assert_dropdown_list_not_contain_options(classifier_name, users_type, fill_field=fill_field)
 
-    def create_incoming_document(self, user_information, all_fields=False):
+    def assert_document_tab_visible(self, tab_name):
+        expect(self.page.get_by_role('tab', name=tab_name)).to_be_visible()
+
+    def create_regular_document(self, user_information, all_fields=False):
         if all_fields:
-            filled_fields = {**self.assert_default_incoming_document_fields_are_filled(user_information, return_values=True),
+            filled_fields = {**self.assert_default_fields_are_filled(user_information, return_values=True),
                              **self.fill_all_not_default_fields(return_values=True)}
             self.click_upper_save_button()
-            expect(self.page.get_by_role('tab', name='Документ №')).to_be_visible()
+            self.assert_document_tab_visible('Документ №')
+            #expect(self.page.get_by_role('tab', name='Документ №')).to_be_visible()
             return DocumentViewPage(self.page), filled_fields
         else:
-            filled_fields = {**self.assert_default_incoming_document_fields_are_filled(user_information, return_values=True),
+            filled_fields = {**self.assert_default_fields_are_filled(user_information, return_values=True),
                              **self.fill_required_fields()}
             self.click_bottom_save_button()
-            expect(self.page.get_by_role('tab', name='Документ №')).to_be_visible()
+            self.assert_document_tab_visible('Документ №')
+            #expect(self.page.get_by_role('tab', name='Документ №')).to_be_visible()
             return DocumentViewPage(self.page), filled_fields
 
 

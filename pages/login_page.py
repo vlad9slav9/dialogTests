@@ -42,10 +42,10 @@ class LoginPage(BasePage):
         return self.config['responsible']['password']
 
     def get_fake_username(self):
-        return 'fake_username_123'
+        return 'fake_Username_123'
 
     def get_fake_password(self):
-        return 'fake_password_123'
+        return 'fake_Password_123'
 
     def login_with_responsible(self):
         self.do_login(self.get_responsible_username(), self.get_responsible_password())

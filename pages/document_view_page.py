@@ -15,11 +15,13 @@ class DocumentViewPage(BasePage):
 
     def assert_field_has_value(self, field_name, expected_value):
         locator = (self.page.locator(f".MuiFormControl-root:has(label:text-is('{field_name}'))")
-                   .locator("input, textarea, span.MuiChip-label, div.PropsViewWorkerPickerSelect-UserList"))
+                   .locator("input, textarea, span.MuiChip-label, div.PropsViewWorkerPickerSelect-UserList, div.MuiSelect-root"))
         current_locator = locator.first
         tag_name = current_locator.evaluate("el => el.tagName.toLowerCase()")
         if tag_name in ['input', 'textarea']:
             expect(current_locator).to_have_value(expected_value)
+        elif 'MuiSelect-root' in current_locator.evaluate("el => el.className"):
+            expect(current_locator).to_have_text(expected_value)
         else:
             if isinstance(expected_value, str):
                 expected_value = [expected_value]
@@ -36,5 +38,15 @@ class DocumentViewPage(BasePage):
                 self.assert_description_contain_text(field_name, expected_value)
             else:
                 self.assert_field_has_value(field_name, expected_value)
+
+    def assert_system_fields_have_values(self, user_information):
+        current_date = self.generate_date_offset_days()
+        self.assert_field_has_value('Дата создания в системе', current_date)
+
+        document_author = user_information.split(' | ', 1)[0]
+        self.assert_field_has_value('Автор документа', document_author)
+
+        self.assert_field_has_value('Статус Документа', 'Открыт')
+
 
     #def example_method(self, expected_data):
