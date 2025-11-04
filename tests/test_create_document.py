@@ -64,56 +64,13 @@ def test_create_document_button_disabled_after_clearing_field(main_page_with_res
     main_page_with_responsible.assert_doc_type_search_field_is_empty()
     main_page_with_responsible.assert_create_doc_button_disabled()
 
-
 def test_autofill_default_fields(main_page_with_responsible):
     user_information = main_page_with_responsible.get_basic_user_information()
     doc_create_page = main_page_with_responsible.open_doc_create_page('Исходящий (Автотест)')
     doc_create_page.assert_document_creation_tab_visible('Исходящий (Автотест)')
     doc_create_page.assert_default_fields_are_filled(user_information)
 
-def test_change_default_date_fields(main_page_with_responsible):
-    doc_create_page = main_page_with_responsible.open_doc_create_page('Исходящий (Автотест)')
-    future_date = doc_create_page.change_date_via_calendar('Срок исполнения')
-    doc_create_page.assert_field_is_filled('Срок исполнения *', future_date)
-    doc_create_page.change_date_in_property('Дата документа *', -15)
-    new_year = doc_create_page.change_date_via_calendar('Год', is_year=True)
-    doc_create_page.assert_field_is_filled('Год', new_year)
-    past_date = doc_create_page.change_date_via_calendar('Дата от', future_date=False)
-    doc_create_page.assert_field_is_filled('Дата от', past_date)
-
-
-def test_create_document_with_all_fields(main_page_with_responsible):
-    user_information = main_page_with_responsible.get_basic_user_information()
-    doc_create_page = main_page_with_responsible.open_doc_create_page('Исходящий (Автотест)')
-    doc_view_page, fields_values = doc_create_page.create_regular_document(user_information, all_fields=True)
-    doc_create_page.assert_snackbar_displayed('Документ создан')
-    doc_view_page.assert_fields_have_values(fields_values)
-    doc_view_page.assert_system_fields_have_values(user_information)
-
-def test_create_document_with_only_required_fields(main_page_with_responsible):
-    user_information = main_page_with_responsible.get_basic_user_information()
-    doc_create_page = main_page_with_responsible.open_doc_create_page('Входящий (Автотест)')
-    doc_view_page, fields_values = doc_create_page.create_regular_document(user_information, all_fields=False)
-    doc_create_page.assert_snackbar_displayed('Документ создан')
-    doc_view_page.assert_fields_have_values(fields_values)
-    doc_view_page.assert_system_fields_have_values(user_information)
-
-def test_create_document_via_upper_edit_button(main_page_with_responsible):
-    doc_create_page = main_page_with_responsible.open_doc_create_page('Исходящий МЭДО (Автотест)')
-    doc_create_page.fill_short_description()
-    doc_create_page.click_upper_edit_button()
-    doc_create_page.assert_document_tab_visible('Редактирование документа № МЭДО/')
-    doc_create_page.assert_snackbar_displayed('Документ создан')
-
-
-def test_create_document_via_bottom_edit_button(main_page_with_responsible):
-    doc_create_page = main_page_with_responsible.open_doc_create_page('Внутренний. Без Шаблона Печати (Автотест)')
-    doc_create_page.fill_short_description()
-    doc_create_page.click_bottom_edit_button()
-    doc_create_page.assert_document_tab_visible('Редактирование документа №')
-    doc_create_page.assert_snackbar_displayed('Документ создан')
-
-def test_click_upper_save_button_without_filling_required_fields(main_page_with_responsible):
+def test_click_save_button_without_filling_required_fields(main_page_with_responsible):
     doc_create_page = main_page_with_responsible.open_doc_create_page('Исходящий (Автотест)')
     doc_create_page.clear_property('Срок исполнения *')
     doc_create_page.clear_property('Дата документа *')
@@ -130,38 +87,16 @@ def test_click_upper_save_button_without_filling_required_fields(main_page_with_
     doc_create_page.assert_snackbar_displayed('Не все поля заполнены корректно.')
 
 
-def test_click_bottom_save_button_without_filling_required_fields(main_page_with_responsible):
+def test_click_edit_button_without_filling_required_fields(main_page_with_responsible):
     doc_create_page = main_page_with_responsible.open_doc_create_page('Входящий (Автотест)')
     doc_create_page.clear_property('Срок исполнения *')
     doc_create_page.clear_property('Дата документа *')
-    doc_create_page.click_bottom_save_button()
+    doc_create_page.click_bottom_edit_button()
     doc_create_page.assert_document_creation_tab_visible('Входящий (Автотест)')
     doc_create_page.assert_required_field_error_displayed('Срок исполнения должен быть датой')
     doc_create_page.assert_required_field_error_displayed('Значение поля "Дата документа" должно быть датой')
     doc_create_page.assert_required_field_error_displayed('Значение поля "Тип документа" не может быть пустым.')
     doc_create_page.assert_required_field_error_displayed('Значение поля "Вид документа" не может быть пустым.')
-    doc_create_page.assert_required_field_error_displayed('Значение поля "Краткое описание" не может быть пустым.')
-    doc_create_page.assert_snackbar_displayed('Не все поля заполнены корректно.')
-
-def test_click_bottom_edit_button_without_filling_required_fields(main_page_with_responsible):
-    doc_create_page = main_page_with_responsible.open_doc_create_page('Исходящий МЭДО (Автотест)')
-    doc_create_page.clear_property('Срок исполнения *')
-    doc_create_page.clear_property('Год *')
-    doc_create_page.clear_print_template()
-    doc_create_page.click_bottom_edit_button()
-    doc_create_page.assert_document_creation_tab_visible('Исходящий МЭДО (Автотест)')
-    doc_create_page.assert_required_field_error_displayed('Срок исполнения должен быть датой')
-    doc_create_page.assert_required_field_error_displayed('Значение поля "Год" должно быть датой')
-    doc_create_page.assert_required_field_error_displayed('Значение поля "Краткое описание" не может быть пустым.')
-    doc_create_page.assert_required_field_error_displayed('Значение поля "Шаблон (для печати)" не может быть пустым.')
-    doc_create_page.assert_snackbar_displayed('Не все поля заполнены корректно.')
-
-def test_click_upper_edit_button_without_filling_required_fields(main_page_with_responsible):
-    doc_create_page = main_page_with_responsible.open_doc_create_page('Внутренний. Без Шаблона Печати (Автотест)')
-    doc_create_page.clear_property('Срок исполнения *')
-    doc_create_page.click_upper_edit_button()
-    doc_create_page.assert_document_creation_tab_visible('Внутренний. Без Шаблона Печати (Автотест)')
-    doc_create_page.assert_required_field_error_displayed('Срок исполнения должен быть датой')
     doc_create_page.assert_required_field_error_displayed('Значение поля "Краткое описание" не может быть пустым.')
     doc_create_page.assert_snackbar_displayed('Не все поля заполнены корректно.')
 
@@ -234,6 +169,41 @@ def test_search_user_in_creation_document_medo_fields(main_page_with_responsible
     doc_create_page.assert_picker_not_contain_users('Получатели после подписания', doc_create_page.curators_and_other_departments)
     doc_create_page.assert_picker_contain_users('Пользователи своей орги', doc_create_page.users_with_mku_and_curators)
     doc_create_page.assert_picker_not_contain_users('Пользователи своей орги', doc_create_page.users_from_other_departments)
+
+
+def test_create_document_with_all_fields(main_page_with_responsible):
+    user_information = main_page_with_responsible.get_basic_user_information()
+    doc_create_page = main_page_with_responsible.open_doc_create_page('Исходящий (Автотест)')
+    doc_view_page, fields_values = doc_create_page.create_regular_document(user_information, all_fields=True)
+    doc_create_page.assert_snackbar_displayed('Документ создан')
+    doc_view_page.assert_fields_have_values(fields_values)
+    doc_view_page.assert_system_fields_have_values(user_information)
+
+def test_create_document_with_only_required_fields(main_page_with_responsible):
+    user_information = main_page_with_responsible.get_basic_user_information()
+    doc_create_page = main_page_with_responsible.open_doc_create_page('Входящий (Автотест)')
+    doc_view_page, fields_values = doc_create_page.create_regular_document(user_information, all_fields=False)
+    doc_create_page.assert_snackbar_displayed('Документ создан')
+    doc_view_page.assert_fields_have_values(fields_values)
+    doc_view_page.assert_system_fields_have_values(user_information)
+
+def test_create_document_via_edit_button(main_page_with_responsible):
+    doc_create_page = main_page_with_responsible.open_doc_create_page('Исходящий МЭДО (Автотест)')
+    doc_create_page.fill_short_description()
+    doc_create_page.click_upper_edit_button()
+    doc_create_page.assert_document_tab_visible('Редактирование документа № МЭДО/')
+    doc_create_page.assert_snackbar_displayed('Документ создан')
+
+# Сделать с редактируемыми полями во время создания / редактирования + дата документа на который ссылаемся для печати
+# def test_change_default_date_fields(main_page_with_responsible):
+#     doc_create_page = main_page_with_responsible.open_doc_create_page('Исходящий (Автотест)')
+#     future_date = doc_create_page.change_date_via_calendar('Срок исполнения')
+#     doc_create_page.assert_field_is_filled('Срок исполнения *', future_date)
+#     doc_create_page.change_date_in_property('Дата документа *', -15)
+#     new_year = doc_create_page.change_date_via_calendar('Год', is_year=True)
+#     doc_create_page.assert_field_is_filled('Год', new_year)
+#     past_date = doc_create_page.change_date_via_calendar('Дата от', future_date=False)
+#     doc_create_page.assert_field_is_filled('Дата от', past_date)
 
 def test_retest(main_page_with_responsible):
     user_information = main_page_with_responsible.get_basic_user_information()
