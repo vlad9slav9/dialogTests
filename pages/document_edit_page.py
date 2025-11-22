@@ -12,7 +12,7 @@ from pages.document_view_page import DocumentViewPage
 generic = Generic('ru')
 
 
-class DocumentCreationPage(BasePage):
+class DocumentEditPage(BasePage):
     def __init__(self, page: Page):
         super().__init__(page)
         self.page = page
@@ -399,12 +399,8 @@ class DocumentCreationPage(BasePage):
         locator = self.page.locator("p.MuiFormHelperText-root", has_text=error_text)
         expect(locator).to_be_visible()
 
-    def assert_content_editor_has_first_template(self):
-        self.assert_content_editor_has_value('Автотест для проверки добавления первого шаблона содержимого!')
-
-    def assert_content_editor_has_two_templates(self):
-        expect(self._content_editor).to_have_text("Автотест для проверки добавления первого шаблона содержимого!"
-                                                  "Это второй шаблон для автотеста, который проверяет, что добавляется второй шаблон в дополнении к первому")
+    def assert_content_editor_has_text(self, text):
+        self.assert_content_editor_has_value(text)
 
     def assert_content_editor_is_empty(self):
         expect(self._content_editor).to_be_empty()

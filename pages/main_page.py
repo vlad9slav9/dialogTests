@@ -5,7 +5,7 @@ from pages.base_page import BasePage
 from datetime import datetime
 import locale
 
-from pages.document_сreation_page import DocumentCreationPage
+from pages.document_edit_page import DocumentEditPage
 
 
 class MainPage(BasePage):
@@ -90,7 +90,7 @@ class MainPage(BasePage):
         self.click_doc_type_select_field()
         self.select_doc_type(doc_type)
         self._create_doc_button.click()
-        return DocumentCreationPage(self.page)
+        return DocumentEditPage(self.page)
 
     def get_basic_user_information(self):
         self.click_profile_button()

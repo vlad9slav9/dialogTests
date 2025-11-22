@@ -12,6 +12,10 @@ class DocumentViewPage(BasePage):
 
         self._doc_number_tab = self.page.locator('.DocNumber-Text')
         self._doc_history_tab = self.page.get_by_role('tab', name='История документа', exact=True)
+        self._edit_button = self.page.locator('#edit_document')
+
+    def click_edit_button(self):
+        self._edit_button.click()
 
     def assert_field_has_value(self, field_name, expected_value):
         locator = (self.page.locator(f".MuiFormControl-root:has(label:text-is('{field_name}'))")
