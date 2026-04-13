@@ -32,18 +32,6 @@ class BasePage:
         self.users_without_curators = self.department_users + self.mku_users + self.users_from_other_departments
         self.curators_and_other_departments = self.department_curators + self.users_from_other_departments
 
-    # def generate_random_string_with_all_symbols(self):
-    #     digits = '0123456789'
-    #     lowercase = 'абвгдежзийклмнопрстуфхцчшщъыьэюя'
-    #     uppercase = 'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
-    #     special_chars = '!@#$%^&*()_+-=[]{}|;:\'",.<>?/`~'
-    #     random_digit = random.choice(digits)
-    #     random_lowercase = random.choice(lowercase)
-    #     random_uppercase = random.choice(uppercase)
-    #     random_string = random_digit + random_lowercase + random_uppercase + special_chars
-    #     random_string = ''.join(random.sample(random_string, len(random_string)))
-    #     return random_string
-
     def generate_date_offset_days(self, days=0, year=False):
         if year:
             date_offset = (datetime.datetime.now() + datetime.timedelta(days=days)).strftime('%Y')
@@ -87,11 +75,6 @@ class BasePage:
         mapping = {"fio": 0, "organization": 1, "position": 2}
         result = [components[mapping[p]] for p in parts if p in mapping and mapping[p] < len(components)]
         return " | ".join(result)
-
-    # def get_user_position(self, option_text):
-    #     parts = option_text.split('|')
-    #     position = parts[2].strip()
-    #     return position
 
     def click_and_open_new_tab(self, button_link):
         context = self.page.context

@@ -15,7 +15,7 @@ generic = Generic('ru')
 class DocumentEditPage(BasePage):
     def __init__(self, page: Page):
         super().__init__(page)
-        self.page = page
+        #self.page = page
 
         self._outgoing_document_creation_tab = self.page.get_by_role('tab',
                                                                      name='Создание документа (Исходящий (Автотест))',
@@ -47,6 +47,10 @@ class DocumentEditPage(BasePage):
         self._prev_month_button = self.page.locator(".MuiPickersCalendarHeader-switchHeader button").nth(0)
         self._next_month_button = self.page.locator(".MuiPickersCalendarHeader-switchHeader button").nth(1)
 
+        self.classifiers_ids = ['from', 'office_class_view_docs', 'whom', 'target_department', 'responsible_performer',
+                                'signature', 'coordinator_name', 'users_my_org_test', 'office_class_topics',
+                                'office_class_corrs', 'print_font_size_pt']
+
     def select_option(self, value=None):
         options_locator = self.page.get_by_role('option')
         expect(options_locator).not_to_have_count(0)
@@ -57,41 +61,36 @@ class DocumentEditPage(BasePage):
             selected_option = random.choice(options)
         option_text = selected_option.inner_text()
         selected_option.click()
-        return self.normalize_spaces(option_text)
+        return option_text
 
 
-    def fill_classifier(self, classifier_name, is_multiform=False, option_value=None):
-        classifier = self.page.get_by_label(classifier_name, exact=True)
-        if is_multiform:
-            selected_values = []
-            for _ in range(2):
-                classifier.click()
-                selected_values.append(self.select_option(option_value))
-            return selected_values
-        else:
-            classifier.click()
-            return self.select_option(option_value)
+    # def fill_classifier(self, classifier_name, is_multiform=False, option_value=None):
+    #     classifier = self.page.get_by_label(classifier_name, exact=True)
+    #     if is_multiform:
+    #         selected_values = []
+    #         for _ in range(2):
+    #             classifier.click()
+    #             selected_values.append(self.select_option())
+    #         return selected_values
+    #     else:
+    #         classifier.click()
+    #         return self.select_option(option_value)
 
-    def fill_textarea(self, area_name, input_text=None):
-        textarea_locator = self.page.locator(f"fieldset:has(legend:has-text('{area_name}')) textarea.PropsTextArea-Autosize").first
-        if input_text:
-            textarea_locator.fill(input_text)
-        else:
-            input_text = generic.text.text()
-            textarea_locator.fill(input_text)
+    def fill_classifier(self, classifier_id):
+        classifier_locator = self.page.locator(f'#{classifier_id} input')
+        classifier_locator.click()
+        return self.select_option()
 
+
+    def fill_property(self, property_id):
+        property_locator = self.page.locator(f'#{property_id}').locator('input, textarea:visible')
+        input_text = generic.text.word()
+        property_locator.type(input_text)
         return input_text
 
-    def fill_property(self, property_name, input_text=None):
-        property_locator = self.page.get_by_label(property_name, exact=True)
-        if input_text:
-            property_locator.fill(input_text)
-        else:
-            input_text = generic.text.word()
-            #input_text = self.generate_random_string_with_all_symbols()
-            property_locator.fill(input_text)
-
-        return input_text
+    def assert_property_filled(self, property_id, value):
+        property_locator = self.page.locator(f'#{property_id}').locator('input, textarea:visible')
+        expect(property_locator).to_have_value(value)
 
     def clear_multivalues_field(self, field_name):
         delete_icons = self.page.locator(f'label:has-text("{field_name}") ~ div .MuiChip-deleteIcon')
@@ -310,7 +309,7 @@ class DocumentEditPage(BasePage):
         print_font_size = self.fill_classifier('Размер шрифта(при печати)')
         self.assert_field_is_filled('Размер шрифта(при печати)', print_font_size)
 
-        document_information = self.fill_textarea('Информация о документе')
+        document_information = self.fill_property('Информация о документе')
         self.assert_textarea_has_value('Информация о документе', document_information)
 
         short_description = self.fill_short_description()
@@ -433,5 +432,13 @@ class DocumentEditPage(BasePage):
 
 
     def test_example(self):
-        document_information = self.fill_textarea('Информация о документе')
-        self.assert_textarea_has_value('Информация о документе', document_information)
+        tematics = self.fill_classifier_test('office_class_topics')
+        self.assert_property_filled('office_class_topics', tematics)
+
+
+        by_attorney = self.fill_property('by_attorney')
+        self.assert_property_filled('by_attorney', by_attorney)
+
+
+        document_type = self.fill_property('doc_type')
+        self.assert_property_filled('doc_type', document_type)

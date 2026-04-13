@@ -158,6 +158,12 @@ def test_create_document_with_only_required_fields(main_page_with_responsible):
     doc_view_page.assert_fields_have_values(fields_values)
     doc_view_page.assert_system_fields_have_values(user_information)
 
+def test_retest_id(main_page_with_responsible):
+    user_information = main_page_with_responsible.get_basic_user_information()
+    doc_edit_page = main_page_with_responsible.open_doc_create_page('Исходящий (Автотест)')
+    doc_edit_page.test_example()
+
+
 @pytest.mark.parametrize(
     "save_action",
     [
@@ -222,6 +228,12 @@ def test_retest(main_page_with_responsible):
     doc_view_page, fields_values = doc_edit_page.create_regular_document(user_information, all_fields=True)
     doc_view_page.assert_fields_have_values(fields_values)
     doc_view_page.assert_system_fields_have_values(user_information)
+
+def test_last_test(main_page_with_responsible, view):
+    #doc_view_page = main_page_with_responsible.page.goto('https://test.dialog.loc/document-view/38dbbf11-8797-4650-863c-68e350b6b994')
+    #view.assert_test_field_has_value()
+    doc_edit_page = main_page_with_responsible.open_doc_create_page('Исходящий (Автотест)')
+    doc_edit_page.test_example()
 
 
 

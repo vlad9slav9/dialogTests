@@ -1,6 +1,7 @@
 import configparser
 import pytest
 from pages.login_page import LoginPage
+from pages.document_view_page import DocumentViewPage
 
 
 def pytest_addoption(parser):
@@ -44,3 +45,7 @@ def login_page(page):
 def main_page_with_responsible(login_page):
     main_page = login_page.login_with_responsible()
     yield main_page
+
+@pytest.fixture(scope='function')
+def view(page):
+    return DocumentViewPage(page)
