@@ -3,6 +3,7 @@ from playwright.sync_api import expect
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import random
+from fields_config import FIELDS, FieldType, ClassifierMode
 
 from mimesis import Generic
 
@@ -47,8 +48,8 @@ class DocumentEditPage(BasePage):
         self._prev_month_button = self.page.locator(".MuiPickersCalendarHeader-switchHeader button").nth(0)
         self._next_month_button = self.page.locator(".MuiPickersCalendarHeader-switchHeader button").nth(1)
 
-        self.classifiers_ids = ['from', 'office_class_view_docs', 'whom', 'target_department', 'responsible_performer',
-                                'signature', 'coordinator_name', 'users_my_org_test', 'office_class_topics',
+        self.classifiers_ids = ['office_class_view_docs', 'whom', 'target_department', 'responsible_performer',
+                                'users_my_org_test', 'office_class_topics',
                                 'office_class_corrs', 'print_font_size_pt']
 
     def select_option(self, value=None):
@@ -76,10 +77,19 @@ class DocumentEditPage(BasePage):
     #         classifier.click()
     #         return self.select_option(option_value)
 
-    def fill_classifier(self, classifier_id):
+    def fill_classifier(self, classifier_id, config):
+        mode = config.get('mode')
         classifier_locator = self.page.locator(f'#{classifier_id} input')
-        classifier_locator.click()
-        return self.select_option()
+        if mode == ClassifierMode.SINGLE:
+            classifier_locator.click()
+            return self.select_option()
+        elif mode == ClassifierMode.MULTI:
+            selected_values = []
+            for _ in range(2):
+                classifier_locator.click()
+                selected_values.append(self.select_option())
+            return selected_values
+
 
 
     def fill_property(self, property_id):
@@ -87,6 +97,18 @@ class DocumentEditPage(BasePage):
         input_text = generic.text.word()
         property_locator.type(input_text)
         return input_text
+
+    def fill_multiform(self, multiform_id):
+        multiform_locator = self.page.locator(f'#{multiform_id} input')
+        selected_values = []
+        for _ in range(2):
+            multiform_locator.click()
+            selected_values.append(self.select_option())
+        return selected_values
+
+    def assert_multiform_is_filled(self, multiform_id, values):
+        multiform_locator = self.page.locator(f'#{multiform_id} .MuiChip-label')
+        expect(multiform_locator).to_have_text(values)
 
     def assert_property_filled(self, property_id, value):
         property_locator = self.page.locator(f'#{property_id}').locator('input, textarea:visible')
@@ -226,23 +248,33 @@ class DocumentEditPage(BasePage):
     #     self.click_checkbox('Для МЭДО')
     #     self.assert_checkbox_checked('Для МЭДО')
 
-    def fill_required_fields(self, return_content=True):
+    # def fill_required_fields(self, return_content=True):
+    #
+    #     document_type = self.fill_property('Тип документа *')
+    #     self.assert_field_is_filled('Тип документа *', document_type)
+    #
+    #     document_view = self.fill_classifier('Вид документа *')
+    #     self.assert_field_is_filled('Вид документа *', document_view)
+    #
+    #     short_description = self.fill_short_description()
+    #     self.assert_short_description_has_value(short_description)
+    #
+    #     if return_content:
+    #         return {
+    #             'Тип документа': document_type,
+    #             'Вид документа': document_view,
+    #             'Краткое описание:': short_description
+    #         }
 
-        document_type = self.fill_property('Тип документа *')
-        self.assert_field_is_filled('Тип документа *', document_type)
+    def fill_required_fields(self):
+        for field_id, config in FIELDS.items():
+            field_type = config['type']
+            if field_type == FieldType.CLASSIFIER:
+                self.fill_classifier(field_id, config)
+            elif field_type == FieldType.PROPERTY:
+                self.fill_property(field_id)
 
-        document_view = self.fill_classifier('Вид документа *')
-        self.assert_field_is_filled('Вид документа *', document_view)
 
-        short_description = self.fill_short_description()
-        self.assert_short_description_has_value(short_description)
-
-        if return_content:
-            return {
-                'Тип документа': document_type,
-                'Вид документа': document_view,
-                'Краткое описание:': short_description
-            }
 
     def fill_all_not_default_fields(self, return_values=False):
         document_type = self.fill_property('Тип документа *')
@@ -432,13 +464,20 @@ class DocumentEditPage(BasePage):
 
 
     def test_example(self):
-        tematics = self.fill_classifier_test('office_class_topics')
-        self.assert_property_filled('office_class_topics', tematics)
 
+        self.fill_required_fields()
 
-        by_attorney = self.fill_property('by_attorney')
-        self.assert_property_filled('by_attorney', by_attorney)
-
-
-        document_type = self.fill_property('doc_type')
-        self.assert_property_filled('doc_type', document_type)
+        # meeting = self.fill_multiform('document_type_field_meeting_region')
+        # self.assert_multiform_is_filled('document_type_field_meeting_region', meeting)
+        #
+        #
+        # tematics = self.fill_classifier('office_class_topics')
+        # self.assert_property_filled('office_class_topics', tematics)
+        #
+        #
+        # by_attorney = self.fill_property('by_attorney')
+        # self.assert_property_filled('by_attorney', by_attorney)
+        #
+        #
+        # document_type = self.fill_property('doc_type')
+        # self.assert_property_filled('doc_type', document_type)
