@@ -33,8 +33,6 @@ class DocumentViewPage(BasePage):
     def assert_test_field_has_value(self, field_id):
         new_locator = (self.page.locator(f'#{field_id}').locator('input, textarea:visible, .MuiChip-label, .ViewSwitch-Switch, .PropsViewWorkerPickerSelect-UserList'))
 
-
-
         expect(self.page.locator('#target_department_after_sign .MuiChip-label')).to_have_text([
             "Министерство внутренней политики, информации и связи Республики Крым",
             "Министерство сэд 2.0",

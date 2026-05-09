@@ -232,8 +232,9 @@ def test_retest(main_page_with_responsible):
 def test_last_test(main_page_with_responsible, view):
     #doc_view_page = main_page_with_responsible.page.goto('https://test.dialog.loc/document-view/38dbbf11-8797-4650-863c-68e350b6b994')
     #view.assert_test_field_has_value()
+    user_information = main_page_with_responsible.get_basic_user_information()
     doc_edit_page = main_page_with_responsible.open_doc_create_page('Исходящий (Автотест)')
-    doc_edit_page.test_example()
+    doc_edit_page.test_example(user_information)
 
 
 
