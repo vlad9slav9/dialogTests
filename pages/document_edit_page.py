@@ -39,9 +39,9 @@ class DocumentEditPage(BasePage):
         self._content_template_field = self.page.locator(".Document-Select").filter(
             has_text="Добавить содержимое из шаблона")
 
-        self.group_with_organizations_from_admin = ["Министерство сэд 2.0", 'Аппарат Совета министров Республики Крым',
-                                                    'Министерство Тестирования РК']
-        self.group_with_organizations_from_profile = ['Тестовая Организация 999', 'МКУ Автотестовое']
+    #    self.group_with_organizations_from_admin = ["Министерство сэд 2.0", 'Аппарат Совета министров Республики Крым',
+    #                                                'Министерство Тестирования РК']
+    #    self.group_with_organizations_from_profile = ['Тестовая Организация 999', 'МКУ Автотестовое']
 
         self._calendar_year_button = self.page.locator('button:has(h6.MuiPickersToolbarText-toolbarTxt)')
 
@@ -64,7 +64,12 @@ class DocumentEditPage(BasePage):
         selected_option.click()
         return option_text
 
-    def fill_classifier(self, classifier_id, config):
+    def fill_classifier_by_label(self, group_label, value):
+        group_locator = self.page.get_by_label(f'{group_label}')
+        group_locator.click()
+        self.select_option(value)
+
+    def fill_classifier_by_config(self, classifier_id, config):
         mode = config.get('mode')
         classifier_locator = self.page.locator(f'#{classifier_id} input')
         if mode == ClassifierMode.SINGLE:
@@ -183,7 +188,7 @@ class DocumentEditPage(BasePage):
     def change_print_template(self, entered_text):
         self.clear_print_template()
         self._print_template_field.click()
-        self._print_template_field.press_sequentially(f'{entered_text}', delay=100)
+        self._print_template_field.press_sequentially(f'{entered_text}')
         self.assert_dropdown_list_contain_text(f'{entered_text}')
         options_locator = self.page.get_by_role('option', name=f'{entered_text}')
         options_locator.click()
@@ -212,7 +217,7 @@ class DocumentEditPage(BasePage):
         for field_id, config in FIELDS.items():
             field_type = config['type']
             if field_type == FieldType.CLASSIFIER:
-                selected_value = self.fill_classifier(field_id, config)
+                selected_value = self.fill_classifier_by_config(field_id, config)
             elif field_type == FieldType.PROPERTY:
                 selected_value = self.fill_property(field_id)
             else:
@@ -276,11 +281,11 @@ class DocumentEditPage(BasePage):
     def assert_content_editor_is_empty(self):
         expect(self._content_editor).to_be_empty()
 
-    def assert_picker_contain_users(self, classifier_name, users_type, fill_field=True):
-        self.assert_dropdown_list_contain_options(classifier_name, users_type, fill_field=fill_field)
+    def assert_picker_contain_users(self, classifier_name, users_values, fill_field=True):
+        self.assert_dropdown_list_contain_options(classifier_name, users_values, fill_field=fill_field)
 
-    def assert_picker_not_contain_users(self, classifier_name, users_type, fill_field=True):
-        self.assert_dropdown_list_not_contain_options(classifier_name, users_type, fill_field=fill_field)
+    def assert_picker_not_contain_users(self, classifier_name, users_values, fill_field=True):
+        self.assert_dropdown_list_not_contain_options(classifier_name, users_values, fill_field=fill_field)
 
     def assert_document_tab_visible(self, tab_name):
         expect(self.page.get_by_role('tab', name=tab_name)).to_be_visible()

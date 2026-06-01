@@ -13,7 +13,10 @@ class BasePage:
         self._vkontakte_button_link = self.page.locator('.SocialComponent-Vkontakte a')
         self._dropdown_list_without_options = self.page.get_by_text('No options')
 
-        self.group_with_organizations_from_admin = ['ФУЛ МКУ 9', 'Тестовая 9919', "РЕадмин", "Министерство сэд 2.0"]
+        self.group_with_organizations_from_admin = ["Министерство сэд 2.0", 'Аппарат Совета министров Республики Крым',
+                                                    'Министерство Тестирования РК']
+        self.group_with_organizations_from_profile = ['Тестовая Орга 999', 'МКУ Автотестовое']
+
         self.department_users = [
             'Ответственный Первый Пользователь | Автотестовая Родительская организация | Первая автотестовая должность',
             'Обычный Первый Пользователь | Автотестовая Родительская организация | Вторая автотестовая должность']
@@ -68,7 +71,7 @@ class BasePage:
 
         return result[0] if single else result
 
-    def extract_user_parts(self, user_data, parts='fio'):
+    def extract_user_parts(self, user_data, parts):
         if isinstance(parts, str):
             parts = [parts]
         components = user_data.split(' | ')
@@ -114,31 +117,38 @@ class BasePage:
         for option in all_options:
             expect(option).to_contain_text(search_text, ignore_case=True)
 
-    def assert_dropdown_list_contain_options(self, classifier_name, users_options, fill_field=False):
-        if isinstance(users_options, str):
-            users_options = [users_options]
-        self.click_classifier(classifier_name)
-        for user_option in users_options:
-            if fill_field:
-                search_prefix = user_option[:3]
-                self.enter_text_in_the_classifier(classifier_name, search_prefix)
-                expect(self.page.get_by_role('option', name=user_option, exact=True)).to_be_visible()
-                self.clear_classifier(classifier_name)
-            else:
-                expect(self.page.get_by_role('option', name=user_option, exact=True)).to_be_visible()
+    def assert_dropdown_list_not_contain_text(self, search_text):
+        options_locator = self.page.locator('role=option')
+        expect(options_locator).not_to_have_count(0)
+        all_options = options_locator.all()
+        for option in all_options:
+            expect(option).not_to_contain_text(search_text, ignore_case=True)
 
-    def assert_dropdown_list_not_contain_options(self, classifier_name, users_options, fill_field=True):
-        if isinstance(users_options, str):
-            users_options = [users_options]
+    def assert_dropdown_list_contain_options(self, classifier_name, users_values, fill_field=False):
+        if isinstance(users_values, str):
+            users_values = [users_values]
         self.click_classifier(classifier_name)
-        for user_option in users_options:
+        for user_value in users_values:
             if fill_field:
-                search_prefix = user_option[:3]
+                search_prefix = user_value[:3]
                 self.enter_text_in_the_classifier(classifier_name, search_prefix)
-                expect(self.page.get_by_role('option', name=user_option, exact=True)).to_be_hidden()
+                expect(self.page.get_by_role('option', name=user_value, exact=True)).to_be_visible()
                 self.clear_classifier(classifier_name)
             else:
-                expect(self.page.get_by_role('option', name=user_option, exact=True)).to_be_hidden()
+                expect(self.page.get_by_role('option', name=user_value, exact=True)).to_be_visible()
+
+    def assert_dropdown_list_not_contain_options(self, classifier_name, users_values, fill_field=True):
+        if isinstance(users_values, str):
+            users_values = [users_values]
+        self.click_classifier(classifier_name)
+        for user_value in users_values:
+            if fill_field:
+                search_prefix = user_value[:3]
+                self.enter_text_in_the_classifier(classifier_name, search_prefix)
+                expect(self.page.get_by_role('option', name=user_value, exact=True)).to_be_hidden()
+                self.clear_classifier(classifier_name)
+            else:
+                expect(self.page.get_by_role('option', name=user_value, exact=True)).to_be_hidden()
 
     def assert_dropdown_list_without_options(self, wait_time=3000):
         options_locator = self.page.locator("role=option")
@@ -148,7 +158,7 @@ class BasePage:
 
     def enter_text_in_the_classifier(self, classifier_name, text):
         classifier = self.page.get_by_role('textbox', name=classifier_name)
-        classifier.press_sequentially(text, delay=100)
+        classifier.press_sequentially(text)
 
     def clear_classifier(self, classifier_name):
         classifier = self.page.get_by_role('textbox', name=classifier_name, exact=True)
