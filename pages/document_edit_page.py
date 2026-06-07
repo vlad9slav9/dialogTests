@@ -3,7 +3,7 @@ from playwright.sync_api import expect
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import random
-from fields_config import FIELDS, FieldType, ClassifierMode
+from fields_config import ALL_FIELDS, REQUIRED_FIELDS, FieldType, ClassifierMode, PropertyMode
 
 from mimesis import Generic
 
@@ -38,10 +38,6 @@ class DocumentEditPage(BasePage):
             "//label[text() = 'Шаблон (для печати)']//following::button[@title='Clear']")
         self._content_template_field = self.page.locator(".Document-Select").filter(
             has_text="Добавить содержимое из шаблона")
-
-    #    self.group_with_organizations_from_admin = ["Министерство сэд 2.0", 'Аппарат Совета министров Республики Крым',
-    #                                                'Министерство Тестирования РК']
-    #    self.group_with_organizations_from_profile = ['Тестовая Организация 999', 'МКУ Автотестовое']
 
         self._calendar_year_button = self.page.locator('button:has(h6.MuiPickersToolbarText-toolbarTxt)')
 
@@ -91,12 +87,16 @@ class DocumentEditPage(BasePage):
             self.assert_field_is_filled(classifier_id, selected_values, is_multiform=True)
             return selected_values
 
-    def fill_property(self, property_id):
+    def fill_property_by_config(self, property_id, config):
+        mode = config.get('mode')
         property_locator = self.page.locator(f'#{property_id}').locator('input, textarea:visible')
-        input_text = generic.text.word()
-        property_locator.type(input_text)
-        self.assert_field_is_filled(property_id, input_text)
-        return input_text
+        if mode == PropertyMode.TEXT:
+            input_text = generic.text.word()
+            property_locator.fill(input_text)
+            self.assert_field_is_filled(property_id, input_text)
+            return input_text
+        #elif mode == PropertyMode.NUMBER:
+        #elif mode == PropertyMode.DATE:
 
     def clear_multivalues_field(self, field_name):
         delete_icons = self.page.locator(f'label:has-text("{field_name}") ~ div .MuiChip-deleteIcon')
@@ -214,12 +214,12 @@ class DocumentEditPage(BasePage):
 
     def fill_required_fields(self):
         filled_fields = {}
-        for field_id, config in FIELDS.items():
+        for field_id, config in ALL_FIELDS.items():
             field_type = config['type']
             if field_type == FieldType.CLASSIFIER:
                 selected_value = self.fill_classifier_by_config(field_id, config)
             elif field_type == FieldType.PROPERTY:
-                selected_value = self.fill_property(field_id)
+                selected_value = self.fill_property_by_config(field_id)
             else:
                 raise ValueError(f'Неизвестный тип поля: {field_type}')
             filled_fields[field_id] = selected_value
