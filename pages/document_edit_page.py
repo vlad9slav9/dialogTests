@@ -10,7 +10,7 @@ from mimesis import Generic
 from pages.base_page import BasePage
 from pages.document_view_page import DocumentViewPage
 
-generic = Generic('ru')
+generic_ru = Generic('ru')
 
 
 class DocumentEditPage(BasePage):
@@ -91,12 +91,14 @@ class DocumentEditPage(BasePage):
         mode = config.get('mode')
         property_locator = self.page.locator(f'#{property_id}').locator('input, textarea:visible')
         if mode == PropertyMode.TEXT:
-            input_text = generic.text.word()
-            property_locator.fill(input_text)
-            self.assert_field_is_filled(property_id, input_text)
-            return input_text
-        #elif mode == PropertyMode.NUMBER:
-        #elif mode == PropertyMode.DATE:
+            input_text = generic_ru.text.text()
+        elif mode == PropertyMode.NUMBER:
+            input_text = self.generate_random_input()
+        elif mode == PropertyMode.DATE:
+            input_text = self.generate_date_offset_days(0)
+        property_locator.fill(input_text)
+        self.assert_field_is_filled(property_id, input_text)
+        return input_text
 
     def clear_multivalues_field(self, field_name):
         delete_icons = self.page.locator(f'label:has-text("{field_name}") ~ div .MuiChip-deleteIcon')
@@ -155,7 +157,7 @@ class DocumentEditPage(BasePage):
         if value:
             self._short_description.fill(value)
         else:
-            value = generic.text.text()
+            value = generic_ru.text.text()
             self._short_description.fill(value)
         return value
 
@@ -166,7 +168,7 @@ class DocumentEditPage(BasePage):
         if text:
             self._content_editor.fill(text)
         else:
-            text = generic.text.text()
+            text = generic_ru.text.text()
             self._content_editor.fill(text)
 
         return text
@@ -212,17 +214,20 @@ class DocumentEditPage(BasePage):
     #     self.click_checkbox('Для МЭДО')
     #     self.assert_checkbox_checked('Для МЭДО')
 
-    def fill_required_fields(self):
+    def fill_all_not_default_fields(self):
         filled_fields = {}
         for field_id, config in ALL_FIELDS.items():
             field_type = config['type']
             if field_type == FieldType.CLASSIFIER:
                 selected_value = self.fill_classifier_by_config(field_id, config)
             elif field_type == FieldType.PROPERTY:
-                selected_value = self.fill_property_by_config(field_id)
+                selected_value = self.fill_property_by_config(field_id, config)
             else:
                 raise ValueError(f'Неизвестный тип поля: {field_type}')
             filled_fields[field_id] = selected_value
+
+        self.fill_short_description()
+        self.fill_content_editor()
 
     def click_upper_edit_button(self):
         self._upper_edit_button.click()
@@ -300,7 +305,7 @@ class DocumentEditPage(BasePage):
             return DocumentViewPage(self.page), filled_fields
         else:
             filled_fields = {**self.assert_default_fields_are_filled(user_information, return_values=True),
-                             **self.fill_required_fields()}
+                             **self.fill_all_not_default_fields()}
             self.click_bottom_save_button()
             self.assert_document_tab_visible('Документ №')
             #expect(self.page.get_by_role('tab', name='Документ №')).to_be_visible()
@@ -308,8 +313,8 @@ class DocumentEditPage(BasePage):
 
     def test_example(self, user_information):
 
-        #self.fill_required_fields()
-        self.assert_default_fields_are_filled(user_information)
+        self.fill_all_not_default_fields()
+        #self.assert_default_fields_are_filled(user_information)
 
         # meeting = self.fill_multiform('document_type_field_meeting_region')
         # self.assert_multiform_is_filled('document_type_field_meeting_region', meeting)

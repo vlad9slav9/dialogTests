@@ -1,7 +1,11 @@
 from playwright.sync_api import Page
 from playwright.sync_api import expect
+from mimesis import Generic
 import random
 import datetime
+
+generic_ru = Generic('ru')
+generic_en = Generic('en')
 
 
 class BasePage:
@@ -176,3 +180,6 @@ class BasePage:
             result.append(normalized_text)
 
         return result[0] if single else result
+
+    def generate_random_input(self):
+        return f"{generic_ru.text.word().capitalize()}-{generic_en.text.word().capitalize()}/{random.uniform(100, 999):.3f}"
