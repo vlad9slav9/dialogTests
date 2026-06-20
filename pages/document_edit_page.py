@@ -60,8 +60,8 @@ class DocumentEditPage(BasePage):
         selected_option.click()
         return option_text
 
-    def fill_classifier_by_label(self, group_label, value):
-        group_locator = self.page.get_by_label(f'{group_label}')
+    def fill_classifier_by_label(self, classifier_label, value):
+        group_locator = self.page.get_by_label(f'{classifier_label}')
         group_locator.click()
         self.select_option(value)
 
@@ -105,6 +105,10 @@ class DocumentEditPage(BasePage):
         for icon in delete_icons.all()[::-1]:
             icon.click()
 
+    def clear_group_field_by_id(self, field_id):
+        clear_locator = self.page.locator(f'#{field_id} [class*="GroupsPicker"] button[aria-label="Clear"]')
+        clear_locator.click()
+
     def assert_field_is_filled(self, field_id, value, is_multiform=False):
         if is_multiform:
             field_locator = self.page.locator(f'#{field_id} .MuiChip-label')
@@ -115,6 +119,10 @@ class DocumentEditPage(BasePage):
 
     def assert_field_is_empty(self, field_name):
         expect(self.page.get_by_label(field_name, exact=True)).to_be_empty()
+
+    def assert_group_and_field_is_empty(self, container_id):
+        expect(self.page.locator(f'#{container_id} [class*="GroupsPicker"] input')).to_be_empty()
+        expect(self.page.locator(f'#{container_id} .MuiChip-root')).to_have_count(0)
 
     def fill_date_property(self, date_property_name, input_date=None):
         date_property_locator = self.page.get_by_label(date_property_name, exact=True)
