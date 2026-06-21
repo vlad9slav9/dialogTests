@@ -85,14 +85,14 @@ def test_change_print_template(main_page_with_responsible):
 def test_search_nonexistent_print_template(main_page_with_responsible):
     doc_edit_page = main_page_with_responsible.open_doc_create_page('Исходящий (Автотест)')
     doc_edit_page.assert_field_is_filled('Шаблон (для печати) *', 'Первый автотестовый шаблон')
-    doc_edit_page.clear_classifier('Шаблон (для печати) *')
+    doc_edit_page.clear_classifier_by_name('Шаблон (для печати) *')
     doc_edit_page.enter_text_in_the_classifier('Шаблон (для печати) *', 'второй несуществующий')
     doc_edit_page.assert_dropdown_list_without_options()
 
 
 def test_check_empty_print_template(main_page_with_responsible):
     doc_edit_page = main_page_with_responsible.open_doc_create_page('Внутренний. Без Шаблона Печати (Автотест)')
-    doc_edit_page.assert_field_is_empty('Шаблон (для печати)')
+    doc_edit_page.assert_field_is_empty_by_name('Шаблон (для печати)')
     doc_edit_page.click_classifier('Шаблон (для печати)')
     doc_edit_page.assert_dropdown_list_without_options()
 
@@ -133,7 +133,7 @@ def test_search_option_in_classifier(main_page_with_responsible, field_name):
 
 def test_fill_organization_classifier_via_group(main_page_with_responsible):
     doc_edit_page = main_page_with_responsible.open_doc_create_page('Исходящий (Автотест)')
-    doc_edit_page.fill_classifier_by_label('Выберите группу', 'Автотестовая группа из профиля')
+    doc_edit_page.fill_classifier_group('Выберите группу', 'Автотестовая группа из профиля')
     doc_edit_page.assert_field_is_filled('target_department_after_sign',
                                          doc_edit_page.group_with_organizations_from_profile, is_multiform=True)
     doc_edit_page.clear_group_field_by_id('target_department_after_sign')
@@ -143,23 +143,28 @@ def test_fill_organization_classifier_via_group(main_page_with_responsible):
 
 def test_fill_user_classifier_via_grop(main_page_with_responsible):
     doc_edit_page = main_page_with_responsible.open_doc_create_page('Исходящий (Автотест)')
-    doc_edit_page.fill_classifier_by_label('Добавить из группы', 'Пользователи моей организации')
+    doc_edit_page.fill_classifier_group('Добавить из группы', 'Пользователи моей организации')
     doc_edit_page.assert_field_is_filled('send_forward_after_signature', doc_edit_page.department_users,
                                          is_multiform=True)
     doc_edit_page.clear_group_field_by_id('send_forward_after_signature')
     doc_edit_page.assert_group_and_field_is_empty('send_forward_after_signature')
 
 @pytest.mark.parametrize(
-    'field_name, field_id',
+    'main_field, second_field',
     [
-        ('Подпись', 'position'),
-        ('Имя согласователя', 'coordinator_pos')
+        ('signature', 'position'),
+        ('coordinator_name', 'coordinator_pos')
     ]
 )
-def test_autofill_position_classifier(main_page_with_responsible, field_name, field_id):
+def test_autofill_position_classifier(main_page_with_responsible, main_field, second_field):
     doc_edit_page = main_page_with_responsible.open_doc_create_page('Исходящий (Автотест)')
-    doc_edit_page.fill_classifier_by_label(field_name, doc_edit_page.department_users[1])
-    doc_edit_page.assert_field_is_filled(field_id, doc_edit_page.extract_user_parts(doc_edit_page.department_users[1], parts='position'))
+    doc_edit_page.fill_classifier_by_id(main_field, doc_edit_page.department_users[0])
+    doc_edit_page.assert_field_is_filled(second_field, doc_edit_page.extract_user_parts(doc_edit_page.department_users[0], parts='position'))
+    doc_edit_page.clear_classifier_by_id(main_field)
+    doc_edit_page.assert_field_is_empty_by_id(main_field)
+    doc_edit_page.assert_field_is_empty_by_id(second_field)
+    doc_edit_page.fill_classifier_by_id(main_field, doc_edit_page.department_users[1])
+    doc_edit_page.assert_field_is_filled(second_field, doc_edit_page.extract_user_parts(doc_edit_page.department_users[1], parts='position'))
 
 
 def test_search_user_in_creation_document_fields(main_page_with_responsible):

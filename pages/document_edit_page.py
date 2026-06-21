@@ -60,21 +60,31 @@ class DocumentEditPage(BasePage):
         selected_option.click()
         return option_text
 
-    def fill_classifier_by_label(self, classifier_label, value):
+    def fill_classifier_group(self, classifier_label, value):
         group_locator = self.page.get_by_label(f'{classifier_label}')
         group_locator.click()
         self.select_option(value)
 
-    def fill_classifier_by_config(self, classifier_id, config):
+    def fill_classifier_by_id(self, classifier_id, value):
+        classifier_locator = self.page.locator(f'#{classifier_id}')
+        classifier_locator.click()
+        self.select_option(value)
+
+
+    def fill_classifier_by_config(self, classifier_id, config, search_prefix=None):
         mode = config.get('mode')
         classifier_locator = self.page.locator(f'#{classifier_id} input')
         if mode == ClassifierMode.SINGLE:
             classifier_locator.click()
+            if search_prefix:
+                classifier_locator.press_sequentially(search_prefix)
             selected_value = self.select_option()
             self.assert_field_is_filled(classifier_id, selected_value)
             return selected_value
         elif mode == ClassifierMode.ABBREVIATED:
             classifier_locator.click()
+            if search_prefix:
+                classifier_locator.press_sequentially(search_prefix)
             full_data = self.select_option()
             short_name = self.get_shortened_name(full_data, all_initials=False)
             self.assert_field_is_filled(classifier_id, short_name)
@@ -83,6 +93,8 @@ class DocumentEditPage(BasePage):
             selected_values = []
             for _ in range(2):
                 classifier_locator.click()
+                if search_prefix:
+                    classifier_locator.press_sequentially(search_prefix)
                 selected_values.append(self.select_option())
             self.assert_field_is_filled(classifier_id, selected_values, is_multiform=True)
             return selected_values
@@ -96,7 +108,9 @@ class DocumentEditPage(BasePage):
             input_text = self.generate_random_input()
         elif mode == PropertyMode.DATE:
             input_text = self.generate_date_offset_days(0)
-        property_locator.fill(input_text)
+        else:
+            raise ValueError(f'Неизвестный PropertyMode')
+        property_locator.press_sequentially(input_text)
         self.assert_field_is_filled(property_id, input_text)
         return input_text
 
@@ -117,8 +131,11 @@ class DocumentEditPage(BasePage):
             field_locator = self.page.locator(f'#{field_id}').locator('input, textarea:visible')
             expect(field_locator).to_have_value(value)
 
-    def assert_field_is_empty(self, field_name):
+    def assert_field_is_empty_by_name(self, field_name):
         expect(self.page.get_by_label(field_name, exact=True)).to_be_empty()
+
+    def assert_field_is_empty_by_id(self, field_id):
+        expect(self.page.locator(f'#{field_id}').locator('input, textarea:visible')).to_be_empty()
 
     def assert_group_and_field_is_empty(self, container_id):
         expect(self.page.locator(f'#{container_id} [class*="GroupsPicker"] input')).to_be_empty()
@@ -127,16 +144,18 @@ class DocumentEditPage(BasePage):
     def fill_date_property(self, date_property_name, input_date=None):
         date_property_locator = self.page.get_by_label(date_property_name, exact=True)
         if input_date:
-            date_property_locator.fill(input_date)
+            date_property_locator.press_sequentially(input_date)
         else:
             input_date = self.generate_date_offset_days(0)
-            date_property_locator.fill(input_date)
+            date_property_locator.press_sequentially(input_date)
 
         return input_date
 
     def clear_property(self, prop_name):
         prop_locator = self.page.get_by_label(prop_name, exact=True)
-        prop_locator.clear()
+        prop_locator.press('Control+A')
+        prop_locator.press('Backspace')
+        #prop_locator.clear()
 
     def change_date_in_property(self, prop_name, date_offset):
         self.clear_property(prop_name)
@@ -163,10 +182,10 @@ class DocumentEditPage(BasePage):
 
     def fill_short_description(self, value=None):
         if value:
-            self._short_description.fill(value)
+            self._short_description.press_sequentially(value)
         else:
             value = generic_ru.text.text()
-            self._short_description.fill(value)
+            self._short_description.press_sequentially(value)
         return value
 
     def assert_short_description_has_value(self, value):
@@ -174,15 +193,17 @@ class DocumentEditPage(BasePage):
 
     def fill_content_editor(self, text=None):
         if text:
-            self._content_editor.fill(text)
+            self._content_editor.press_sequentially(text)
         else:
             text = generic_ru.text.text()
-            self._content_editor.fill(text)
+            self._content_editor.press_sequentially(text)
 
         return text
 
     def clear_content_editor(self):
-        self._content_editor.clear()
+        self._content_editor.click()
+        self._content_editor.press('Control+A')
+        self._content_editor.press('Backspace')
 
     def assert_content_editor_has_value(self, value):
         expect(self._content_editor).to_have_text(value)
@@ -227,7 +248,7 @@ class DocumentEditPage(BasePage):
         for field_id, config in ALL_FIELDS.items():
             field_type = config['type']
             if field_type == FieldType.CLASSIFIER:
-                selected_value = self.fill_classifier_by_config(field_id, config)
+                selected_value = self.fill_classifier_by_config(field_id, config, 'отв')
             elif field_type == FieldType.PROPERTY:
                 selected_value = self.fill_property_by_config(field_id, config)
             else:

@@ -137,7 +137,7 @@ class BasePage:
                 search_prefix = user_value[:3]
                 self.enter_text_in_the_classifier(classifier_name, search_prefix)
                 expect(self.page.get_by_role('option', name=user_value, exact=True)).to_be_visible()
-                self.clear_classifier(classifier_name)
+                self.clear_classifier_by_name(classifier_name)
             else:
                 expect(self.page.get_by_role('option', name=user_value, exact=True)).to_be_visible()
 
@@ -150,7 +150,7 @@ class BasePage:
                 search_prefix = user_value[:3]
                 self.enter_text_in_the_classifier(classifier_name, search_prefix)
                 expect(self.page.get_by_role('option', name=user_value, exact=True)).to_be_hidden()
-                self.clear_classifier(classifier_name)
+                self.clear_classifier_by_name(classifier_name)
             else:
                 expect(self.page.get_by_role('option', name=user_value, exact=True)).to_be_hidden()
 
@@ -164,9 +164,14 @@ class BasePage:
         classifier = self.page.get_by_role('textbox', name=classifier_name)
         classifier.press_sequentially(text)
 
-    def clear_classifier(self, classifier_name):
-        classifier = self.page.get_by_role('textbox', name=classifier_name, exact=True)
-        classifier.clear()
+    def clear_classifier_by_name(self, classifier_name):
+        classifier_locator = self.page.get_by_role('textbox', name=classifier_name, exact=True)
+        classifier_locator.clear()
+
+    def clear_classifier_by_id(self, classifier_id):
+        classifier_locator = self.page.locator(f'#{classifier_id}')
+        classifier_locator.press('Control+A')
+        classifier_locator.press('Backspace')
 
     def normalize_spaces(self, texts):
         if isinstance(texts, str):
