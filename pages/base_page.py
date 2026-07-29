@@ -112,7 +112,7 @@ class BasePage:
         expect(new_page).to_have_url('https://t.me/krtech')
 
     def assert_vkontakte_website_opened(self, new_page):
-        expect(new_page).to_have_url('https://vk.com/krtech_crimea')
+        expect(new_page).to_have_url('https://vk.ru/krtech_crimea')
 
     def assert_dropdown_list_contain_text(self, search_text):
         options_locator = self.page.locator('role=option')
