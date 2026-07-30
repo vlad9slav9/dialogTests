@@ -16,6 +16,7 @@ class BasePage:
         self._telegram_button_link = self.page.locator('.SocialComponent-Telegram a')
         self._vkontakte_button_link = self.page.locator('.SocialComponent-Vkontakte a')
         self._dropdown_list_without_options = self.page.get_by_text('No options')
+        self._loading_indicator = self.page.get_by_text('Загрузка...')
 
         self.group_with_organizations_from_admin = ["Министерство сэд 2.0", 'Аппарат Совета министров Республики Крым',
                                                     'Министерство Тестирования РК']
@@ -154,9 +155,9 @@ class BasePage:
             else:
                 expect(self.page.get_by_role('option', name=user_value, exact=True)).to_be_hidden()
 
-    def assert_dropdown_list_without_options(self, wait_time=3000):
+    def assert_dropdown_list_without_options(self):
+        expect(self._loading_indicator).to_be_hidden()
         options_locator = self.page.locator("role=option")
-        self.page.wait_for_timeout(wait_time)
         expect(options_locator).to_have_count(0)
         expect(self._dropdown_list_without_options).to_be_visible()
 
