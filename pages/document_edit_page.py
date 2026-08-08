@@ -12,6 +12,14 @@ from pages.document_view_page import DocumentViewPage
 
 generic_ru = Generic('ru')
 
+TARGET_FRONTEND_INPUTS = {                                                                                                                           
+        #"workerPicker",                                                                                                                                  
+        "classifierSelect",                                                                                                                              
+        "targetDepartmentPicker",                                                                                                                        
+        "signature",                                                                                                                                     
+        "onlyMyDepWorkerPicker",                                                                                                                         
+        #"targetDepartmentAfterSignPicker"
+        }
 
 class DocumentEditPage(BasePage):
     def __init__(self, page: Page):
@@ -48,6 +56,7 @@ class DocumentEditPage(BasePage):
                                 'users_my_org_test', 'office_class_topics',
                                 'office_class_corrs', 'print_font_size_pt']
 
+
     def select_option(self, value=None):
         options_locator = self.page.get_by_role('option')
         expect(options_locator).not_to_have_count(0)
@@ -70,8 +79,31 @@ class DocumentEditPage(BasePage):
         classifier_locator.click()
         self.select_option(value)
 
+    def fill_classifier(self, classifier_id, is_multiple=False, search_prefix=None):                                                                     
+        """                                                                                                                                              
+        Заполняет классификатор.                                                                                                                         
+        Если is_multiple == False — одиночный выбор.                                                                                                     
+        Если is_multiple == True — множественный выбор.                                                                                                  
+        """                                                                                                                                              
+        classifier_locator = self.page.locator(f'#{classifier_id} input').first                                                                                
+                                                                                                                                                         
+        if not is_multiple:                                                                                                                              
+            classifier_locator.click()                                                                                                                   
+            if search_prefix:                                                                                                                            
+                classifier_locator.press_sequentially(search_prefix)                                                                                     
+            selected_value = self.select_option()                                                                                  
+            return selected_value                                                                                                                        
+        else:                                                                                                                                            
+            selected_values = []                                                                                                                         
+            for _ in range(2):                                                                                                                           
+                classifier_locator.click()                                                                                                               
+                if search_prefix:                                                                                                                        
+                    classifier_locator.press_sequentially(search_prefix)                                                                                 
+                selected_values.append(self.select_option())                                                                                                                                                           
+            return selected_values
 
-    def fill_classifier_by_config(self, classifier_id, config, search_prefix=None):
+
+    '''def fill_classifier_by_config(self, classifier_id, config, search_prefix=None):
         mode = config.get('mode')
         classifier_locator = self.page.locator(f'#{classifier_id} input')
         if mode == ClassifierMode.SINGLE:
@@ -97,7 +129,7 @@ class DocumentEditPage(BasePage):
                     classifier_locator.press_sequentially(search_prefix)
                 selected_values.append(self.select_option())
             self.assert_field_is_filled(classifier_id, selected_values, is_multiform=True)
-            return selected_values
+            return selected_values'''
 
     def fill_property_by_config(self, property_id, config):
         mode = config.get('mode')
@@ -243,7 +275,34 @@ class DocumentEditPage(BasePage):
     #     self.click_checkbox('Для МЭДО')
     #     self.assert_checkbox_checked('Для МЭДО')
 
-    def fill_all_not_default_fields(self):
+    def fill_all_not_default_fields(self):                                                                                          
+        template_data = getattr(self, 'template_data', None)                                                                                             
+        if not template_data:                                                                                                                            
+            raise ValueError("Данные шаблона не были перехвачены!")                                                                                      
+                                                                                                                                                         
+        filled_fields = {}                                                                                                                               
+                                                                                                                                                         
+        for block in template_data.get("template", []):                                                                                                  
+            for item in block.get("items", []):                                                                                                          
+                frontend_input = item.get("frontendInput")                                                                                               
+                is_multiple = item.get("multiple", False) # Читаем флаг множественного выбора                                                            
+                field_id = item.get("code")                                                                                                              
+                is_editable = item.get("editable", True)                                                                                                 
+                                                                                                                                                         
+                if frontend_input in TARGET_FRONTEND_INPUTS and is_editable and field_id:                                                                
+                    # Вызываем заполнение напрямую с флагом is_multiple                                                                                  
+                    selected_value = self.fill_classifier(                                                                                               
+                        classifier_id=field_id,                                                                                                          
+                        is_multiple=is_multiple,
+                        search_prefix='тес'                                                                                                                                                                                                       
+                    )                                                                                                                                    
+                    filled_fields[field_id] = selected_value                                                                                             
+                                                                                                                                                         
+        self.fill_short_description()                                                                                                                    
+        self.fill_content_editor()                                                                                                                       
+        return filled_fields
+
+    ''' def fill_all_not_default_fields(self):
         filled_fields = {}
         for field_id, config in ALL_FIELDS.items():
             field_type = config['type']
@@ -256,7 +315,7 @@ class DocumentEditPage(BasePage):
             filled_fields[field_id] = selected_value
 
         self.fill_short_description()
-        self.fill_content_editor()
+        self.fill_content_editor()'''
 
     def click_upper_edit_button(self):
         self._upper_edit_button.click()
@@ -339,23 +398,3 @@ class DocumentEditPage(BasePage):
             self.assert_document_tab_visible('Документ №')
             #expect(self.page.get_by_role('tab', name='Документ №')).to_be_visible()
             return DocumentViewPage(self.page), filled_fields
-
-    def test_example(self, user_information):
-
-        self.fill_all_not_default_fields()
-        #self.assert_default_fields_are_filled(user_information)
-
-        # meeting = self.fill_multiform('document_type_field_meeting_region')
-        # self.assert_multiform_is_filled('document_type_field_meeting_region', meeting)
-        #
-        #
-        # tematics = self.fill_classifier('office_class_topics')
-        # self.assert_property_filled('office_class_topics', tematics)
-        #
-        #
-        # by_attorney = self.fill_property('by_attorney')
-        # self.assert_property_filled('by_attorney', by_attorney)
-        #
-        #
-        # document_type = self.fill_property('doc_type')
-        # self.assert_property_filled('doc_type', document_type)

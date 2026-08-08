@@ -89,8 +89,14 @@ class MainPage(BasePage):
         self._quick_doc_create_button.click()
         self.click_doc_type_select_field()
         self.select_doc_type(doc_type)
-        self._create_doc_button.click()
-        return DocumentEditPage(self.page)
+        with self.page.expect_response(
+            lambda res: '/template' in res.url and res.status == 200
+        ) as response_info:
+            self._create_doc_button.click()
+        doc_edit_page = DocumentEditPage(self.page)
+        doc_edit_page.template_data = response_info.value.json()
+        return doc_edit_page
+
 
     def get_basic_user_information(self):
         self.click_profile_button()
