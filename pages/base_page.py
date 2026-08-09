@@ -161,6 +161,20 @@ class BasePage:
         expect(options_locator).to_have_count(0)
         expect(self._dropdown_list_without_options).to_be_visible()
 
+    def is_field_empty(self, field_id: str) -> bool:               
+                container = self.page.locator(f'#{field_id}')                                                      
+                                                                           
+                # 1. Если это мультиселект (с чипами выбранных значений)   
+                if container.locator('.MuiChip-root, .MuiAutocomplete-tag').count() > 0:                                                   
+                    return False                                           
+                                                                           
+                # 2. Если это input или textarea                           
+                input_elem = container.locator(' .MuiAutocomplete-root:not([class*="GroupsPicker"]) input, textarea')
+                if input_elem.input_value():
+                    return False                                   
+                                                                           
+                return True
+
     def enter_text_in_the_classifier(self, classifier_name, text):
         classifier = self.page.get_by_role('textbox', name=classifier_name)
         classifier.press_sequentially(text)

@@ -1,16 +1,25 @@
-def test_logout(login_page, main_page_with_responsible):
+from pages.login_page import LoginPage
+from pages.main_page import MainPage
+import pytest
+
+
+
+
+
+
+def test_logout(login_page: LoginPage, main_page_with_responsible: MainPage):
     main_page_with_responsible.click_logout_button()
     main_page_with_responsible.click_logout_confirm_button()
     login_page.assert_login_page_logo_visible()
 
 
-def test_cancel_logout(main_page_with_responsible):
+def test_cancel_logout(main_page_with_responsible: MainPage):
     main_page_with_responsible.click_logout_button()
     main_page_with_responsible.click_cancel_logout_button()
     main_page_with_responsible.assert_profile_button_visible()
 
 
-def test_click_krtech_logo_from_main_page(main_page_with_responsible):
+def test_click_krtech_logo_from_main_page(main_page_with_responsible: MainPage):
     krtech_page = main_page_with_responsible.click_krtech_logo()
     main_page_with_responsible.assert_krtech_website_opened(krtech_page)
 

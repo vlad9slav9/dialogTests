@@ -13,12 +13,12 @@ from pages.document_view_page import DocumentViewPage
 generic_ru = Generic('ru')
 
 TARGET_FRONTEND_INPUTS = {                                                                                                                           
-        #"workerPicker",                                                                                                                                  
+        "workerPicker",                                                                                                                                  
         "classifierSelect",                                                                                                                              
         "targetDepartmentPicker",                                                                                                                        
         "signature",                                                                                                                                     
         "onlyMyDepWorkerPicker",                                                                                                                         
-        #"targetDepartmentAfterSignPicker"
+        "targetDepartmentAfterSignPicker"
         }
 
 class DocumentEditPage(BasePage):
@@ -74,62 +74,31 @@ class DocumentEditPage(BasePage):
         group_locator.click()
         self.select_option(value)
 
-    def fill_classifier_by_id(self, classifier_id, value):
-        classifier_locator = self.page.locator(f'#{classifier_id}')
-        classifier_locator.click()
-        self.select_option(value)
+    # def fill_classifier_by_id(self, classifier_id, value=None):
+    #     classifier_locator = self.page.locator(f'#{classifier_id}')
+    #     classifier_locator.click()
+    #     self.select_option(value)
 
-    def fill_classifier(self, classifier_id, is_multiple=False, search_prefix=None):                                                                     
-        """                                                                                                                                              
-        Заполняет классификатор.                                                                                                                         
-        Если is_multiple == False — одиночный выбор.                                                                                                     
-        Если is_multiple == True — множественный выбор.                                                                                                  
-        """                                                                                                                                              
-        classifier_locator = self.page.locator(f'#{classifier_id} input').first                                                                                
-                                                                                                                                                         
-        if not is_multiple:                                                                                                                              
-            classifier_locator.click()                                                                                                                   
-            if search_prefix:                                                                                                                            
-                classifier_locator.press_sequentially(search_prefix)                                                                                     
-            selected_value = self.select_option()                                                                                  
-            return selected_value                                                                                                                        
-        else:                                                                                                                                            
+    def fill_classifier(self, classifier_id, is_multiple=False, search_prefix=None):                                                                                                                                                                                                                
+        classifier_locator = self.page.locator(f'#{classifier_id} .MuiAutocomplete-root:not([class*="GroupsPicker"]) input')                                                                                                                                                                                                                            
+        if is_multiple:
             selected_values = []                                                                                                                         
             for _ in range(2):                                                                                                                           
-                classifier_locator.click()                                                                                                               
+                classifier_locator.click(force=True)                                                                                                               
                 if search_prefix:                                                                                                                        
                     classifier_locator.press_sequentially(search_prefix)                                                                                 
                 selected_values.append(self.select_option())                                                                                                                                                           
-            return selected_values
+            return selected_values                                                                                                                                                                                                                                                      
+        else:
+            classifier_locator.click(force=True)                                                                                                                   
+            if search_prefix:                                                                                                                            
+                classifier_locator.press_sequentially(search_prefix)                                                                                     
+            selected_value = self.select_option()                                                                                  
+            return selected_value                                                                                                                                            
 
 
-    '''def fill_classifier_by_config(self, classifier_id, config, search_prefix=None):
-        mode = config.get('mode')
-        classifier_locator = self.page.locator(f'#{classifier_id} input')
-        if mode == ClassifierMode.SINGLE:
-            classifier_locator.click()
-            if search_prefix:
-                classifier_locator.press_sequentially(search_prefix)
-            selected_value = self.select_option()
-            self.assert_field_is_filled(classifier_id, selected_value)
-            return selected_value
-        elif mode == ClassifierMode.ABBREVIATED:
-            classifier_locator.click()
-            if search_prefix:
-                classifier_locator.press_sequentially(search_prefix)
-            full_data = self.select_option()
-            short_name = self.get_shortened_name(full_data, all_initials=False)
-            self.assert_field_is_filled(classifier_id, short_name)
-            return short_name
-        elif mode == ClassifierMode.MULTI:
-            selected_values = []
-            for _ in range(2):
-                classifier_locator.click()
-                if search_prefix:
-                    classifier_locator.press_sequentially(search_prefix)
-                selected_values.append(self.select_option())
-            self.assert_field_is_filled(classifier_id, selected_values, is_multiform=True)
-            return selected_values'''
+
+
 
     def fill_property_by_config(self, property_id, config):
         mode = config.get('mode')
@@ -289,33 +258,34 @@ class DocumentEditPage(BasePage):
                 field_id = item.get("code")                                                                                                              
                 is_editable = item.get("editable", True)                                                                                                 
                                                                                                                                                          
-                if frontend_input in TARGET_FRONTEND_INPUTS and is_editable and field_id:                                                                
-                    # Вызываем заполнение напрямую с флагом is_multiple                                                                                  
-                    selected_value = self.fill_classifier(                                                                                               
+                if frontend_input in TARGET_FRONTEND_INPUTS:
+
+                    if self.is_field_empty(field_id):
+                        selected_value = self.fill_classifier(                                                                                               
                         classifier_id=field_id,                                                                                                          
                         is_multiple=is_multiple,
                         search_prefix='тес'                                                                                                                                                                                                       
                     )                                                                                                                                    
-                    filled_fields[field_id] = selected_value                                                                                             
+                        filled_fields[field_id] = selected_value
                                                                                                                                                          
-        self.fill_short_description()                                                                                                                    
-        self.fill_content_editor()                                                                                                                       
+        #self.fill_short_description()                                                                                                                    
+        #self.fill_content_editor()                                                                                                                       
         return filled_fields
 
-    ''' def fill_all_not_default_fields(self):
-        filled_fields = {}
-        for field_id, config in ALL_FIELDS.items():
-            field_type = config['type']
-            if field_type == FieldType.CLASSIFIER:
-                selected_value = self.fill_classifier_by_config(field_id, config, 'отв')
-            elif field_type == FieldType.PROPERTY:
-                selected_value = self.fill_property_by_config(field_id, config)
-            else:
-                raise ValueError(f'Неизвестный тип поля: {field_type}')
-            filled_fields[field_id] = selected_value
+    # def fill_all_not_default_fields(self):
+    #     filled_fields = {}
+    #     for field_id, config in ALL_FIELDS.items():
+    #         field_type = config['type']
+    #         if field_type == FieldType.CLASSIFIER:
+    #             selected_value = self.fill_classifier_by_config(field_id, config, 'отв')
+    #         elif field_type == FieldType.PROPERTY:
+    #             selected_value = self.fill_property_by_config(field_id, config)
+    #         else:
+    #             raise ValueError(f'Неизвестный тип поля: {field_type}')
+    #         filled_fields[field_id] = selected_value
 
-        self.fill_short_description()
-        self.fill_content_editor()'''
+    #     self.fill_short_description()
+    #     self.fill_content_editor()
 
     def click_upper_edit_button(self):
         self._upper_edit_button.click()
