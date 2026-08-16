@@ -22,10 +22,10 @@ class LoginPage(BasePage):
         self.page.goto('/')
 
     def enter_username(self, username):
-        self._username_input_field.fill(username)
+        self._username_input_field.press_sequentially(username)
 
     def enter_password(self, password):
-        self._password_input_field.fill(password)
+        self._password_input_field.press_sequentially(password)
 
     def click_login(self):
         self._login_button.click()

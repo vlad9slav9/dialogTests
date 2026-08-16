@@ -12,7 +12,7 @@ from pages.document_view_page import DocumentViewPage
 
 generic_ru = Generic('ru')
 
-TARGET_FRONTEND_INPUTS = {                                                                                                                           
+TARGET_CLASSIFIER_FRONTEND_INPUTS = {                                                                                                                           
         "workerPicker",                                                                                                                                  
         "classifierSelect",                                                                                                                              
         "targetDepartmentPicker",                                                                                                                        
@@ -20,6 +20,14 @@ TARGET_FRONTEND_INPUTS = {
         "onlyMyDepWorkerPicker",                                                                                                                         
         "targetDepartmentAfterSignPicker"
         }
+
+TARGET_PROPERTY_INPUTS = {                     
+        "date",
+        'dateYear',                                    
+        "date_empty",                              
+        "text",                                    
+        "text_area"                                
+    }
 
 class DocumentEditPage(BasePage):
     def __init__(self, page: Page):
@@ -94,26 +102,22 @@ class DocumentEditPage(BasePage):
             if search_prefix:                                                                                                                            
                 classifier_locator.press_sequentially(search_prefix)                                                                                     
             selected_value = self.select_option()                                                                                  
-            return selected_value                                                                                                                                            
+            return selected_value
 
 
-
-
-
-    def fill_property_by_config(self, property_id, config):
-        mode = config.get('mode')
-        property_locator = self.page.locator(f'#{property_id}').locator('input, textarea:visible')
-        if mode == PropertyMode.TEXT:
-            input_text = generic_ru.text.text()
-        elif mode == PropertyMode.NUMBER:
-            input_text = self.generate_random_input()
-        elif mode == PropertyMode.DATE:
-            input_text = self.generate_date_offset_days(0)
+    def fill_property(self, property_id: str, frontend_input: str) -> str:
+        locator = self.page.locator(f'#{property_id}').locator('input, textarea:visible')
+        if frontend_input in ['date','date_empty']:
+            value = self.generate_date_offset_days(0)
+        elif frontend_input == 'dateYear':
+            value = self.generate_date_offset_days(0, year=True)
+        elif frontend_input in ['text','text_area']:
+            value = self.generate_random_input()
         else:
-            raise ValueError(f'Неизвестный PropertyMode')
-        property_locator.press_sequentially(input_text)
-        self.assert_field_is_filled(property_id, input_text)
-        return input_text
+            raise ValueError(f'Неподдерживаемый тип свойства: {frontend_input}')
+        locator.press_sequentially(value)
+        return value
+
 
     def clear_multivalues_field(self, field_name):
         delete_icons = self.page.locator(f'label:has-text("{field_name}") ~ div .MuiChip-deleteIcon')
@@ -124,13 +128,9 @@ class DocumentEditPage(BasePage):
         clear_locator = self.page.locator(f'#{field_id} [class*="GroupsPicker"] button[aria-label="Clear"]')
         clear_locator.click()
 
-    def assert_field_is_filled(self, field_id, value, is_multiform=False):
-        if is_multiform:
-            field_locator = self.page.locator(f'#{field_id} .MuiChip-label')
-            expect(field_locator).to_have_text(value)
-        else:
-            field_locator = self.page.locator(f'#{field_id}').locator('input, textarea:visible')
-            expect(field_locator).to_have_value(value)
+    def assert_property_has_value(self, field_id, value):
+        field_locator = self.page.locator(f'#{field_id}').locator('input, textarea:visible')
+        expect(field_locator).to_have_value(value)
 
     def assert_field_is_empty_by_name(self, field_name):
         expect(self.page.get_by_label(field_name, exact=True)).to_be_empty()
@@ -162,7 +162,7 @@ class DocumentEditPage(BasePage):
         self.clear_property(prop_name)
         new_date = self.generate_date_offset_days(date_offset)
         self.fill_date_property(prop_name, new_date)
-        self.assert_field_is_filled(prop_name, new_date)
+        self.assert_property_has_value(prop_name, new_date)
 
     def click_field_calendar(self, property_name):
         button = self.page.locator(f"//label[text() = '{property_name}']/following::button[1]")
@@ -183,10 +183,10 @@ class DocumentEditPage(BasePage):
 
     def fill_short_description(self, value=None):
         if value:
-            self._short_description.press_sequentially(value)
+            self._short_description.fill(value)
         else:
             value = generic_ru.text.text()
-            self._short_description.press_sequentially(value)
+            self._short_description.fill(value)
         return value
 
     def assert_short_description_has_value(self, value):
@@ -194,10 +194,10 @@ class DocumentEditPage(BasePage):
 
     def fill_content_editor(self, text=None):
         if text:
-            self._content_editor.press_sequentially(text)
+            self._content_editor.fill(text)
         else:
             text = generic_ru.text.text()
-            self._content_editor.press_sequentially(text)
+            self._content_editor.fill(text)
 
         return text
 
@@ -254,22 +254,34 @@ class DocumentEditPage(BasePage):
         for block in template_data.get("template", []):                                                                                                  
             for item in block.get("items", []):                                                                                                          
                 frontend_input = item.get("frontendInput")                                                                                               
-                is_multiple = item.get("multiple", False) # Читаем флаг множественного выбора                                                            
+                is_multiple = item.get("multiple", False)                                                       
                 field_id = item.get("code")                                                                                                              
-                is_editable = item.get("editable", True)                                                                                                 
-                                                                                                                                                         
-                if frontend_input in TARGET_FRONTEND_INPUTS:
-
-                    if self.is_field_empty(field_id):
-                        selected_value = self.fill_classifier(                                                                                               
-                        classifier_id=field_id,                                                                                                          
-                        is_multiple=is_multiple,
-                        search_prefix='тес'                                                                                                                                                                                                       
-                    )                                                                                                                                    
+                is_editable = item.get("editable", True)                                                                                                                                      
+                if frontend_input in TARGET_CLASSIFIER_FRONTEND_INPUTS:
+                    if self.is_field_empty(field_id, field_type='classifier'):   
+                        selected_value = self.fill_classifier(
+                            classifier_id=field_id,
+                            is_multiple=is_multiple,
+                            search_prefix='тес'
+                        )
+                        expected_value = selected_value
+                        if frontend_input == 'signature':
+                            expected_value = self.get_shortened_name(selected_value)
+                        self.assert_classifier_has_value(field_id, expected_value, is_multiple)
                         filled_fields[field_id] = selected_value
+                elif frontend_input in TARGET_PROPERTY_INPUTS:
+                    if self.is_field_empty(field_id, field_type='property'):   
+                        filled_value = self.fill_property(field_id, frontend_input)
+                        self.assert_property_has_value(field_id, filled_value)
+                        filled_fields[field_id] = filled_value
+                elif frontend_input == 'checkbox':
+                    if self.is_field_empty(field_id, field_type='checkbox'):   
+                        self.click_checkbox(field_id)
+                        self.assert_checkbox_checked(field_id)
+                        filled_fields[field_id] = True
                                                                                                                                                          
-        #self.fill_short_description()                                                                                                                    
-        #self.fill_content_editor()                                                                                                                       
+        self.fill_short_description()                                                                                                                    
+        self.fill_content_editor()                                                                                                                       
         return filled_fields
 
     # def fill_all_not_default_fields(self):
@@ -308,14 +320,14 @@ class DocumentEditPage(BasePage):
         expect(self._end_date_field).to_have_value(end_date)
 
         current_date = self.generate_date_offset_days()
-        self.assert_field_is_filled('date_doc', current_date)
+        self.assert_property_has_value('date_doc', current_date)
 
-        self.assert_field_is_filled('date_from', current_date)
+        self.assert_property_has_value('date_from', current_date)
 
         current_year = self.generate_date_offset_days(0, year=True)
-        self.assert_field_is_filled('date_year', current_year)
+        self.assert_property_has_value('date_year', current_year)
 
-        self.assert_field_is_filled('from', user_information, is_multiform=True)
+        self.assert_property_has_value('from', user_information, is_multiform=True)
 
         self.assert_checkbox_checked('show_signature')
         self.assert_checkbox_checked('show_author')
@@ -368,3 +380,21 @@ class DocumentEditPage(BasePage):
             self.assert_document_tab_visible('Документ №')
             #expect(self.page.get_by_role('tab', name='Документ №')).to_be_visible()
             return DocumentViewPage(self.page), filled_fields
+
+    def assert_classifier_has_value(self, field_id: str, expected_value, is_multiple: bool = False):                    
+            """Проверяет, что классификатор содержит выбранное значение (строка или список строк)."""                       
+            container = self.page.locator(f'#{field_id}')                                                                   
+                                                                                                                            
+            if is_multiple:                                                                                                 
+                # expected_value — это список (list[str])                                                                   
+                for val in expected_value:                                                                                  
+                    chip_locator = container.locator('.MuiChip-root, .MuiAutocomplete-tag').filter(has_text=val)            
+                    expect(chip_locator).to_be_visible()                                                                    
+            else:                                                                                                           
+                # expected_value — это строка (str)                                                                         
+                chips = container.locator('.MuiChip-root, .MuiAutocomplete-tag')                                            
+                if chips.count() > 0:                                                                                       
+                    expect(chips).to_contain_text(expected_value)                                                           
+                else:                                                                                                       
+                    input_elem = container.locator('.MuiAutocomplete-root:not([class*="GroupsPicker"]) input, textarea')    
+                    expect(input_elem).to_have_value(expected_value)

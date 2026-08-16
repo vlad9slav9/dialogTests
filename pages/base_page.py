@@ -53,7 +53,7 @@ class BasePage:
         user_data = user_data_locator.inner_text().split(':')[-1].strip()
         return user_data
 
-    def get_shortened_name(self, full_names, all_initials=True):
+    def get_shortened_name(self, full_names, all_initials=False):
         if isinstance(full_names, str):
             full_names = [full_names]
             single = True
@@ -100,8 +100,8 @@ class BasePage:
     def click_vkontakte_button(self):
         return self.click_and_open_new_tab(self._vkontakte_button_link)
 
-    def click_checkbox(self, checkbox_name):
-        self.page.get_by_label(checkbox_name, exact=True).click()
+    def click_checkbox(self, checkbox_id):
+        self.page.locator(f'#{checkbox_id} input[type="checkbox"]').click()
 
     def click_classifier(self, classifier_name):
         self.page.get_by_role('textbox', name=classifier_name, exact=True).click()
@@ -161,18 +161,24 @@ class BasePage:
         expect(options_locator).to_have_count(0)
         expect(self._dropdown_list_without_options).to_be_visible()
 
-    def is_field_empty(self, field_id: str) -> bool:               
-                container = self.page.locator(f'#{field_id}')                                                      
-                                                                           
-                # 1. Если это мультиселект (с чипами выбранных значений)   
-                if container.locator('.MuiChip-root, .MuiAutocomplete-tag').count() > 0:                                                   
-                    return False                                           
-                                                                           
-                # 2. Если это input или textarea                           
-                input_elem = container.locator(' .MuiAutocomplete-root:not([class*="GroupsPicker"]) input, textarea')
-                if input_elem.input_value():
-                    return False                                   
-                                                                           
+    def is_field_empty(self, field_id: str, field_type:str) -> bool:               
+                container = self.page.locator(f'#{field_id}')  
+                if field_type == 'classifier':                                                    
+                    if container.locator('.MuiChip-root, .MuiAutocomplete-tag').count() > 0:                                                   
+                        return False                                                                                                                
+                    input_elem = container.locator(' .MuiAutocomplete-root:not([class*="GroupsPicker"]) input, textarea')
+                    if input_elem.input_value():
+                        return False
+                elif field_type == 'property':
+                    prop_elem = container.locator('input, textarea:visible')
+                    if prop_elem.input_value():
+                        return False
+                elif field_type == 'checkbox':
+                    checkbox_elem = container.locator('input[type="checkbox"]')
+                    if checkbox_elem.is_checked():
+                        return False
+                else:
+                    raise ValueError(f'Неподдерживаемый тип поля: {field_type}')                                                  
                 return True
 
     def enter_text_in_the_classifier(self, classifier_name, text):

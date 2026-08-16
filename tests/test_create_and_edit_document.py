@@ -222,12 +222,6 @@ def test_create_document_with_only_required_fields(main_page_with_responsible):
     doc_view_page.assert_system_fields_have_values(user_information)
 
 
-def test_retest_id(main_page_with_responsible):
-    user_information = main_page_with_responsible.get_basic_user_information()
-    doc_edit_page = main_page_with_responsible.open_doc_create_page('Исходящий (Автотест)')
-    doc_edit_page.test_example()
-
-
 @pytest.mark.parametrize(
     "save_action",
     [
@@ -290,7 +284,7 @@ def test_edit_document(main_page_with_responsible):
 #     past_date = doc_create_page.change_date_via_calendar('Дата от', future_date=False)
 #     doc_create_page.assert_field_is_filled('Дата от', past_date)
 
-def test_retest(main_page_with_responsible):
+def test_retest(main_page_with_responsible: MainPage):
     user_information = main_page_with_responsible.get_basic_user_information()
     doc_edit_page = main_page_with_responsible.open_doc_create_page('Исходящий (Автотест)')
     doc_edit_page.fill_all_not_default_fields()
