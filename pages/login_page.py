@@ -1,7 +1,6 @@
-import configparser
+import os
 
-from playwright.sync_api import Page
-from playwright.sync_api import expect
+from playwright.sync_api import Page, expect
 
 from pages.base_page import BasePage
 from pages.main_page import MainPage
@@ -10,16 +9,16 @@ from pages.main_page import MainPage
 class LoginPage(BasePage):
     def __init__(self, page: Page):
         super().__init__(page)
-        self.config = configparser.ConfigParser()
-        self.config.read('auth.ini')
-        self._username_input_field = self.page.locator('#login')
-        self._password_input_field = self.page.locator('#password')
-        self._login_button = self.page.locator('#login_enter_button')
-        self._login_error_message = self.page.get_by_text('Введены неверные данные')
-        self._login_page_logo = self.page.get_by_text('Войти в систему электронного документооборота')
+        self._username_input_field = self.page.locator("#login")
+        self._password_input_field = self.page.locator("#password")
+        self._login_button = self.page.locator("#login_enter_button")
+        self._login_error_message = self.page.get_by_text("Введены неверные данные")
+        self._login_page_logo = self.page.get_by_text(
+            "Войти в систему электронного документооборота"
+        )
 
     def navigate(self):
-        self.page.goto('/')
+        self.page.goto("/")
 
     def enter_username(self, username):
         self._username_input_field.press_sequentially(username)
@@ -36,16 +35,16 @@ class LoginPage(BasePage):
         self.click_login()
 
     def get_responsible_username(self):
-        return self.config['responsible']['username']
+        return os.getenv("RESPONSIBLE_USERNAME")
 
     def get_responsible_password(self):
-        return self.config['responsible']['password']
+        return os.getenv("RESPONSIBLE_PASSWORD")
 
     def get_fake_username(self):
-        return 'fake_Username_123'
+        return "fake_Username_123"
 
     def get_fake_password(self):
-        return 'fake_Password_123'
+        return "fake_Password_123"
 
     def login_with_responsible(self):
         self.do_login(self.get_responsible_username(), self.get_responsible_password())

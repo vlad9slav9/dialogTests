@@ -1,4 +1,3 @@
-
 def test_navigate_to_login_page(login_page):
     login_page.assert_login_page_logo_visible()
 
