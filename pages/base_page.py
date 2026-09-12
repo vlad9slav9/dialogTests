@@ -1,56 +1,79 @@
-from playwright.sync_api import Page
-from playwright.sync_api import expect
-from mimesis import Generic
-import random
 import datetime
+import random
 
-generic_ru = Generic('ru')
-generic_en = Generic('en')
+from mimesis import Generic
+from playwright.sync_api import Page, expect
+
+generic_ru = Generic("ru")
+generic_en = Generic("en")
 
 
 class BasePage:
     def __init__(self, page: Page):
         self.page = page
 
-        self._krtech_logo_link = self.page.locator('.SocialComponent-KrtechLogo a')
-        self._telegram_button_link = self.page.locator('.SocialComponent-Telegram a')
-        self._vkontakte_button_link = self.page.locator('.SocialComponent-Vkontakte a')
-        self._dropdown_list_without_options = self.page.get_by_text('No options')
-        self._loading_indicator = self.page.get_by_text('Загрузка...')
+        self._krtech_logo_link = self.page.locator(".SocialComponent-KrtechLogo a")
+        self._telegram_button_link = self.page.locator(".SocialComponent-Telegram a")
+        self._vkontakte_button_link = self.page.locator(".SocialComponent-Vkontakte a")
+        self._dropdown_list_without_options = self.page.get_by_text("No options")
+        self._loading_indicator = self.page.get_by_text("Загрузка...")
 
-        self.group_with_organizations_from_admin = ["Министерство сэд 2.0", 'Аппарат Совета министров Республики Крым',
-                                                    'Министерство Тестирования РК']
-        self.group_with_organizations_from_profile = ['Тестовая Орга 999', 'МКУ Автотестовое']
+        self.group_with_organizations_from_admin = [
+            "Министерство сэд 2.0",
+            "Аппарат Совета министров Республики Крым",
+            "Министерство Тестирования РК",
+        ]
+        self.group_with_organizations_from_profile = [
+            "Тестовая Орга 999",
+            "МКУ Автотестовое",
+        ]
 
         self.department_users = [
-            'Ответственный Первый Пользователь | Автотестовая Родительская организация | Первая автотестовая должность',
-            'Обычный Первый Пользователь | Автотестовая Родительская организация | Вторая автотестовая должность']
+            "Ответственный Первый Пользователь | Автотестовая Родительская организация | Первая автотестовая должность",
+            "Обычный Первый Пользователь | Автотестовая Родительская организация | Вторая автотестовая должность",
+        ]
         self.department_curators = [
-            'Волохов Алексей Николаевич | Аппарат Совета министров Республики Крым | Глава Республики Крым',
-            'Косторнова Елена Борисовна | Аппарат Совета министров Республики Крым | Начальник управления']
+            "Волохов Алексей Николаевич | Аппарат Совета министров Республики Крым | Глава Республики Крым",
+            "Косторнова Елена Борисовна | Аппарат Совета министров Республики Крым | Начальник управления",
+        ]
         self.mku_users = [
-            'Второй Юзер Мкушнович | МКУ Автотестовое | Второго уровня должность',
-            'Мкушный Пользователь Ответственный | МКУ Автотестовое | Должность первого уровня']
+            "Второй Юзер Мкушнович | МКУ Автотестовое | Второго уровня должность",
+            "Мкушный Пользователь Ответственный | МКУ Автотестовое | Должность первого уровня",
+        ]
         self.users_from_other_departments = [
-            'Андрошин Андрей Владимирович | Министерство Тестирования РК | Генеральный директор	',
-            'Сидоров Артем Сергеевич | Министерство сэд 2.0 | Руководитель']
+            "Андрошин Андрей Владимирович | Министерство Тестирования РК | Генеральный директор	",
+            "Сидоров Артем Сергеевич | Министерство сэд 2.0 | Руководитель",
+        ]
         self.users_with_mku = self.department_users + self.mku_users
-        self.users_with_mku_and_curators = self.users_with_mku + self.department_curators
-        self.cross_department_users = self.users_with_mku_and_curators + self.users_from_other_departments
-        self.users_without_curators = self.department_users + self.mku_users + self.users_from_other_departments
-        self.curators_and_other_departments = self.department_curators + self.users_from_other_departments
+        self.users_with_mku_and_curators = (
+            self.users_with_mku + self.department_curators
+        )
+        self.cross_department_users = (
+            self.users_with_mku_and_curators + self.users_from_other_departments
+        )
+        self.users_without_curators = (
+            self.department_users + self.mku_users + self.users_from_other_departments
+        )
+        self.curators_and_other_departments = (
+            self.department_curators + self.users_from_other_departments
+        )
 
     def generate_date_offset_days(self, days=0, year=False):
         if year:
-            date_offset = (datetime.datetime.now() + datetime.timedelta(days=days)).strftime('%Y')
+            date_offset = (
+                datetime.datetime.now() + datetime.timedelta(days=days)
+            ).strftime("%Y")
         else:
-            date_offset = (datetime.datetime.now() + datetime.timedelta(days=days)).strftime('%d.%m.%Y')
+            date_offset = (
+                datetime.datetime.now() + datetime.timedelta(days=days)
+            ).strftime("%d.%m.%Y")
         return date_offset
 
     def get_user_data(self, data_name):
         user_data_locator = self.page.locator(
-            f'p.MuiTypography-root.MuiTypography-body1:has(strong:text("{data_name}"))')
-        user_data = user_data_locator.inner_text().split(':')[-1].strip()
+            f'p.MuiTypography-root.MuiTypography-body1:has(strong:text("{data_name}"))'
+        )
+        user_data = user_data_locator.inner_text().split(":")[-1].strip()
         return user_data
 
     def get_shortened_name(self, full_names, all_initials=False):
@@ -68,9 +91,9 @@ class BasePage:
             second_initial = parts[2][0]
 
             if all_initials:
-                short_name = f'{last_name} {first_initial}.{second_initial}.'
+                short_name = f"{last_name} {first_initial}.{second_initial}."
             else:
-                short_name = f'{first_initial}. {last_name}'
+                short_name = f"{first_initial}. {last_name}"
 
             result.append(short_name)
 
@@ -79,9 +102,13 @@ class BasePage:
     def extract_user_parts(self, user_data, parts):
         if isinstance(parts, str):
             parts = [parts]
-        components = user_data.split(' | ')
+        components = user_data.split(" | ")
         mapping = {"fio": 0, "organization": 1, "position": 2}
-        result = [components[mapping[p]] for p in parts if p in mapping and mapping[p] < len(components)]
+        result = [
+            components[mapping[p]]
+            for p in parts
+            if p in mapping and mapping[p] < len(components)
+        ]
         return " | ".join(result)
 
     def click_and_open_new_tab(self, button_link):
@@ -104,32 +131,34 @@ class BasePage:
         self.page.locator(f'#{checkbox_id} input[type="checkbox"]').click()
 
     def click_classifier(self, classifier_name):
-        self.page.get_by_role('textbox', name=classifier_name, exact=True).click()
+        self.page.get_by_role("textbox", name=classifier_name, exact=True).click()
 
     def assert_krtech_website_opened(self, new_page):
-        expect(new_page).to_have_url('https://krtech.ru/')
+        expect(new_page).to_have_url("https://krtech.ru/")
 
     def assert_telegram_website_opened(self, new_page):
-        expect(new_page).to_have_url('https://t.me/krtech')
+        expect(new_page).to_have_url("https://t.me/krtech")
 
     def assert_vkontakte_website_opened(self, new_page):
-        expect(new_page).to_have_url('https://vk.ru/krtech_crimea')
+        expect(new_page).to_have_url("https://vk.ru/krtech_crimea")
 
     def assert_dropdown_list_contain_text(self, search_text):
-        options_locator = self.page.locator('role=option')
+        options_locator = self.page.locator("role=option")
         expect(options_locator).not_to_have_count(0)
         all_options = options_locator.all()
         for option in all_options:
             expect(option).to_contain_text(search_text, ignore_case=True)
 
     def assert_dropdown_list_not_contain_text(self, search_text):
-        options_locator = self.page.locator('role=option')
+        options_locator = self.page.locator("role=option")
         expect(options_locator).not_to_have_count(0)
         all_options = options_locator.all()
         for option in all_options:
             expect(option).not_to_contain_text(search_text, ignore_case=True)
 
-    def assert_dropdown_list_contain_options(self, classifier_name, users_values, fill_field=False):
+    def assert_dropdown_list_contain_options(
+        self, classifier_name, users_values, fill_field=False
+    ):
         if isinstance(users_values, str):
             users_values = [users_values]
         self.click_classifier(classifier_name)
@@ -137,12 +166,18 @@ class BasePage:
             if fill_field:
                 search_prefix = user_value[:3]
                 self.enter_text_in_the_classifier(classifier_name, search_prefix)
-                expect(self.page.get_by_role('option', name=user_value, exact=True)).to_be_visible()
+                expect(
+                    self.page.get_by_role("option", name=user_value, exact=True)
+                ).to_be_visible()
                 self.clear_classifier_by_name(classifier_name)
             else:
-                expect(self.page.get_by_role('option', name=user_value, exact=True)).to_be_visible()
+                expect(
+                    self.page.get_by_role("option", name=user_value, exact=True)
+                ).to_be_visible()
 
-    def assert_dropdown_list_not_contain_options(self, classifier_name, users_values, fill_field=True):
+    def assert_dropdown_list_not_contain_options(
+        self, classifier_name, users_values, fill_field=True
+    ):
         if isinstance(users_values, str):
             users_values = [users_values]
         self.click_classifier(classifier_name)
@@ -150,10 +185,14 @@ class BasePage:
             if fill_field:
                 search_prefix = user_value[:3]
                 self.enter_text_in_the_classifier(classifier_name, search_prefix)
-                expect(self.page.get_by_role('option', name=user_value, exact=True)).to_be_hidden()
+                expect(
+                    self.page.get_by_role("option", name=user_value, exact=True)
+                ).to_be_hidden()
                 self.clear_classifier_by_name(classifier_name)
             else:
-                expect(self.page.get_by_role('option', name=user_value, exact=True)).to_be_hidden()
+                expect(
+                    self.page.get_by_role("option", name=user_value, exact=True)
+                ).to_be_hidden()
 
     def assert_dropdown_list_without_options(self):
         expect(self._loading_indicator).to_be_hidden()
@@ -161,38 +200,42 @@ class BasePage:
         expect(options_locator).to_have_count(0)
         expect(self._dropdown_list_without_options).to_be_visible()
 
-    def is_field_empty(self, field_id: str, field_type:str) -> bool:               
-                container = self.page.locator(f'#{field_id}')  
-                if field_type == 'classifier':                                                    
-                    if container.locator('.MuiChip-root, .MuiAutocomplete-tag').count() > 0:                                                   
-                        return False                                                                                                                
-                    input_elem = container.locator(' .MuiAutocomplete-root:not([class*="GroupsPicker"]) input, textarea')
-                    if input_elem.input_value():
-                        return False
-                elif field_type == 'property':
-                    prop_elem = container.locator('input, textarea:visible')
-                    if prop_elem.input_value():
-                        return False
-                elif field_type == 'checkbox':
-                    checkbox_elem = container.locator('input[type="checkbox"]')
-                    if checkbox_elem.is_checked():
-                        return False
-                else:
-                    raise ValueError(f'Неподдерживаемый тип поля: {field_type}')                                                  
-                return True
+    def is_field_empty(self, field_id: str, field_type: str) -> bool:
+        container = self.page.locator(f"#{field_id}")
+        if field_type == "classifier":
+            if container.locator(".MuiChip-root, .MuiAutocomplete-tag").count() > 0:
+                return False
+            input_elem = container.locator(
+                ' .MuiAutocomplete-root:not([class*="GroupsPicker"]) input, textarea'
+            )
+            if input_elem.input_value():
+                return False
+        elif field_type == "property":
+            prop_elem = container.locator("input, textarea:visible")
+            if prop_elem.input_value():
+                return False
+        elif field_type == "checkbox":
+            checkbox_elem = container.locator('input[type="checkbox"]')
+            if checkbox_elem.is_checked():
+                return False
+        else:
+            raise ValueError(f"Неподдерживаемый тип поля: {field_type}")
+        return True
 
     def enter_text_in_the_classifier(self, classifier_name, text):
-        classifier = self.page.get_by_role('textbox', name=classifier_name)
+        classifier = self.page.get_by_role("textbox", name=classifier_name)
         classifier.press_sequentially(text)
 
     def clear_classifier_by_name(self, classifier_name):
-        classifier_locator = self.page.get_by_role('textbox', name=classifier_name, exact=True)
+        classifier_locator = self.page.get_by_role(
+            "textbox", name=classifier_name, exact=True
+        )
         classifier_locator.clear()
 
     def clear_classifier_by_id(self, classifier_id):
-        classifier_locator = self.page.locator(f'#{classifier_id}')
-        classifier_locator.press('Control+A')
-        classifier_locator.press('Backspace')
+        classifier_locator = self.page.locator(f"#{classifier_id}")
+        classifier_locator.press("Control+A")
+        classifier_locator.press("Backspace")
 
     def normalize_spaces(self, texts):
         if isinstance(texts, str):

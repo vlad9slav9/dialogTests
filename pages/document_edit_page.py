@@ -287,7 +287,7 @@ class DocumentEditPage(BasePage):
     #     self.click_checkbox('Для МЭДО')
     #     self.assert_checkbox_checked('Для МЭДО')
 
-    def fill_all_not_default_fields(self):
+    def fill_empty_fields(self, only_required_fields=False):
         template_data = getattr(self, "template_data", None)
         if not template_data:
             raise ValueError("Данные шаблона не были перехвачены!")
@@ -296,8 +296,10 @@ class DocumentEditPage(BasePage):
 
         for block in template_data.get("template", []):
             for item in block.get("items", []):
+                if only_required_fields and not item.get("required"):
+                    continue
                 frontend_input = item.get("frontendInput")
-                is_multiple = item.get("multiple", False)
+                is_multiple = item.get("multiple")
                 field_id = item.get("code")
                 if frontend_input in TARGET_CLASSIFIER_FRONTEND_INPUTS:
                     if self.is_field_empty(field_id, field_type="classifier"):
@@ -360,7 +362,7 @@ class DocumentEditPage(BasePage):
         current_year = self.generate_date_offset_days(0, year=True)
         self.assert_property_has_value("date_year", current_year)
 
-        self.assert_property_has_value("from", user_information, is_multiform=True)
+        self.assert_classifier_has_value("from", user_information)
 
         self.assert_checkbox_checked("show_signature")
         self.assert_checkbox_checked("show_author")
@@ -406,28 +408,26 @@ class DocumentEditPage(BasePage):
     def assert_document_tab_visible(self, tab_name):
         expect(self.page.get_by_role("tab", name=tab_name)).to_be_visible()
 
-    def create_regular_document(self, user_information, all_fields=False):
-        if all_fields:
+    def create_document(self, user_information, only_required_fields=False):
+        if only_required_fields:
             filled_fields = {
                 **self.assert_default_fields_are_filled(
                     user_information, return_values=True
                 ),
-                **self.fill_all_not_default_fields(return_values=True),
+                **self.fill_empty_fields(only_required_fields=True),
             }
-            self.click_upper_save_button()
+            self.click_bottom_save_button()
             self.assert_document_tab_visible("Документ №")
-            # expect(self.page.get_by_role('tab', name='Документ №')).to_be_visible()
             return DocumentViewPage(self.page), filled_fields
         else:
             filled_fields = {
                 **self.assert_default_fields_are_filled(
                     user_information, return_values=True
                 ),
-                **self.fill_all_not_default_fields(),
+                **self.fill_empty_fields(),
             }
-            self.click_bottom_save_button()
+            self.click_upper_save_button()
             self.assert_document_tab_visible("Документ №")
-            # expect(self.page.get_by_role('tab', name='Документ №')).to_be_visible()
             return DocumentViewPage(self.page), filled_fields
 
     def assert_classifier_has_value(
@@ -453,3 +453,61 @@ class DocumentEditPage(BasePage):
                     '.MuiAutocomplete-root:not([class*="GroupsPicker"]) input, textarea'
                 )
                 expect(input_elem).to_have_value(expected_value)
+
+    def clear_field(self, field_id, frontend_input):
+        container = self.page.locator(f"#{field_id}")
+        if frontend_input in TARGET_CLASSIFIER_FRONTEND_INPUTS:
+            # Нажатие на все кнопки Clear у Autocomplete (включая выбор группы)
+            for btn in container.locator(
+                'button[aria-label="Clear"], button.MuiAutocomplete-clearIndicator'
+            ).all():
+                if btn.is_visible():
+                    btn.click()
+
+            # Удаление (MuiChip), если множественный выбор
+            for icon in container.locator(".MuiChip-deleteIcon").all()[::-1]:
+                if icon.is_visible():
+                    icon.click()
+
+            # Очистка инпутов классификатора
+            for input_elem in container.locator(
+                "input:visible, textarea:visible"
+            ).all():
+                if input_elem.input_value():
+                    input_elem.press("Control+A")
+                    input_elem.press("Backspace")
+
+        elif frontend_input in TARGET_PROPERTY_INPUTS:
+            # Очистка обычных текстовых полей и дат
+            for input_elem in container.locator(
+                "input:visible, textarea:visible"
+            ).all():
+                if input_elem.input_value():
+                    input_elem.press("Control+A")
+                    input_elem.press("Backspace")
+
+        elif frontend_input == "checkbox":
+            # Снятие чекбокса, если он отмечен
+            for checkbox in container.locator('input[type="checkbox"]').all():
+                if checkbox.is_checked():
+                    checkbox.click()
+
+    def clear_field_by_id(self, field_id):
+        locator = self.page.locator(f"#{field_id}")
+        locator.press("Control+A")
+        locator.press("Backspace")
+
+    def clear_editable_fields(self):
+        template_data = getattr(self, "template_data", None)
+        if not template_data:
+            raise ValueError("Данные шаблона не были перехвачены!")
+        for block in template_data.get("template", []):
+            for item in block.get("items", []):
+                # Проверяем, что поле доступно для редактирования
+                if not item.get("editable", False):
+                    continue
+                field_id = item.get("code")
+                frontend_input = item.get("frontendInput")
+                self.clear_field(field_id, frontend_input)
+        self._short_description.clear()
+        self._content_editor.clear()
