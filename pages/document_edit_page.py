@@ -420,8 +420,6 @@ class DocumentEditPage(BasePage):
             "input:not([type='hidden']), textarea:visible"
         ).first
         field_input.click()
-        field_input.press("Control+A")
-        field_input.press("Backspace")
         field_input.press_sequentially(str(value))
         return value
 
