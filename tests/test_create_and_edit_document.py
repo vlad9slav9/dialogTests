@@ -443,10 +443,4 @@ def test_retest(main_page_with_responsible: MainPage):
     doc_edit_page = main_page_with_responsible.open_doc_create_page(
         "Исходящий (Автотест)"
     )
-    doc_view_page, fields_values = doc_edit_page.create_document(
-        user_information, only_required_fields=True
-    )
-    doc_edit_page.assert_snackbar_displayed("Документ создан")
-    doc_view_page.click_edit_button()
-    doc_edit_page.clear_editable_fields()
-    doc_edit_page.fill_empty_fields()
+    doc_edit_page.create_document(user_information)

@@ -154,3 +154,44 @@ class DocumentViewPage(BasePage):
         self.assert_field_has_value("Статус Документа", "Открыт")
 
     # def example_method(self, expected_data):
+
+    def assert_field_has_value_by_id(self, field_id: str, expected_val):
+
+        container = self.page.locator(f"#{field_id}")
+        expect(container).to_be_visible()
+        # 1. Поля ввода (input или textarea) -> значение лежит в атрибуте value
+
+        input_elem = container.locator("input:not([type='hidden']), textarea").first
+        if input_elem.count() > 0:
+            if isinstance(expected_val, list):
+                expected_val = expected_val[0]
+            expect(input_elem).to_have_value(str(expected_val))
+            return
+
+        # 2. Множественные чипы / теги (.MuiChip-label)
+        chips = container.locator(".MuiChip-label")
+        if chips.count() > 0:
+            if isinstance(expected_val, list):
+                for val in expected_val:
+                    expect(chips.filter(has_text=val)).to_be_visible()
+            else:
+                expect(chips.filter(has_text=expected_val)).to_be_visible()
+            return
+
+        # 3. Переключатели (Да / Нет)
+        switch = container.locator(".ViewSwitch-Switch")
+        if switch.count() > 0:
+            expect(switch).to_have_text(str(expected_val))
+            return
+
+        # 4. Fallback: поиск по тексту внутри всего контейнера поля
+        # (подходит для списков пользователей вида PropsViewWorkerPickerSelect-UserList)
+        if isinstance(expected_val, list):
+            for val in expected_val:
+                expect(container).to_contain_text(val)
+        else:
+            expect(container).to_contain_text(str(expected_val))
+
+    def assert_fields_have_values_by_id(self, fields_dict: dict):
+        for field_id, expected_value in fields_dict.items():
+            self.assert_field_has_value_by_id(field_id, expected_value)
