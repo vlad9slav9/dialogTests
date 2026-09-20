@@ -404,7 +404,7 @@ class DocumentEditPage(BasePage):
         self._content_editor.clear()
 
     def get_field_container(self, field_name: str):
-        pattern = re.compile(rf"^\s*{re.escape(field_name)}[\s\*\u2009]*$")
+        pattern = re.compile(rf"^{re.escape(field_name)}[\s\*]*$")
         return self.page.locator(
             ".MuiFormControl-root, fieldset, .Document-TextArea, .PropsTextArea"
         ).filter(
