@@ -3,12 +3,13 @@ import os
 from playwright.sync_api import Page, expect
 
 from pages.base_page import BasePage
-from pages.main_page import MainPage
+from pages.components.layout_component import LayoutComponent
 
 
 class LoginPage(BasePage):
     def __init__(self, page: Page):
         super().__init__(page)
+
         self._username_input_field = self.page.locator("#login")
         self._password_input_field = self.page.locator("#password")
         self._login_button = self.page.locator("#login_enter_button")
@@ -48,7 +49,7 @@ class LoginPage(BasePage):
 
     def login_with_responsible(self):
         self.do_login(self.get_responsible_username(), self.get_responsible_password())
-        return MainPage(self.page)
+        return LayoutComponent(self.page)
 
     def assert_login_error_visible(self):
         expect(self._login_error_message).to_be_visible()

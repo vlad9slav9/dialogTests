@@ -6,7 +6,6 @@ from pages.base_page import BasePage
 class DocumentViewPage(BasePage):
     def __init__(self, page: Page):
         super().__init__(page)
-        self.page = page
 
         self._doc_number_tab = self.page.locator(".DocNumber-Text")
         self._doc_history_tab = self.page.get_by_role(

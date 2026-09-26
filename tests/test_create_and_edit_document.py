@@ -1,112 +1,94 @@
 import pytest
 
-from pages.main_page import MainPage
+from pages.components.layout_component import LayoutComponent
 
 
-def test_open_document_creation_window(main_page_with_responsible):
-    main_page_with_responsible.click_quick_doc_create_button()
-    main_page_with_responsible.assert_doc_create_window_visible()
+def test_open_document_creation_window(responsible_user: LayoutComponent):
+    responsible_user.click_quick_doc_create_button()
+    responsible_user.assert_doc_create_window_visible()
 
 
-def test_cancel_document_creation_window(main_page_with_responsible):
-    main_page_with_responsible.click_quick_doc_create_button()
-    main_page_with_responsible.click_cancel_doc_create_button()
-    main_page_with_responsible.assert_doc_create_window_hidden()
+def test_cancel_document_creation_window(responsible_user: LayoutComponent):
+    responsible_user.click_quick_doc_create_button()
+    responsible_user.click_cancel_doc_create_button()
+    responsible_user.assert_doc_create_window_hidden()
 
 
-def test_close_document_creation_window(main_page_with_responsible):
-    main_page_with_responsible.click_quick_doc_create_button()
-    main_page_with_responsible.click_close_doc_create_button()
-    main_page_with_responsible.assert_doc_create_window_hidden()
+def test_close_document_creation_window(responsible_user: LayoutComponent):
+    responsible_user.click_quick_doc_create_button()
+    responsible_user.click_close_doc_create_button()
+    responsible_user.assert_doc_create_window_hidden()
 
 
-def test_search_document_type_in_document_creation_window(main_page_with_responsible):
-    main_page_with_responsible.click_quick_doc_create_button()
-    main_page_with_responsible.click_doc_type_select_field()
-    main_page_with_responsible.assert_dropdown_list_contain_options(
-        "Исходящий (Автотест)"
-    )
-    main_page_with_responsible.assert_dropdown_list_contain_options(
-        "Исходящий МЭДО (Автотест)"
-    )
-    main_page_with_responsible.assert_dropdown_list_contain_options(
-        "Входящий (Автотест)"
-    )
-    main_page_with_responsible.assert_dropdown_list_contain_options(
+def test_search_document_type_in_document_creation_window(
+    responsible_user: LayoutComponent,
+):
+    responsible_user.click_quick_doc_create_button()
+    responsible_user.click_doc_type_select_field()
+    responsible_user.assert_dropdown_list_contain_options("Исходящий (Автотест)")
+    responsible_user.assert_dropdown_list_contain_options("Исходящий МЭДО (Автотест)")
+    responsible_user.assert_dropdown_list_contain_options("Входящий (Автотест)")
+    responsible_user.assert_dropdown_list_contain_options(
         "Внутренний. Без Шаблона Печати (Автотест)"
     )
-    main_page_with_responsible.fill_doc_type_search_field("исходящий")
-    main_page_with_responsible.assert_dropdown_list_contain_options(
-        "Исходящий (Автотест)"
-    )
-    main_page_with_responsible.assert_dropdown_list_contain_options(
-        "Исходящий МЭДО (Автотест)"
-    )
-    main_page_with_responsible.assert_dropdown_list_not_contain_options(
-        "Входящий (Автотест)"
-    )
-    main_page_with_responsible.assert_dropdown_list_not_contain_options(
+    responsible_user.fill_doc_type_search_field("исходящий")
+    responsible_user.assert_dropdown_list_contain_options("Исходящий (Автотест)")
+    responsible_user.assert_dropdown_list_contain_options("Исходящий МЭДО (Автотест)")
+    responsible_user.assert_dropdown_list_not_contain_options("Входящий (Автотест)")
+    responsible_user.assert_dropdown_list_not_contain_options(
         "Внутренний. Без Шаблона Печати (Автотест)"
     )
 
 
-def test_search_nonexistent_document_type(main_page_with_responsible):
-    main_page_with_responsible.click_quick_doc_create_button()
-    main_page_with_responsible.click_doc_type_select_button()
-    main_page_with_responsible.fill_doc_type_search_field("Негативный тест")
-    main_page_with_responsible.assert_dropdown_list_without_options()
+def test_search_nonexistent_document_type(responsible_user: LayoutComponent):
+    responsible_user.click_quick_doc_create_button()
+    responsible_user.click_doc_type_select_button()
+    responsible_user.fill_doc_type_search_field("Негативный тест")
+    responsible_user.assert_dropdown_list_without_options()
 
 
-def test_reselect_document_type_in_document_creation_window(main_page_with_responsible):
-    main_page_with_responsible.click_quick_doc_create_button()
-    main_page_with_responsible.click_doc_type_select_button()
-    main_page_with_responsible.select_doc_type("Исходящий (Автотест)")
-    main_page_with_responsible.assert_doc_option_selected("Исходящий (Автотест)")
-    main_page_with_responsible.click_doc_type_select_field()
-    main_page_with_responsible.assert_dropdown_list_not_contain_options(
-        "Исходящий (Автотест)"
-    )
-    main_page_with_responsible.assert_dropdown_list_contain_options(
-        "Входящий (Автотест)"
-    )
-    main_page_with_responsible.assert_dropdown_list_contain_options(
-        "Исходящий МЭДО (Автотест)"
-    )
-    main_page_with_responsible.assert_dropdown_list_contain_options(
+def test_reselect_document_type_in_document_creation_window(
+    responsible_user: LayoutComponent,
+):
+    responsible_user.click_quick_doc_create_button()
+    responsible_user.click_doc_type_select_button()
+    responsible_user.select_doc_type("Исходящий (Автотест)")
+    responsible_user.assert_doc_option_selected("Исходящий (Автотест)")
+    responsible_user.click_doc_type_select_field()
+    responsible_user.assert_dropdown_list_not_contain_options("Исходящий (Автотест)")
+    responsible_user.assert_dropdown_list_contain_options("Входящий (Автотест)")
+    responsible_user.assert_dropdown_list_contain_options("Исходящий МЭДО (Автотест)")
+    responsible_user.assert_dropdown_list_contain_options(
         "Внутренний. Без Шаблона Печати (Автотест)"
     )
-    main_page_with_responsible.select_doc_type("Входящий (Автотест)")
-    main_page_with_responsible.assert_doc_option_selected("Входящий (Автотест)")
+    responsible_user.select_doc_type("Входящий (Автотест)")
+    responsible_user.assert_doc_option_selected("Входящий (Автотест)")
 
 
 def test_create_document_button_disabled_after_clearing_field(
-    main_page_with_responsible,
+    responsible_user: LayoutComponent,
 ):
-    main_page_with_responsible.click_quick_doc_create_button()
-    main_page_with_responsible.assert_doc_type_search_field_is_empty()
-    main_page_with_responsible.assert_create_doc_button_disabled()
-    main_page_with_responsible.click_doc_type_select_field()
-    main_page_with_responsible.select_doc_type("Входящий (Автотест)")
-    main_page_with_responsible.assert_doc_option_selected("Входящий (Автотест)")
-    main_page_with_responsible.assert_create_doc_button_enabled()
-    main_page_with_responsible.click_doc_type_search_field_clear_button()
-    main_page_with_responsible.assert_doc_type_search_field_is_empty()
-    main_page_with_responsible.assert_create_doc_button_disabled()
+    responsible_user.click_quick_doc_create_button()
+    responsible_user.assert_doc_type_search_field_is_empty()
+    responsible_user.assert_create_doc_button_disabled()
+    responsible_user.click_doc_type_select_field()
+    responsible_user.select_doc_type("Входящий (Автотест)")
+    responsible_user.assert_doc_option_selected("Входящий (Автотест)")
+    responsible_user.assert_create_doc_button_enabled()
+    responsible_user.click_doc_type_search_field_clear_button()
+    responsible_user.assert_doc_type_search_field_is_empty()
+    responsible_user.assert_create_doc_button_disabled()
 
 
-def test_autofill_default_fields(main_page_with_responsible):
-    user_information = main_page_with_responsible.get_basic_user_information()
-    doc_edit_page = main_page_with_responsible.open_doc_create_page(
-        "Исходящий (Автотест)"
-    )
+def test_autofill_default_fields(responsible_user: LayoutComponent):
+    user_information = responsible_user.get_basic_user_information()
+    doc_edit_page = responsible_user.open_doc_edit_page("Исходящий (Автотест)")
     doc_edit_page.assert_document_creation_tab_visible("Исходящий (Автотест)")
     doc_edit_page.assert_default_fields_are_filled(user_information)
 
 
-def test_change_print_template(main_page_with_responsible):
-    doc_edit_page = main_page_with_responsible.open_doc_create_page(
-        "Исходящий (Автотест)"
-    )
+def test_change_print_template(responsible_user: LayoutComponent):
+    doc_edit_page = responsible_user.open_doc_edit_page("Исходящий (Автотест)")
     doc_edit_page.assert_field_is_filled(
         "Шаблон (для печати) *", "Первый автотестовый шаблон"
     )
@@ -114,10 +96,10 @@ def test_change_print_template(main_page_with_responsible):
     doc_edit_page.assert_field_is_filled("Шаблон (для печати) *", "Второй для печати")
 
 
-def test_search_nonexistent_print_template(main_page_with_responsible):
-    doc_edit_page = main_page_with_responsible.open_doc_create_page(
-        "Исходящий (Автотест)"
-    )
+def test_search_nonexistent_print_template(
+    responsible_user: LayoutComponent,
+):
+    doc_edit_page = responsible_user.open_doc_edit_page("Исходящий (Автотест)")
     doc_edit_page.assert_field_is_filled(
         "Шаблон (для печати) *", "Первый автотестовый шаблон"
     )
@@ -128,8 +110,8 @@ def test_search_nonexistent_print_template(main_page_with_responsible):
     doc_edit_page.assert_dropdown_list_without_options()
 
 
-def test_check_empty_print_template(main_page_with_responsible):
-    doc_edit_page = main_page_with_responsible.open_doc_create_page(
+def test_check_empty_print_template(responsible_user: LayoutComponent):
+    doc_edit_page = responsible_user.open_doc_edit_page(
         "Внутренний. Без Шаблона Печати (Автотест)"
     )
     doc_edit_page.assert_field_is_empty_by_name("Шаблон (для печати)")
@@ -137,10 +119,10 @@ def test_check_empty_print_template(main_page_with_responsible):
     doc_edit_page.assert_dropdown_list_without_options()
 
 
-def test_fill_content_editor_via_content_template(main_page_with_responsible):
-    doc_edit_page = main_page_with_responsible.open_doc_create_page(
-        "Исходящий (Автотест)"
-    )
+def test_fill_content_editor_via_content_template(
+    responsible_user: LayoutComponent,
+):
+    doc_edit_page = responsible_user.open_doc_edit_page("Исходящий (Автотест)")
     doc_edit_page.assert_content_editor_is_empty()
     doc_edit_page.select_content_template("Первый шаблон для Исходящего документа")
     doc_edit_page.assert_content_editor_has_text(
@@ -153,10 +135,8 @@ def test_fill_content_editor_via_content_template(main_page_with_responsible):
     )
 
 
-def test_select_empty_content_template(main_page_with_responsible):
-    doc_edit_page = main_page_with_responsible.open_doc_create_page(
-        "Исходящий (Автотест)"
-    )
+def test_select_empty_content_template(responsible_user: LayoutComponent):
+    doc_edit_page = responsible_user.open_doc_edit_page("Исходящий (Автотест)")
     doc_edit_page.select_content_template("Без шаблона")
     doc_edit_page.assert_content_editor_is_empty()
 
@@ -172,19 +152,17 @@ def test_select_empty_content_template(main_page_with_responsible):
         "Размер шрифта(при печати)",
     ],
 )
-def test_search_option_in_classifier(main_page_with_responsible, field_name):
-    doc_edit_page = main_page_with_responsible.open_doc_create_page(
-        "Исходящий (Автотест)"
-    )
+def test_search_option_in_classifier(responsible_user: LayoutComponent, field_name):
+    doc_edit_page = responsible_user.open_doc_edit_page("Исходящий (Автотест)")
     doc_edit_page.enter_text_in_the_classifier(field_name, "тест значение")
     doc_edit_page.assert_dropdown_list_contain_text("тест значение")
     doc_edit_page.assert_dropdown_list_not_contain_text("негативная проверка")
 
 
-def test_fill_organization_classifier_via_group(main_page_with_responsible):
-    doc_edit_page = main_page_with_responsible.open_doc_create_page(
-        "Исходящий (Автотест)"
-    )
+def test_fill_organization_classifier_via_group(
+    responsible_user: LayoutComponent,
+):
+    doc_edit_page = responsible_user.open_doc_edit_page("Исходящий (Автотест)")
     doc_edit_page.fill_classifier_group(
         "Выберите группу", "Автотестовая группа из профиля"
     )
@@ -197,10 +175,8 @@ def test_fill_organization_classifier_via_group(main_page_with_responsible):
     doc_edit_page.assert_group_and_field_is_empty("target_department_after_sign")
 
 
-def test_fill_user_classifier_via_grop(main_page_with_responsible):
-    doc_edit_page = main_page_with_responsible.open_doc_create_page(
-        "Исходящий (Автотест)"
-    )
+def test_fill_user_classifier_via_grop(responsible_user: LayoutComponent):
+    doc_edit_page = responsible_user.open_doc_edit_page("Исходящий (Автотест)")
     doc_edit_page.fill_classifier_group(
         "Добавить из группы", "Пользователи моей организации"
     )
@@ -218,11 +194,9 @@ def test_fill_user_classifier_via_grop(main_page_with_responsible):
     [("signature", "position"), ("coordinator_name", "coordinator_pos")],
 )
 def test_autofill_position_classifier(
-    main_page_with_responsible, main_field, second_field
+    responsible_user: LayoutComponent, main_field, second_field
 ):
-    doc_edit_page = main_page_with_responsible.open_doc_create_page(
-        "Исходящий (Автотест)"
-    )
+    doc_edit_page = responsible_user.open_doc_edit_page("Исходящий (Автотест)")
     doc_edit_page.fill_classifier_by_id(main_field, doc_edit_page.department_users[0])
     doc_edit_page.assert_field_is_filled(
         second_field,
@@ -242,10 +216,10 @@ def test_autofill_position_classifier(
     )
 
 
-def test_search_user_in_creation_document_fields(main_page_with_responsible):
-    doc_edit_page = main_page_with_responsible.open_doc_create_page(
-        "Исходящий (Автотест)"
-    )
+def test_search_user_in_creation_document_fields(
+    responsible_user: LayoutComponent,
+):
+    doc_edit_page = responsible_user.open_doc_edit_page("Исходящий (Автотест)")
     doc_edit_page.clear_multivalues_field("От кого")
     doc_edit_page.assert_picker_contain_users(
         "От кого", doc_edit_page.cross_department_users
@@ -286,10 +260,10 @@ def test_search_user_in_creation_document_fields(main_page_with_responsible):
     )
 
 
-def test_search_user_in_creation_document_medo_fields(main_page_with_responsible):
-    doc_edit_page = main_page_with_responsible.open_doc_create_page(
-        "Исходящий МЭДО (Автотест)"
-    )
+def test_search_user_in_creation_document_medo_fields(
+    responsible_user: LayoutComponent,
+):
+    doc_edit_page = responsible_user.open_doc_edit_page("Исходящий МЭДО (Автотест)")
     doc_edit_page.clear_multivalues_field("От кого")
     doc_edit_page.assert_picker_contain_users(
         "От кого", doc_edit_page.users_without_curators
@@ -325,11 +299,9 @@ def test_search_user_in_creation_document_medo_fields(main_page_with_responsible
     )
 
 
-def test_create_document_with_all_fields(main_page_with_responsible: MainPage):
-    user_information = main_page_with_responsible.get_basic_user_information()
-    doc_edit_page = main_page_with_responsible.open_doc_create_page(
-        "Исходящий (Автотест)"
-    )
+def test_create_document_with_all_fields(responsible_user: LayoutComponent):
+    user_information = responsible_user.get_basic_user_information()
+    doc_edit_page = responsible_user.open_doc_edit_page("Исходящий (Автотест)")
     doc_view_page, fields_values = doc_edit_page.create_document(user_information)
     doc_edit_page.assert_snackbar_displayed("Документ создан")
     doc_view_page.assert_fields_have_values(fields_values)
@@ -337,12 +309,10 @@ def test_create_document_with_all_fields(main_page_with_responsible: MainPage):
 
 
 def test_create_document_with_only_required_fields(
-    main_page_with_responsible: MainPage,
+    responsible_user: LayoutComponent,
 ):
-    user_information = main_page_with_responsible.get_basic_user_information()
-    doc_edit_page = main_page_with_responsible.open_doc_create_page(
-        "Исходящий (Автотест)"
-    )
+    user_information = responsible_user.get_basic_user_information()
+    doc_edit_page = responsible_user.open_doc_edit_page("Исходящий (Автотест)")
     doc_view_page, fields_values = doc_edit_page.create_document(
         user_information, only_required_fields=True
     )
@@ -360,8 +330,8 @@ def test_create_document_with_only_required_fields(
         "click_bottom_edit_button",
     ],
 )
-def test_create_document(main_page_with_responsible, save_action):
-    doc_edit_page = main_page_with_responsible.open_doc_create_page(
+def test_create_document(responsible_user: LayoutComponent, save_action):
+    doc_edit_page = responsible_user.open_doc_edit_page(
         "Внутренний. Без Шаблона Печати (Автотест)"
     )
     doc_edit_page.fill_short_description()
@@ -380,11 +350,9 @@ def test_create_document(main_page_with_responsible, save_action):
     ],
 )
 def test_save_document_without_filling_required_fields(
-    main_page_with_responsible, save_action
+    responsible_user: LayoutComponent, save_action
 ):
-    doc_edit_page = main_page_with_responsible.open_doc_create_page(
-        "Исходящий (Автотест)"
-    )
+    doc_edit_page = responsible_user.open_doc_edit_page("Исходящий (Автотест)")
     doc_edit_page.clear_property("Срок исполнения *")
     doc_edit_page.clear_property("Дата документа *")
     doc_edit_page.clear_print_template()
@@ -414,11 +382,9 @@ def test_save_document_without_filling_required_fields(
     doc_edit_page.assert_snackbar_displayed("Не все поля заполнены корректно.")
 
 
-def test_edit_document(main_page_with_responsible: MainPage):
-    user_information = main_page_with_responsible.get_basic_user_information()
-    doc_edit_page = main_page_with_responsible.open_doc_create_page(
-        "Исходящий (Автотест)"
-    )
+def test_edit_document(responsible_user: LayoutComponent):
+    user_information = responsible_user.get_basic_user_information()
+    doc_edit_page = responsible_user.open_doc_edit_page("Исходящий (Автотест)")
     doc_view_page, fields_values = doc_edit_page.create_document(user_information)
     doc_view_page.click_edit_button()
     doc_edit_page.assert_document_tab_visible("Редактирование документа  № АвтоИсход")
@@ -426,21 +392,9 @@ def test_edit_document(main_page_with_responsible: MainPage):
     doc_edit_page.fill_empty_fields()
 
 
-# Сделать с редактируемыми полями во время создания / редактирования + дата документа на который ссылаемся для печати
-# def test_change_default_date_fields(main_page_with_responsible):
-#     doc_create_page = main_page_with_responsible.open_doc_create_page('Исходящий (Автотест)')
-#     future_date = doc_create_page.change_date_via_calendar('Срок исполнения')
-#     doc_create_page.assert_field_is_filled('Срок исполнения *', future_date)
-#     doc_create_page.change_date_in_property('Дата документа *', -15)
-#     new_year = doc_create_page.change_date_via_calendar('Год', is_year=True)
-#     doc_create_page.assert_field_is_filled('Год', new_year)
-#     past_date = doc_create_page.change_date_via_calendar('Дата от', future_date=False)
-#     doc_create_page.assert_field_is_filled('Дата от', past_date)
-
-
-def test_retest(main_page_with_responsible: MainPage):
-    user_information = main_page_with_responsible.get_basic_user_information()
-    doc_edit_page = main_page_with_responsible.open_doc_create_page(
-        "Исходящий (Автотест)"
+def test_retest(responsible_user: LayoutComponent):
+    user_information = responsible_user.get_basic_user_information()
+    doc_edit_page = responsible_user.open_doc_edit_page(
+        "Исходящий (Автотест)", user_information
     )
-    doc_edit_page.create_document(user_information)
+    doc_edit_page.create_document()

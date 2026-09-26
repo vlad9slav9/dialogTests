@@ -26,7 +26,6 @@ TARGET_PROPERTY_INPUTS = {"date", "dateYear", "date_empty", "text", "text_area"}
 class DocumentEditPage(BasePage):
     def __init__(self, page: Page):
         super().__init__(page)
-        # self.page = page
 
         self._outgoing_document_creation_tab = self.page.get_by_role(
             "tab", name="Создание документа (Исходящий (Автотест))", exact=True

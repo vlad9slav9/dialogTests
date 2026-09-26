@@ -4,6 +4,8 @@ import random
 from mimesis import Generic
 from playwright.sync_api import Page, expect
 
+from pages.components.layout_component import LayoutComponent
+
 generic_ru = Generic("ru")
 generic_en = Generic("en")
 
@@ -11,6 +13,7 @@ generic_en = Generic("en")
 class BasePage:
     def __init__(self, page: Page):
         self.page = page
+        self.header = LayoutComponent(page)
 
         self._krtech_logo_link = self.page.locator(".SocialComponent-KrtechLogo a")
         self._telegram_button_link = self.page.locator(".SocialComponent-Telegram a")
